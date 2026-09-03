@@ -26,7 +26,7 @@ ASSETS = Path(__file__).parent / "assets"
 
 st.set_page_config(
     page_title="Portafolio",
-    page_icon="🔥",
+    page_icon="",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
