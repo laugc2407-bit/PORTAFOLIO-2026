@@ -26,7 +26,7 @@ ASSETS = Path(__file__).parent / "assets"
 
 st.set_page_config(
     page_title="Portafolio",
-    page_icon="",
+    page_icon="☀️",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
@@ -55,12 +55,18 @@ NAV = [
 
 ABOUT = {
     "titulo": "SOBRE MÍ",
-    "texto": (
-        "Escribe aquí 4-6 líneas sobre ti: quién eres, en qué te especializas "
-        "y qué hace único tu trabajo. Ejemplo: 'Soy diseñador(a) de experiencias "
-        "interactivas enfocado(a) en mundos inmersivos, interfaces y narrativa "
-        "visual. Combino herramientas de tiempo real con procesos artesanales "
-        "para crear proyectos que se sienten tanto como se ven.'"
+    "texto": ## Sobre mí
+
+Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
+
+Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
+
+Me interesa especialmente ese punto donde **el diseño y la tecnología se encuentran con lo humano**. Por eso no busco hacer proyectos que simplemente se vean bien, sino experiencias que tengan una intención, despierten curiosidad y dejen algo en quien las vive.
+
+Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas nuevas para llevar una idea un paso más allá.
+
+**En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
+"
     ),
     # Coloca tu foto en: assets/perfil.jpg  (retrato, cualquier proporción)
     "imagen": "perfil.jpg",
@@ -83,66 +89,108 @@ TOOLS = [
     {"nombre": "Maya", "archivo": "maya.png"},
 ]
 
-# Proyectos "inmersivos" — cada uno puede tener foto (.jpg/.png) o video (.mp4)
-# Coloca el archivo en assets/projects/ con el nombre indicado.
+# -----------------------------------------------------------------------
+# PROYECTOS — cada uno se muestra como un desplegable (clic para abrir).
+# Usa la función `proyecto(...)` para cada uno; solo llena estos 6 campos
+# cortos. Dejar "" en `enlace` o `herramientas` está bien, simplemente no
+# se muestra esa línea.
+# -----------------------------------------------------------------------
+def proyecto(titulo, resumen, archivo, rol="", herramientas="", resultado="", enlace=""):
+    return {
+        "titulo": titulo,            # nombre del proyecto
+        "resumen": resumen,          # 1 frase corta, visible antes de abrir
+        "archivo": archivo,          # imagen o video en assets/projects/
+        "rol": rol,                  # tu rol, ej: "Diseño UX + modelado 3D"
+        "herramientas": herramientas,  # ej: "Unity, Blender, C++"
+        "resultado": resultado,      # 1 frase: qué se logró / impacto
+        "enlace": enlace,            # url a demo o repo (opcional)
+    }
+
+
+# Proyectos "inmersivos" — foto (.jpg/.png) o video (.mp4) en assets/projects/
 INMERSIVOS = [
-    {
-        "titulo": "Museo: el universo de Tim Burton",
-        "descripcion": "Cuenta en 1-2 frases de qué trató el proyecto, tu rol y qué herramientas usaste.",
-        "archivo": "projects/tim_burton.jpg",
-    },
-    {
-        "titulo": "Videojuego en VR: Vayquin",
-        "descripcion": "Cuenta en 1-2 frases de qué trató el proyecto, tu rol y qué herramientas usaste.",
-        "archivo": "projects/vayquin_vr.mp4",
-    },
-    {
-        "titulo": "Videojuego: Bruna Lab",
-        "descripcion": "Cuenta en 1-2 frases de qué trató el proyecto, tu rol y qué herramientas usaste.",
-        "archivo": "projects/bruna_lab.jpg",
-    },
-  
+    proyecto(
+        titulo="Museo: el universo de Tim Burton",
+        resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo del Tim Burton, recorriendo por sus obras mas emblemáticas.",
+        archivo="projects/tim_burton.jpg",
+        rol="Desarrollo y montaje.",
+        herramientas="Unity y Maya.",
+
+    ),
+    proyecto(
+        titulo="Videojuego en VR: Vayquin",
+        resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
+        archivo="projects/vayquin_vr.mp4",
+        rol="Desarrollo y montaje.",
+        herramientas="Unity.",
+    ),
+    proyecto(
+        titulo="Videojuego: Bruna Lab (En proceso) ",
+        resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
+        archivo="projects/bruna_lab.jpg",
+        rol="Proyect Manager.",
 ]
 
-# Proyectos de "Interfaces" — con una pequeña lista de logros/datos
+# Proyectos de "Interfaces"
 INTERFACES = [
-    {
-        "titulo": "App: Mundo Ayuda Mayores",
-        "descripcion": "Describe brevemente el objetivo de la app y a quién ayuda.",
-        "datos": [
-            "Colaboré con clientes de distintos perfiles.",
-            "Gestioné con éxito más de 27 sesiones de trabajo.",
-            "Desarrollé conceptos creativos a la medida.",
-        ],
-        "archivo": "projects/mundo_ayuda_mayores.jpg",
-    },
-    {
-        "titulo": "App: Parque Éxpora",
-        "descripcion": "Describe brevemente el objetivo de la app y a quién ayuda.",
-        "datos": [],
-        "archivo": "projects/parque_expora.jpg",
-    },
+    proyecto(
+        titulo="App: Mundo Ayuda Mayores",
+        resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
+        archivo="projects/mundo_ayuda_mayores.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI). ",
+        herramientas="Figma y canva.",
+    ),
+    proyecto(
+        titulo="App: Parque Éxpora",
+        resumen="Aplicativo para facilitar la experiencia de espera en la cafeteria del parque.",
+        archivo="projects/parque_expora.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI). ",
+        herramientas="Figma y canva.",
+    ),
+      proyecto(
+        titulo="App: Antioquia, territorio multicultural (En proceso) ",
+        resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
+        archivo="projects/parque_expora.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI). ",
+        herramientas="Figma y canva.",
+    ),
 ]
 
-# Proyectos de "Visual" — modelado, animación 3D, piezas visuales
+# Proyectos de "Visual"
 VISUAL = [
-    {"titulo": "Modelado 3D", "descripcion": "Describe la pieza y el software usado.", "archivo": "projects/modelado_3d.jpg"},
-    {"titulo": "Animación 3D: Eclipsaris", "descripcion": "Describe el proyecto de animación.", "archivo": "projects/eclipsaris.mp4"},
-    {"titulo": "Visuales", "descripcion": "Describe la pieza visual.", "archivo": "projects/visuales.jpg"},
+    proyecto(
+        titulo="Modelado 3D",
+        resumen="Piezas modeladas en 3D.",
+        archivo="projects/modelado_3d.jpg",
+        herramientas="Maya y adobe substance 3D painter.",
+    ),
+    proyecto(
+        titulo="Animación 3D: Eclipsaris",
+        resumen="Cortometraje de animación 3D.",
+        rol="Rig de los personajes y animatic. ",
+        archivo="projects/eclipsaris.mp4",
+        herramientas="Maya y filmora.",
+    ),
+    proyecto(
+        titulo="Visuales",
+        resumen="Visuales reactivas a movimiento o sonido.",
+        archivo="projects/visuales.jpg",
+        herramientas="TouchDesigner.",
+    ),
 ]
 
 # Proyectos de "Investigación"
 INVESTIGACION = [
-    {
-        "titulo": "Educación en los niños con TEA",
-        "descripcion": "Ideal para explicar contexto, metodología y hallazgos principales de la investigación.",
-        "archivo": "projects/tea.jpg",
-    },
-    {
-        "titulo": "Investigación de mercados: Postobón",
-        "descripcion": "Cuenta el objetivo del estudio y qué aportó tu trabajo.",
-        "archivo": "projects/postobon.jpg",
-    },
+    proyecto(
+        titulo="Educación en niños con TEA",
+        resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
+        archivo="projects/tea.jpg",
+    ),
+    proyecto(
+        titulo="Investigación de mercados: Postobón",
+        resumen="Estudio de mercado sobre el comportamiento posconsumo del consumidor. ",
+        archivo="projects/postobon.jpg",
+    ),
 ]
 
 CONTACT = {
@@ -153,7 +201,6 @@ CONTACT = {
     "telefono": "+57 3103777407",
     "links": [
         {"nombre": "LinkedIn", "url": "https://linkedin.com/in/tu-usuario"},
-    
     ],
 }
 
@@ -240,11 +287,19 @@ def inject_css():
         h1, h2, h3, .heat-display {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
-            line-height: 1;
-            letter-spacing: -1px;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
             margin: 0;
-            padding-top: 0.12em;
+            padding: 0.15em 0;
             overflow: visible;
+        }}
+
+        /* make sure no Streamlit wrapper ever clips our headline glyphs */
+        div[data-testid="stVerticalBlock"],
+        div[data-testid="element-container"],
+        div[data-testid="stMarkdown"],
+        div[data-testid="stMarkdownContainer"] {{
+            overflow: visible !important;
         }}
 
         .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
@@ -277,16 +332,6 @@ def inject_css():
         }}
         .halftone-block.tr {{ top: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
         .halftone-block.bl {{ bottom: 0; left: 0; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
-
-        /* torn/scalloped seam between two sections of different color */
-        .torn-edge {{
-            position: absolute;
-            top: -23px; left: 0;
-            width: 100%; height: 46px;
-            z-index: 4;
-            filter: drop-shadow(0 3px 0 var(--ink));
-            pointer-events: none;
-        }}
 
         /* fixed vertical "spine" label, readable through every color band */
         .spine {{
@@ -356,8 +401,9 @@ def inject_css():
             padding: 100px 60px !important;
             position: relative;
             overflow: visible;
+            border-bottom: 3px solid var(--ink);
         }}
-        .st-key-divider {{ padding: 0 !important; position: relative; }}
+        .st-key-divider {{ padding: 0 !important; position: relative; border-bottom: 3px solid var(--ink); }}
         .st-key-hero {{ padding: 0 !important; position: relative; overflow: hidden; }}
 
         .st-key-about       {{ background: var(--crimson) !important; color: var(--cream); }}
@@ -552,22 +598,6 @@ def inject_css():
     )
 
 
-def torn_edge(color_var: str, teeth: int = 16) -> str:
-    """Costura festoneada/rasgada entre dos secciones de color distinto:
-    un div con clip-path en zigzag, del color de la sección ACTUAL,
-    mordiendo hacia la sección anterior."""
-    pts = []
-    for i in range(teeth + 1):
-        x = round(i / teeth * 100, 2)
-        y = 0 if i % 2 == 1 else 100
-        pts.append(f"{x}% {y}%")
-    polygon = ", ".join(pts)
-    return (
-        f'<div class="torn-edge" style="background:{color_var}; '
-        f'clip-path: polygon({polygon});"></div>'
-    )
-
-
 def eyebrow_and_nav():
     words = SITE["eyebrow"]
     st.markdown(
@@ -704,7 +734,6 @@ def section_hero():
 
 def section_about():
     with st.container(key="about"):
-        st.markdown(torn_edge("var(--crimson)"), unsafe_allow_html=True)
         anchor("sobre-mi")
         col1, col2 = st.columns([1.1, 1], gap="large")
         with col1:
@@ -721,7 +750,6 @@ def section_about():
 
 def section_tools():
     with st.container(key="tools"):
-        st.markdown(torn_edge("var(--amber)"), unsafe_allow_html=True)
         anchor("herramientas")
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">HERRAMIENTAS</div>',
@@ -738,25 +766,30 @@ def section_tools():
         st.markdown(f'<div style="margin-top:30px;">{"".join(chips)}</div>', unsafe_allow_html=True)
 
 
-def project_grid(items, text_extra_key="datos"):
-    cols = st.columns(2, gap="large")
+def project_grid(items, columns=2):
+    cols = st.columns(columns, gap="large")
     for idx, item in enumerate(items):
-        with cols[idx % 2]:
+        with cols[idx % columns]:
             with st.container(key=f"card-{slugify(item['titulo'])}-{idx}"):
-                st.markdown(f'<div class="card-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
-                show_media(item["archivo"], item["titulo"])
-                extra = ""
-                if item.get(text_extra_key):
-                    extra = "<ul>" + "".join(f"<li>{d}</li>" for d in item[text_extra_key]) + "</ul>"
-                st.markdown(
-                    f"""<h4>{item['titulo']}</h4><p>{item['descripcion']}</p>{extra}""",
-                    unsafe_allow_html=True,
-                )
+                label = f"N°{idx + 1:02d}  ·  {item['titulo']}"
+                with st.expander(label, expanded=False):
+                    show_media(item["archivo"], item["titulo"])
+                    st.markdown(f"**{item['resumen']}**")
+                    meta = []
+                    if item.get("rol"):
+                        meta.append(f"**Rol:** {item['rol']}")
+                    if item.get("herramientas"):
+                        meta.append(f"**Herramientas:** {item['herramientas']}")
+                    if meta:
+                        st.markdown(" &nbsp;|&nbsp; ".join(meta))
+                    if item.get("resultado"):
+                        st.markdown(item["resultado"])
+                    if item.get("enlace"):
+                        st.markdown(f"[Ver proyecto ↗]({item['enlace']})")
 
 
 def section_immersive():
     with st.container(key="immersive"):
-        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         anchor("inmersivos")
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--ember)", "var(--amber)"])}">INMERSIVOS</div>',
@@ -771,13 +804,11 @@ def section_immersive():
 
 def section_divider():
     with st.container(key="divider"):
-        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         bg_video_section("divider", height_px=200, fallback_text="divider")
 
 
 def section_interfaces():
     with st.container(key="interfaces"):
-        st.markdown(torn_edge("var(--plum)"), unsafe_allow_html=True)
         anchor("interfaces")
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--amber)"])}">INTERFACES</div>',
@@ -789,25 +820,17 @@ def section_interfaces():
 
 def section_visual():
     with st.container(key="visual"):
-        st.markdown(torn_edge("var(--ember)"), unsafe_allow_html=True)
         anchor("visual")
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--plum)", "var(--crimson)"])}">VISUAL</div>',
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        cols = st.columns(len(VISUAL), gap="medium")
-        for idx, (col, item) in enumerate(zip(cols, VISUAL)):
-            with col:
-                with st.container(key=f"card-visual-{idx}"):
-                    st.markdown(f'<div class="card-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
-                    show_media(item["archivo"], item["titulo"])
-                    st.markdown(f"<h4>{item['titulo']}</h4><p>{item['descripcion']}</p>", unsafe_allow_html=True)
+        project_grid(VISUAL, columns=3)
 
 
 def section_research():
     with st.container(key="research"):
-        st.markdown(torn_edge("var(--cream)"), unsafe_allow_html=True)
         anchor("investigacion")
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">INVESTIGACIÓN</div>',
@@ -819,7 +842,6 @@ def section_research():
 
 def section_contact():
     with st.container(key="contact"):
-        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         anchor("contacto")
         bg_video_section("footer", height_px=380, fallback_text="footer")
         st.markdown(
