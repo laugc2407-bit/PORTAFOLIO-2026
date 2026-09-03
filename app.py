@@ -244,9 +244,11 @@ def inject_css():
         h1, h2, h3, .heat-display {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
-            line-height: 0.85;
+            line-height: 1;
             letter-spacing: -1px;
             margin: 0;
+            padding-top: 0.12em;
+            overflow: visible;
         }}
 
         .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
