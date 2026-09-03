@@ -36,7 +36,7 @@ st.set_page_config(
 # =============================================================================
 
 SITE = {
-    "nombre": "Tu Nombre Aquí",
+    "nombre": "Laura García",
     "titulo_hero_1": "PORTAFOLIO",
     "titulo_hero_2": "CREATIVO",
     "eyebrow": ["portafolio", "diseño", "interactivo"],   # las 3 palabras de la barra superior
@@ -101,11 +101,7 @@ INMERSIVOS = [
         "descripcion": "Cuenta en 1-2 frases de qué trató el proyecto, tu rol y qué herramientas usaste.",
         "archivo": "projects/bruna_lab.jpg",
     },
-    {
-        "titulo": "Taller de Aprendizaje Basado en Retos y Proyectos (ABR/ABP)",
-        "descripcion": "Cuenta en 1-2 frases de qué trató el proyecto, tu rol y qué herramientas usaste.",
-        "archivo": "projects/abr_abp.jpg",
-    },
+  
 ]
 
 # Proyectos de "Interfaces" — con una pequeña lista de logros/datos
@@ -154,9 +150,9 @@ CONTACT = {
     "titulo_2": "JUNTOS",
     "texto": "¿Tienes un proyecto en mente? Escríbeme y hablemos.",
     "email": "lngarciac@eafit.edu.co",
+    "telefono": "+57 3103777407",
     "links": [
         {"nombre": "LinkedIn", "url": "https://linkedin.com/in/tu-usuario"},
-        {"nombre": "Teléfono", "url": "+57 3103777407"},
     
     ],
 }
