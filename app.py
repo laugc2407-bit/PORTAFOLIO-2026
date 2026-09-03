@@ -395,14 +395,6 @@ def inject_css():
         .st-key-research    {{ background: var(--cream)   !important; color: var(--ink);   }}
         .st-key-contact     {{ background: var(--void)    !important; color: var(--cream); padding: 0 !important; }}
 
-        [class*="st-key-card-"] {{
-            border: 3px solid currentColor !important;
-            padding: 30px 26px !important;
-            margin: 22px 0 !important;
-            position: relative !important;
-            overflow: visible !important;
-        }}
-
         .halftone {{
             background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
             background-size: 14px 14px;
@@ -457,17 +449,6 @@ def inject_css():
         .card ul {{ margin: 10px 0 0 18px; padding: 0; }}
         .card li {{ margin-bottom: 4px; }}
 
-        [class*="st-key-card-"] h4 {{
-            font-family: '{FONT_DISPLAY}', sans-serif;
-            text-transform: uppercase;
-            font-size: 1.7rem;
-            letter-spacing: -0.5px;
-            margin: 0 0 10px 0;
-        }}
-        [class*="st-key-card-"] p {{ margin: 0; opacity: 0.9; line-height: 1.45; }}
-        [class*="st-key-card-"] ul {{ margin: 10px 0 0 18px; padding: 0; }}
-        [class*="st-key-card-"] li {{ margin-bottom: 4px; }}
-
         .card-badge {{
             position: absolute;
             top: -22px; left: -22px;
@@ -517,82 +498,6 @@ def inject_css():
             color: var(--void) !important;
             transform: translate(5px, 5px);
             box-shadow: 0 0 0 var(--amber);
-        }}
-
-        /* ---------- desplegables de proyecto ------------------------------- */
-        div[data-testid="stExpander"] {{
-            border: 3px solid currentColor !important;
-            border-radius: 0 !important;
-            background: rgba(0,0,0,0.04);
-            box-shadow: 5px 5px 0 rgba(0,0,0,0.18);
-        }}
-        div[data-testid="stExpander"] summary {{
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            padding: 16px 20px !important;
-        }}
-        div[data-testid="stExpander"] summary:hover {{
-            color: var(--amber);
-        }}
-        div[data-testid="stExpander"] [data-testid="stExpanderDetails"] {{
-            padding: 4px 22px 26px 22px !important;
-        }}
-
-        .proj-info {{ margin-top: 18px; }}
-        .proj-resumen {{
-            font-size: 1.02rem;
-            line-height: 1.55;
-            opacity: 0.92;
-            margin: 0 0 18px 0;
-        }}
-        .proj-meta {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 0 0 18px 0;
-        }}
-        .proj-chip {{
-            border: 2px solid currentColor;
-            padding: 8px 14px;
-            font-size: 0.82rem;
-            line-height: 1.35;
-            max-width: 260px;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
-        }}
-        .proj-chip-label {{
-            display: block;
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.65;
-            margin-bottom: 3px;
-        }}
-        .proj-resultado {{
-            font-style: italic;
-            border-left: 3px solid currentColor;
-            padding: 2px 0 2px 14px;
-            margin: 0 0 18px 0;
-            opacity: 0.92;
-        }}
-        .proj-link-btn {{
-            display: inline-block;
-            border: 3px solid currentColor;
-            color: currentColor !important;
-            padding: 10px 20px;
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.78rem;
-            letter-spacing: 0.5px;
-            text-decoration: none;
-            box-shadow: 4px 4px 0 currentColor;
-            opacity: 0.9;
-            transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
-        }}
-        .proj-link-btn:hover {{
-            transform: translate(4px, 4px);
-            box-shadow: 0 0 0 currentColor;
-            opacity: 1;
         }}
 
         [data-testid="stImage"] img {{
@@ -711,131 +616,227 @@ def _media_data_uri(rel_path: str, label: str):
     return "image", f"data:image/jpeg;base64,{data}"
 
 
-def render_carousel(media_list, titulo, height_px: int = 300):
-    """Carrusel navegable (flechas, puntos y contador) para una lista de
-    rutas relativas a ASSETS (imagen o video), con la estética heat map.
-    Se renderiza como un componente HTML autónomo (iframe), por eso los
-    colores de la paleta se pasan directo en hexadecimal."""
-    if not media_list:
-        return
+def render_project_card(item, idx, fg_hex):
+    """Tarjeta de proyecto construida a mano (sin st.expander) para que
+    combine con la estética 70s + heat map: placa numerada, título en
+    Anton, halftone en la esquina, acordeón animado en JS y el carrusel
+    de medios integrado — todo en un único componente HTML."""
+    media = _project_media_list(item)
 
     slides_html = []
-    for i, rel in enumerate(media_list):
-        kind, uri = _media_data_uri(rel, f"{titulo} {i + 1}")
+    for i, rel in enumerate(media):
+        kind, uri = _media_data_uri(rel, f"{item['titulo']} {i + 1}")
         if kind == "video":
             autoplay = "autoplay " if i == 0 else ""
             slides_html.append(
                 f'<div class="hm-slide"><video src="{uri}" {autoplay}muted loop playsinline></video></div>'
             )
         else:
-            slides_html.append(f'<div class="hm-slide"><img src="{uri}" alt="{titulo}"></div>')
+            slides_html.append(f'<div class="hm-slide"><img src="{uri}" alt="{item["titulo"]}"></div>')
 
     multi = len(slides_html) > 1
     dots_html = "".join(
-        f'<span class="hm-dot{" active" if i == 0 else ""}" onclick="hmGo(this,{i})"></span>'
+        f'<span class="hm-dot{" active" if i == 0 else ""}" onclick="event.stopPropagation(); hmGo(this,{i})"></span>'
         for i in range(len(slides_html))
+    )
+    carousel_html = ""
+    if slides_html:
+        carousel_html = f"""
+        <div class="hm-carousel" data-index="0">
+            <div class="hm-track">{''.join(slides_html)}</div>
+            {'<div class="hm-arrow hm-prev" onclick="event.stopPropagation(); hmPrev(this)">‹</div><div class="hm-arrow hm-next" onclick="event.stopPropagation(); hmNext(this)">›</div>' if multi else ''}
+            <div class="hm-counter">01 / {len(slides_html):02d}</div>
+            {'<div class="hm-dots">' + dots_html + '</div>' if multi else ''}
+        </div>
+        """
+
+    chips_html = ""
+    if item.get("rol"):
+        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Rol</span>{item["rol"]}</div>'
+    if item.get("herramientas"):
+        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Herramientas</span>{item["herramientas"]}</div>'
+
+    resultado_html = f'<p class="proj-resultado">✦ {item["resultado"]}</p>' if item.get("resultado") else ""
+    enlace_html = (
+        f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank" onclick="event.stopPropagation();">Ver proyecto ↗</a>'
+        if item.get("enlace") else ""
     )
 
     html = f"""
     <style>
-        html, body {{ margin:0; padding:0; background:transparent; }}
+        * {{ box-sizing: border-box; }}
+        html, body {{ margin: 0; padding: 0; background: transparent; font-family: '{FONT_BODY}', sans-serif; }}
+        .proj-card {{
+            border: 3px solid {fg_hex};
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+            color: {fg_hex};
+            position: relative;
+            overflow: hidden;
+        }}
+        .proj-card::before {{
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            width: 90px; height: 90px;
+            background-image: radial-gradient(currentColor 1.6px, transparent 1.6px);
+            background-size: 12px 12px;
+            opacity: 0.15;
+            clip-path: polygon(100% 0, 100% 100%, 0 0);
+            pointer-events: none;
+        }}
+        .proj-header {{
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 22px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            z-index: 2;
+        }}
+        .proj-num {{
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            background: {PALETTE['ink']};
+            color: {PALETTE['amber']};
+            border: 2px solid currentColor;
+            padding: 5px 9px;
+            flex-shrink: 0;
+        }}
+        .proj-title {{
+            font-family: '{FONT_DISPLAY}', sans-serif;
+            text-transform: uppercase;
+            font-size: 1.15rem;
+            letter-spacing: -0.3px;
+            line-height: 1.25;
+            flex: 1;
+        }}
+        .proj-plus {{
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 1.15rem;
+            width: 30px; height: 30px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }}
+        .proj-card.open .proj-plus {{ transform: rotate(135deg); }}
+        .proj-card.open .proj-header {{ border-bottom: 2px dashed currentColor; }}
+        .proj-body {{
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            position: relative;
+            z-index: 2;
+        }}
+        .proj-body-inner {{ padding: 20px 22px 24px 22px; }}
+
         .hm-carousel {{
             position: relative;
             width: 100%;
-            height: {height_px}px;
+            height: 250px;
             overflow: hidden;
-            border: 3px solid {PALETTE['ink']};
-            box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+            border: 2px solid currentColor;
+            margin-bottom: 18px;
             background: {PALETTE['void']};
-            font-family: '{FONT_KICKER}', sans-serif;
         }}
-        .hm-track {{
-            display: flex;
-            height: 100%;
-            transition: transform 0.4s ease;
-        }}
-        .hm-slide {{
-            flex: 0 0 100%;
-            height: 100%;
-            position: relative;
-        }}
-        .hm-slide img, .hm-slide video {{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }}
+        .hm-track {{ display: flex; height: 100%; transition: transform 0.4s ease; }}
+        .hm-slide {{ flex: 0 0 100%; height: 100%; }}
+        .hm-slide img, .hm-slide video {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
         .hm-arrow {{
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: {PALETTE['ink']};
-            color: {PALETTE['amber']};
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 34px; height: 34px; border-radius: 50%;
+            background: {PALETTE['ink']}; color: {PALETTE['amber']};
             border: 2px solid {PALETTE['amber']};
-            font-size: 1.3rem;
-            line-height: 1;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.88;
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
-            user-select: none;
-            z-index: 5;
+            font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0.88; z-index: 5; user-select: none;
+            transition: transform 0.12s ease;
         }}
-        .hm-arrow:hover {{
-            transform: translateY(-50%) scale(1.08);
-            box-shadow: 3px 3px 0 {PALETTE['crimson']};
-        }}
-        .hm-prev {{ left: 12px; }}
-        .hm-next {{ right: 12px; }}
+        .hm-arrow:hover {{ transform: translateY(-50%) scale(1.08); }}
+        .hm-prev {{ left: 10px; }}
+        .hm-next {{ right: 10px; }}
         .hm-counter {{
-            position: absolute;
-            bottom: 12px;
-            right: 14px;
-            background: {PALETTE['ink']};
-            color: {PALETTE['cream']};
-            font-size: 0.68rem;
-            letter-spacing: 1px;
-            padding: 4px 10px;
-            border: 2px solid {PALETTE['amber']};
-            z-index: 5;
+            position: absolute; bottom: 10px; right: 12px;
+            background: {PALETTE['ink']}; color: {PALETTE['cream']};
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.6rem; letter-spacing: 1px;
+            padding: 3px 8px; border: 2px solid {PALETTE['amber']}; z-index: 5;
         }}
-        .hm-dots {{
-            position: absolute;
-            bottom: 14px;
-            left: 14px;
-            display: flex;
-            gap: 7px;
-            z-index: 5;
-        }}
+        .hm-dots {{ position: absolute; bottom: 12px; left: 12px; display: flex; gap: 6px; z-index: 5; }}
         .hm-dot {{
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: transparent;
-            border: 2px solid {PALETTE['cream']};
-            cursor: pointer;
-            opacity: 0.65;
-            transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+            width: 9px; height: 9px; border-radius: 50%;
+            background: transparent; border: 2px solid {PALETTE['cream']};
+            cursor: pointer; opacity: 0.65;
         }}
-        .hm-dot:hover {{ transform: scale(1.15); }}
-        .hm-dot.active {{
-            background: {PALETTE['amber']};
-            border-color: {PALETTE['amber']};
-            opacity: 1;
+        .hm-dot.active {{ background: {PALETTE['amber']}; border-color: {PALETTE['amber']}; opacity: 1; }}
+
+        .proj-resumen {{ font-size: 1rem; line-height: 1.55; opacity: 0.92; margin: 0 0 16px 0; }}
+        .proj-meta {{ display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 16px 0; }}
+        .proj-chip {{
+            border: 2px solid currentColor; padding: 7px 12px;
+            font-size: 0.8rem; line-height: 1.3; max-width: 240px;
         }}
+        .proj-chip-label {{
+            display: block; font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.56rem; letter-spacing: 1px; text-transform: uppercase;
+            opacity: 0.65; margin-bottom: 3px;
+        }}
+        .proj-resultado {{
+            font-style: italic; border-left: 3px solid currentColor;
+            padding: 2px 0 2px 12px; margin: 0 0 16px 0; opacity: 0.92;
+        }}
+        .proj-link-btn {{
+            display: inline-block; border: 3px solid currentColor; color: currentColor !important;
+            padding: 9px 18px; font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.75rem; letter-spacing: 0.5px; text-decoration: none;
+            box-shadow: 4px 4px 0 currentColor;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }}
+        .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
     </style>
-    <div class="hm-carousel" data-index="0">
-        <div class="hm-track">{''.join(slides_html)}</div>
-        {'<div class="hm-arrow hm-prev" onclick="hmPrev(this)">‹</div><div class="hm-arrow hm-next" onclick="hmNext(this)">›</div>' if multi else ''}
-        <div class="hm-counter">01 / {len(slides_html):02d}</div>
-        {'<div class="hm-dots">' + dots_html + '</div>' if multi else ''}
+
+    <div class="proj-card" id="card">
+        <div class="proj-header" onclick="pcToggle()">
+            <span class="proj-num">N°{idx + 1:02d}</span>
+            <span class="proj-title">{item['titulo']}</span>
+            <span class="proj-plus">+</span>
+        </div>
+        <div class="proj-body" id="body">
+            <div class="proj-body-inner" id="inner">
+                {carousel_html}
+                <p class="proj-resumen">{item['resumen']}</p>
+                {f'<div class="proj-meta">{chips_html}</div>' if chips_html else ''}
+                {resultado_html}
+                {enlace_html}
+            </div>
+        </div>
     </div>
+
     <script>
+        function pcResize() {{
+            try {{
+                if (window.frameElement) {{
+                    window.frameElement.style.height = document.body.scrollHeight + 'px';
+                }}
+            }} catch (e) {{}}
+        }}
+        function pcToggle() {{
+            const card = document.getElementById('card');
+            const body = document.getElementById('body');
+            const inner = document.getElementById('inner');
+            const opening = !card.classList.contains('open');
+            card.classList.toggle('open');
+            if (opening) {{
+                body.style.maxHeight = inner.scrollHeight + 'px';
+            }} else {{
+                body.style.maxHeight = '0px';
+            }}
+            setTimeout(pcResize, 420);
+        }}
+
         function hmSetIndex(root, idx) {{
             const track = root.querySelector('.hm-track');
             const slides = root.querySelectorAll('.hm-slide');
@@ -868,9 +869,14 @@ def render_carousel(media_list, titulo, height_px: int = 300):
             const root = el.closest('.hm-carousel');
             hmSetIndex(root, idx);
         }}
+
+        pcResize();
+        window.addEventListener('resize', pcResize);
     </script>
     """
-    st.components.v1.html(html, height=height_px + 6)
+    st.components.v1.html(html, height=80)
+
+
 
 
 def render_flow_field_bg(height_px: int, density: float = 1.0, seed: int = 0):
@@ -1043,42 +1049,12 @@ def _project_media_list(item):
     return []
 
 
-def project_grid(items, columns=2):
+def project_grid(items, columns=2, fg_hex=None):
+    fg_hex = fg_hex or PALETTE["cream"]
     cols = st.columns(columns, gap="large")
     for idx, item in enumerate(items):
         with cols[idx % columns]:
-            with st.container(key=f"card-{slugify(item['titulo'])}-{idx}"):
-                label = f"N°{idx + 1:02d}  ·  {item['titulo']}"
-                with st.expander(label, expanded=False):
-                    media = _project_media_list(item)
-                    if media:
-                        render_carousel(media, item["titulo"])
-
-                    chips_html = ""
-                    if item.get("rol"):
-                        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Rol</span>{item["rol"]}</div>'
-                    if item.get("herramientas"):
-                        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Herramientas</span>{item["herramientas"]}</div>'
-
-                    resultado_html = (
-                        f'<p class="proj-resultado">✦ {item["resultado"]}</p>' if item.get("resultado") else ""
-                    )
-                    enlace_html = (
-                        f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>'
-                        if item.get("enlace") else ""
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div class="proj-info">
-                            <p class="proj-resumen">{item['resumen']}</p>
-                            {f'<div class="proj-meta">{chips_html}</div>' if chips_html else ''}
-                            {resultado_html}
-                            {enlace_html}
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+            render_project_card(item, idx, fg_hex)
 
 
 def section_immersive():
@@ -1092,7 +1068,7 @@ def section_immersive():
             '<p class="body-md" style="margin:20px 0 44px 0;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
             unsafe_allow_html=True,
         )
-        project_grid(INMERSIVOS)
+        project_grid(INMERSIVOS, fg_hex=PALETTE["cream"])
 
 
 def section_divider():
@@ -1108,7 +1084,7 @@ def section_interfaces():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        project_grid(INTERFACES)
+        project_grid(INTERFACES, fg_hex=PALETTE["cream"])
 
 
 def section_visual():
@@ -1119,7 +1095,7 @@ def section_visual():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        project_grid(VISUAL, columns=3)
+        project_grid(VISUAL, columns=3, fg_hex=PALETTE["void"])
 
 
 def section_research():
@@ -1130,7 +1106,7 @@ def section_research():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        project_grid(INVESTIGACION)
+        project_grid(INVESTIGACION, fg_hex=PALETTE["ink"])
 
 
 def section_contact():
