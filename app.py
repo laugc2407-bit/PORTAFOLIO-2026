@@ -153,11 +153,11 @@ CONTACT = {
     "titulo_1": "TRABAJEMOS",
     "titulo_2": "JUNTOS",
     "texto": "¿Tienes un proyecto en mente? Escríbeme y hablemos.",
-    "email": "tu-correo@ejemplo.com",
+    "email": "lngarciac@eafit.edu.co",
     "links": [
         {"nombre": "LinkedIn", "url": "https://linkedin.com/in/tu-usuario"},
-        {"nombre": "Instagram", "url": "https://instagram.com/tu-usuario"},
-        {"nombre": "Behance", "url": "https://behance.net/tu-usuario"},
+        {"nombre": "Teléfono", "url": "+57 3103777407"},
+    
     ],
 }
 
