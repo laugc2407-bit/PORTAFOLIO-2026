@@ -1,4 +1,4 @@
-PORTAFOLIO — app.py
+PORTAFOLIO app.py
 
 Plantilla de portafolio "heat map / retro 70s" hecha en Streamlit.
 
