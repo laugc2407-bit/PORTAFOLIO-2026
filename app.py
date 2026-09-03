@@ -198,16 +198,6 @@ CONTACT = {
     ],
 }
 
-# ---- Videos de fondo (loops hechos en TouchDesigner) ----------------------
-# Exporta desde TouchDesigner como .mp4, corto (5-15s), sin audio, y
-# comprímelo (H.264, <10-15 MB idealmente) para que la web cargue rápido.
-# Colócalos en /assets con estos nombres exactos:
-BG_VIDEOS = {
-    "hero": "hero_bg.mp4",        # fondo grande detrás del título principal
-    "divider": "divider_bg.mp4",  # franja angosta entre "Sobre mí" y "Herramientas"
-    "footer": "footer_bg.mp4",    # fondo detrás de "Trabajemos juntos"
-}
-
 # =============================================================================
 # DISEÑO — paleta "heat map" + 70s retro. No necesitas tocar esto.
 # =============================================================================
@@ -605,47 +595,6 @@ def inject_css():
             opacity: 1;
         }}
 
-        /* ---------- background video / placeholder strips ------------------ */
-        .bgvideo-wrap {{
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-        .bgvideo-wrap video {{
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }}
-        .bgvideo-label {{
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            font-family: '{FONT_BODY}', sans-serif;
-            font-weight: 700;
-            color: var(--cream);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-            padding: 20px;
-        }}
-        .heat-placeholder {{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, var(--void), var(--plum), var(--crimson), var(--ember), var(--amber), var(--void));
-            background-size: 300% 300%;
-            animation: heatshift 12s ease infinite;
-        }}
-        @keyframes heatshift {{
-            0%   {{ background-position: 0% 50%; }}
-            50%  {{ background-position: 100% 50%; }}
-            100% {{ background-position: 0% 50%; }}
-        }}
-
         [data-testid="stImage"] img {{
             border: 3px solid var(--ink);
         }}
@@ -924,35 +873,106 @@ def render_carousel(media_list, titulo, height_px: int = 300):
     st.components.v1.html(html, height=height_px + 6)
 
 
-def bg_video_section(key: str, height_px: int, fallback_text: str):
-    """Franja de fondo para loops de TouchDesigner. Usa base64 para que el
-    <video> cubra completamente el contenedor sin controles ni bordes."""
-    filename = BG_VIDEOS.get(key)
-    path = ASSETS / filename if filename else None
-    if path and path.exists():
-        data = base64.b64encode(path.read_bytes()).decode()
-        ext = path.suffix.lstrip(".")
-        st.markdown(
-            f"""
-            <div class="bgvideo-wrap" style="height:{height_px}px;">
-                <video autoplay muted loop playsinline>
-                    <source src="data:video/{ext};base64,{data}" type="video/{ext}">
-                </video>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class="bgvideo-wrap" style="height:{height_px}px;">
-                <div class="heat-placeholder"></div>
-                <div class="bgvideo-label">🎬 Espacio para loop de TouchDesigner<br>
-                <span style="font-weight:400; opacity:0.85;">coloca tu archivo en assets/{filename}</span></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+def render_flow_field_bg(height_px: int, density: float = 1.0, seed: int = 0):
+    """Fondo animado tipo 'loop de TouchDesigner' — partículas ámbar/ember
+    fluyendo sobre negro como un campo de ruido (flow field) — generado
+    100% con canvas + JS. No carga ningún archivo, así que reemplaza los
+    videos pesados (mp4 de varias decenas de MB) sin perder el look."""
+    html = f"""
+    <style>
+        html, body {{ margin: 0; padding: 0; background: {PALETTE['void']}; overflow: hidden; }}
+        #hm-bg-wrap {{ position: relative; width: 100%; height: {height_px}px; background: {PALETTE['void']}; }}
+        #hm-bg-canvas {{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }}
+    </style>
+    <div id="hm-bg-wrap"><canvas id="hm-bg-canvas"></canvas></div>
+    <script>
+    (function() {{
+        const canvas = document.getElementById('hm-bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const wrap = document.getElementById('hm-bg-wrap');
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
+        const colors = ['{PALETTE['amber']}', '{PALETTE['ember']}', '{PALETTE['crimson']}'];
+        const voidColor = '{PALETTE['void']}';
+        const seed = {seed};
+        const density = {density};
+        let W, H, particles = [];
+
+        function hexToRgb(hex) {{
+            hex = hex.replace('#', '');
+            const n = parseInt(hex, 16);
+            return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        }}
+        const rgbColors = colors.map(hexToRgb);
+        const voidRgb = hexToRgb(voidColor);
+
+        function fieldAngle(x, y, t) {{
+            return (
+                Math.sin(x * 0.006 + t * 0.35 + seed) +
+                Math.cos(y * 0.008 - t * 0.28 + seed * 1.3) +
+                Math.sin((x + y) * 0.004 + t * 0.18)
+            ) * Math.PI * 0.6;
+        }}
+
+        function spawn() {{
+            const c = rgbColors[Math.floor(Math.random() * rgbColors.length)];
+            return {{
+                x: Math.random() * W,
+                y: Math.random() * H,
+                speed: 0.4 + Math.random() * 1.1,
+                r: 0.6 + Math.random() * 1.5,
+                life: 220 + Math.random() * 320,
+                age: Math.random() * 300,
+                color: c,
+            }};
+        }}
+
+        function resize() {{
+            W = wrap.clientWidth;
+            H = wrap.clientHeight;
+            canvas.width = W * DPR;
+            canvas.height = H * DPR;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            ctx.fillStyle = voidColor;
+            ctx.fillRect(0, 0, W, H);
+            const count = Math.max(80, Math.floor((W * H) / 9000 * density));
+            particles = [];
+            for (let i = 0; i < count; i++) particles.push(spawn());
+        }}
+
+        let t = 0;
+        function frame() {{
+            t += 0.016;
+            ctx.fillStyle = 'rgba(' + voidRgb[0] + ',' + voidRgb[1] + ',' + voidRgb[2] + ',0.07)';
+            ctx.fillRect(0, 0, W, H);
+
+            for (let p of particles) {{
+                const angle = fieldAngle(p.x, p.y, t);
+                p.x += Math.cos(angle) * p.speed;
+                p.y += Math.sin(angle) * p.speed + 0.12;
+                p.age += 1;
+
+                if (p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10 || p.age > p.life) {{
+                    const fresh = spawn();
+                    Object.assign(p, fresh);
+                }}
+
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(' + p.color[0] + ',' + p.color[1] + ',' + p.color[2] + ',0.55)';
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }}
+            requestAnimationFrame(frame);
+        }}
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(frame);
+    }})();
+    </script>
+    """
+    st.components.v1.html(html, height=height_px + 4)
 
 
 # =============================================================================
@@ -962,7 +982,7 @@ def bg_video_section(key: str, height_px: int, fallback_text: str):
 def section_hero():
     with st.container(key="hero"):
         anchor("inicio")
-        bg_video_section("hero", height_px=460, fallback_text="hero")
+        render_flow_field_bg(height_px=460, density=1.3, seed=1)
         st.markdown(
             f"""
             <div style="position:relative; padding:70px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
@@ -1077,7 +1097,7 @@ def section_immersive():
 
 def section_divider():
     with st.container(key="divider"):
-        bg_video_section("divider", height_px=200, fallback_text="divider")
+        render_flow_field_bg(height_px=200, density=0.8, seed=2)
 
 
 def section_interfaces():
@@ -1116,7 +1136,7 @@ def section_research():
 def section_contact():
     with st.container(key="contact"):
         anchor("contacto")
-        bg_video_section("footer", height_px=380, fallback_text="footer")
+        render_flow_field_bg(height_px=380, density=1.1, seed=3)
         links_html = "".join(
             f'<a class="cta-btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>' for l in CONTACT["links"]
         )
