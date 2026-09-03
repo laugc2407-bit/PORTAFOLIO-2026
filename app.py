@@ -262,9 +262,6 @@ def inject_css():
         div[data-testid="stAppViewContainer"] {{
             background: var(--cream);
         }}
-        div[data-testid="stVerticalBlock"] {{
-            gap: 0 !important;
-        }}
 
         /* grain overlay, retro film texture over the whole page */
         div[data-testid="stAppViewContainer"]::after {{
@@ -532,6 +529,82 @@ def inject_css():
             box-shadow: 0 0 0 var(--amber);
         }}
 
+        /* ---------- desplegables de proyecto ------------------------------- */
+        div[data-testid="stExpander"] {{
+            border: 3px solid currentColor !important;
+            border-radius: 0 !important;
+            background: rgba(0,0,0,0.04);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.18);
+        }}
+        div[data-testid="stExpander"] summary {{
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding: 16px 20px !important;
+        }}
+        div[data-testid="stExpander"] summary:hover {{
+            color: var(--amber);
+        }}
+        div[data-testid="stExpander"] [data-testid="stExpanderDetails"] {{
+            padding: 4px 22px 26px 22px !important;
+        }}
+
+        .proj-info {{ margin-top: 18px; }}
+        .proj-resumen {{
+            font-size: 1.02rem;
+            line-height: 1.55;
+            opacity: 0.92;
+            margin: 0 0 18px 0;
+        }}
+        .proj-meta {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0 0 18px 0;
+        }}
+        .proj-chip {{
+            border: 2px solid currentColor;
+            padding: 8px 14px;
+            font-size: 0.82rem;
+            line-height: 1.35;
+            max-width: 260px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.25);
+        }}
+        .proj-chip-label {{
+            display: block;
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.65;
+            margin-bottom: 3px;
+        }}
+        .proj-resultado {{
+            font-style: italic;
+            border-left: 3px solid currentColor;
+            padding: 2px 0 2px 14px;
+            margin: 0 0 18px 0;
+            opacity: 0.92;
+        }}
+        .proj-link-btn {{
+            display: inline-block;
+            border: 3px solid currentColor;
+            color: currentColor !important;
+            padding: 10px 20px;
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            box-shadow: 4px 4px 0 currentColor;
+            opacity: 0.9;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+        }}
+        .proj-link-btn:hover {{
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 currentColor;
+            opacity: 1;
+        }}
+
         /* ---------- background video / placeholder strips ------------------ */
         .bgvideo-wrap {{
             position: relative;
@@ -671,6 +744,186 @@ def show_media(rel_path: str, label: str, height: int = None):
         st.image(placeholder_image(f"Añade: assets/{rel_path}"), use_container_width=True)
 
 
+def _media_data_uri(rel_path: str, label: str):
+    """Convierte assets/<rel_path> en un data-uri para incrustarlo en HTML.
+    Si el archivo no existe, genera un placeholder heat map con el mismo
+    formato (imagen), para que el carrusel nunca se rompa."""
+    path = ASSETS / rel_path
+    if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
+        ext = path.suffix.lstrip(".").lower()
+        data = base64.b64encode(path.read_bytes()).decode()
+        return "video", f"data:video/{ext};base64,{data}"
+    if path.exists():
+        ext = path.suffix.lstrip(".").lower()
+        mime = "jpeg" if ext in ("jpg", "jpeg") else ext
+        data = base64.b64encode(path.read_bytes()).decode()
+        return "image", f"data:image/{mime};base64,{data}"
+    data = base64.b64encode(placeholder_image(f"Añade: assets/{rel_path}")).decode()
+    return "image", f"data:image/jpeg;base64,{data}"
+
+
+def render_carousel(media_list, titulo, height_px: int = 300):
+    """Carrusel navegable (flechas, puntos y contador) para una lista de
+    rutas relativas a ASSETS (imagen o video), con la estética heat map.
+    Se renderiza como un componente HTML autónomo (iframe), por eso los
+    colores de la paleta se pasan directo en hexadecimal."""
+    if not media_list:
+        return
+
+    slides_html = []
+    for i, rel in enumerate(media_list):
+        kind, uri = _media_data_uri(rel, f"{titulo} {i + 1}")
+        if kind == "video":
+            autoplay = "autoplay " if i == 0 else ""
+            slides_html.append(
+                f'<div class="hm-slide"><video src="{uri}" {autoplay}muted loop playsinline></video></div>'
+            )
+        else:
+            slides_html.append(f'<div class="hm-slide"><img src="{uri}" alt="{titulo}"></div>')
+
+    multi = len(slides_html) > 1
+    dots_html = "".join(
+        f'<span class="hm-dot{" active" if i == 0 else ""}" onclick="hmGo(this,{i})"></span>'
+        for i in range(len(slides_html))
+    )
+
+    html = f"""
+    <style>
+        html, body {{ margin:0; padding:0; background:transparent; }}
+        .hm-carousel {{
+            position: relative;
+            width: 100%;
+            height: {height_px}px;
+            overflow: hidden;
+            border: 3px solid {PALETTE['ink']};
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.35);
+            background: {PALETTE['void']};
+            font-family: '{FONT_KICKER}', sans-serif;
+        }}
+        .hm-track {{
+            display: flex;
+            height: 100%;
+            transition: transform 0.4s ease;
+        }}
+        .hm-slide {{
+            flex: 0 0 100%;
+            height: 100%;
+            position: relative;
+        }}
+        .hm-slide img, .hm-slide video {{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }}
+        .hm-arrow {{
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: {PALETTE['ink']};
+            color: {PALETTE['amber']};
+            border: 2px solid {PALETTE['amber']};
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.88;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            user-select: none;
+            z-index: 5;
+        }}
+        .hm-arrow:hover {{
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 3px 3px 0 {PALETTE['crimson']};
+        }}
+        .hm-prev {{ left: 12px; }}
+        .hm-next {{ right: 12px; }}
+        .hm-counter {{
+            position: absolute;
+            bottom: 12px;
+            right: 14px;
+            background: {PALETTE['ink']};
+            color: {PALETTE['cream']};
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border: 2px solid {PALETTE['amber']};
+            z-index: 5;
+        }}
+        .hm-dots {{
+            position: absolute;
+            bottom: 14px;
+            left: 14px;
+            display: flex;
+            gap: 7px;
+            z-index: 5;
+        }}
+        .hm-dot {{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid {PALETTE['cream']};
+            cursor: pointer;
+            opacity: 0.65;
+            transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+        }}
+        .hm-dot:hover {{ transform: scale(1.15); }}
+        .hm-dot.active {{
+            background: {PALETTE['amber']};
+            border-color: {PALETTE['amber']};
+            opacity: 1;
+        }}
+    </style>
+    <div class="hm-carousel" data-index="0">
+        <div class="hm-track">{''.join(slides_html)}</div>
+        {'<div class="hm-arrow hm-prev" onclick="hmPrev(this)">‹</div><div class="hm-arrow hm-next" onclick="hmNext(this)">›</div>' if multi else ''}
+        <div class="hm-counter">01 / {len(slides_html):02d}</div>
+        {'<div class="hm-dots">' + dots_html + '</div>' if multi else ''}
+    </div>
+    <script>
+        function hmSetIndex(root, idx) {{
+            const track = root.querySelector('.hm-track');
+            const slides = root.querySelectorAll('.hm-slide');
+            const n = slides.length;
+            idx = ((idx % n) + n) % n;
+            track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+            root.querySelectorAll('.hm-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+            const counter = root.querySelector('.hm-counter');
+            if (counter) {{
+                counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+            }}
+            slides.forEach((s, i) => {{
+                const v = s.querySelector('video');
+                if (v) {{
+                    if (i === idx) {{ v.currentTime = 0; v.play().catch(() => {{}}); }}
+                    else {{ v.pause(); }}
+                }}
+            }});
+            root.dataset.index = idx;
+        }}
+        function hmPrev(el) {{
+            const root = el.closest('.hm-carousel');
+            hmSetIndex(root, parseInt(root.dataset.index || '0') - 1);
+        }}
+        function hmNext(el) {{
+            const root = el.closest('.hm-carousel');
+            hmSetIndex(root, parseInt(root.dataset.index || '0') + 1);
+        }}
+        function hmGo(el, idx) {{
+            const root = el.closest('.hm-carousel');
+            hmSetIndex(root, idx);
+        }}
+    </script>
+    """
+    st.components.v1.html(html, height=height_px + 6)
+
+
 def bg_video_section(key: str, height_px: int, fallback_text: str):
     """Franja de fondo para loops de TouchDesigner. Usa base64 para que el
     <video> cubra completamente el contenedor sin controles ni bordes."""
@@ -760,6 +1013,16 @@ def section_tools():
         st.markdown(f'<div style="margin-top:30px;">{"".join(chips)}</div>', unsafe_allow_html=True)
 
 
+def _project_media_list(item):
+    """Une 'archivo' (un solo medio) y 'galeria' (varios) en una sola lista
+    para alimentar el carrusel, sin importar cómo esté definido el proyecto."""
+    if item.get("galeria"):
+        return list(item["galeria"])
+    if item.get("archivo"):
+        return [item["archivo"]]
+    return []
+
+
 def project_grid(items, columns=2):
     cols = st.columns(columns, gap="large")
     for idx, item in enumerate(items):
@@ -767,31 +1030,35 @@ def project_grid(items, columns=2):
             with st.container(key=f"card-{slugify(item['titulo'])}-{idx}"):
                 label = f"N°{idx + 1:02d}  ·  {item['titulo']}"
                 with st.expander(label, expanded=False):
-                    if item.get("archivo"):
-                        show_media(item["archivo"], item["titulo"])
-                    elif item.get("galeria"):
-                        galeria = item["galeria"]
-                        show_media(galeria[0], item["titulo"])
-                        if len(galeria) > 1:
-                            extra_cols = st.columns(len(galeria) - 1)
-                            for g_idx, g_path in enumerate(galeria[1:]):
-                                with extra_cols[g_idx]:
-                                    show_media(g_path, item["titulo"])
+                    media = _project_media_list(item)
+                    if media:
+                        render_carousel(media, item["titulo"])
 
-                    st.markdown(f"{item['resumen']}")
-
-                    meta = []
+                    chips_html = ""
                     if item.get("rol"):
-                        meta.append(f"Rol: {item['rol']}")
+                        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Rol</span>{item["rol"]}</div>'
                     if item.get("herramientas"):
-                        meta.append(f"Herramientas: {item['herramientas']}")
-                    if meta:
-                        st.markdown("  |  ".join(meta))
+                        chips_html += f'<div class="proj-chip"><span class="proj-chip-label">Herramientas</span>{item["herramientas"]}</div>'
 
-                    if item.get("resultado"):
-                        st.markdown(item["resultado"])
-                    if item.get("enlace"):
-                        st.markdown(f"[Ver proyecto ↗]({item['enlace']})")
+                    resultado_html = (
+                        f'<p class="proj-resultado">✦ {item["resultado"]}</p>' if item.get("resultado") else ""
+                    )
+                    enlace_html = (
+                        f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>'
+                        if item.get("enlace") else ""
+                    )
+
+                    st.markdown(
+                        f"""
+                        <div class="proj-info">
+                            <p class="proj-resumen">{item['resumen']}</p>
+                            {f'<div class="proj-meta">{chips_html}</div>' if chips_html else ''}
+                            {resultado_html}
+                            {enlace_html}
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
 
 
 def section_immersive():
