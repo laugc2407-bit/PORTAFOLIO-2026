@@ -1,33 +1,4 @@
-# =============================================================================
-PORTAFOLIO app.py
 
-Plantilla de portafolio "heat map / retro 70s" hecha en Streamlit.
-
-
-
-👉 PARA EDITAR TEXTOS: todo lo que necesitas cambiar está en el bloque
-
-"CONTENIDO" más abajo (busca la palabra CONTENIDO). No necesitas tocar
-
-nada después de eso a menos que quieras cambiar el diseño.
-
-
-
-👉 PARA AÑADIR IMÁGENES Y VIDEOS: no edites código. Solo copia tus
-
-archivos dentro de la carpeta /assets con el nombre EXACTO que se pide
-
-en cada comentario de la sección CONTENIDO. Mientras un archivo no
-
-exista, la página muestra automáticamente un espacio de reemplazo con
-
-el estilo heat map, así que nunca se ve roto.
-
-
-
-Lee el archivo README.md para instrucciones de instalación y despliegue.
-
-=============================================================================
 
 import base64
 import io
