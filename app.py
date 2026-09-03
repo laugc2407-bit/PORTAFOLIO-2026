@@ -1,20 +1,3 @@
-# =============================================================================
-#  PORTAFOLIO — app.py
-#  Plantilla de portafolio "heat map / retro 70s" hecha en Streamlit.
-#
-#  👉 PARA EDITAR TEXTOS: todo lo que necesitas cambiar está en el bloque
-#     "CONTENIDO" más abajo (busca la palabra CONTENIDO). No necesitas tocar
-#     nada después de eso a menos que quieras cambiar el diseño.
-#
-#  👉 PARA AÑADIR IMÁGENES Y VIDEOS: no edites código. Solo copia tus
-#     archivos dentro de la carpeta /assets con el nombre EXACTO que se pide
-#     en cada comentario de la sección CONTENIDO. Mientras un archivo no
-#     exista, la página muestra automáticamente un espacio de reemplazo con
-#     el estilo heat map, así que nunca se ve roto.
-#
-#  Lee el archivo README.md para instrucciones de instalación y despliegue.
-# =============================================================================
-
 import base64
 import io
 from pathlib import Path
@@ -26,20 +9,17 @@ ASSETS = Path(__file__).parent / "assets"
 
 st.set_page_config(
     page_title="Portafolio",
-    page_icon="🔥",
+    page_icon="☀️",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# =============================================================================
-#  CONTENIDO  —  EDITA SOLO AQUÍ
-# =============================================================================
 
 SITE = {
-    "nombre": "Tu Nombre Aquí",
+    "nombre": "Laura García",
     "titulo_hero_1": "PORTAFOLIO",
     "titulo_hero_2": "CREATIVO",
-    "eyebrow": ["portafolio", "diseño", "interactivo"],   # las 3 palabras de la barra superior
+    "eyebrow": ["portafolio", "diseño", "interactivo"],  # las 3 palabras de la barra superior
     "tagline": "Diseño de experiencias interactivas, mundos inmersivos y visuales que se sienten.",
 }
 
@@ -55,19 +35,23 @@ NAV = [
 
 ABOUT = {
     "titulo": "SOBRE MÍ",
-    "texto": (
-        "Escribe aquí 4-6 líneas sobre ti: quién eres, en qué te especializas "
-        "y qué hace único tu trabajo. Ejemplo: 'Soy diseñador(a) de experiencias "
-        "interactivas enfocado(a) en mundos inmersivos, interfaces y narrativa "
-        "visual. Combino herramientas de tiempo real con procesos artesanales "
-        "para crear proyectos que se sienten tanto como se ven.'"
-    ),
-    # Coloca tu foto en: assets/perfil.jpg  (retrato, cualquier proporción)
+    "texto": """
+Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
+
+Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
+
+Me interesa especialmente ese punto donde **el diseño y la tecnología se encuentran con lo humano**. Por eso no busco hacer proyectos que simplemente se vean bien, sino experiencias que tengan una intención, despierten curiosidad y dejen algo en quien las vive.
+
+Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas nuevas para llevar una idea un paso más allá.
+
+**En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
+""",
+    # Coloca tu foto en: assets/perfil.jpg
     "imagen": "perfil.jpg",
 }
 
 # Para cada herramienta puedes (opcional) poner un logo en assets/tools/<archivo>
-# Si el archivo no existe, se muestra una "ficha" con el nombre en texto —
+# Si el archivo no existe, se muestra una "ficha" con el nombre en texto,
 # así que puedes dejarlo así de fácil sin subir ningún logo.
 TOOLS = [
     {"nombre": "Illustrator", "archivo": "ai.png"},
@@ -83,160 +67,140 @@ TOOLS = [
     {"nombre": "Maya", "archivo": "maya.png"},
 ]
 
-# =============================================================================
-#  FICHA DE PROYECTO — usa siempre estos mismos campos, copia y pega una
-#  entrada para crear un proyecto nuevo. Todos los campos son texto simple;
-#  dejar "" (vacío) en link si no tienes uno.
-#
-#   "titulo"       -> nombre del proyecto
-#   "resumen"      -> 1 línea, se ve siempre en la tarjeta (sin desplegar)
-#   "rol"          -> tu rol en el proyecto (ej. "Diseño UX / modelado 3D")
-#   "herramientas" -> separadas por coma (ej. "Unity, Figma, C++")
-#   "descripcion"  -> 2-3 líneas, se ve solo al desplegar la tarjeta
-#   "archivo"      -> ruta dentro de assets/projects/ (imagen o .mp4)
-#   "link"         -> url opcional ("" si no aplica)
-# =============================================================================
 
-# Proyectos "inmersivos" — cada uno puede tener foto (.jpg/.png) o video (.mp4)
-# Coloca el archivo en assets/projects/ con el nombre indicado.
+# -----------------------------------------------------------------------
+# PROYECTOS — cada uno se muestra como su propio bloque, con carrusel.
+# Usa la función proyecto(...) para cada uno; solo llena estos 6 campos
+# cortos. Dejar "" en enlace o herramientas está bien, simplemente no
+# se muestra esa línea.
+# -----------------------------------------------------------------------
+def proyecto(titulo, resumen, archivo="", galeria=None, rol="", herramientas="", resultado="", enlace=""):
+    return {
+        "titulo": titulo,              # nombre del proyecto
+        "resumen": resumen,            # 1 frase corta
+        "archivo": archivo,            # UNA imagen o video en assets/projects/
+        "galeria": galeria or [],      # o VARIAS imágenes/videos (carrusel)
+        "rol": rol,                    # tu rol, ej: "Diseño UX + modelado 3D"
+        "herramientas": herramientas,  # ej: "Unity, Blender, C++"
+        "resultado": resultado,        # 1 frase: qué se logró / impacto
+        "enlace": enlace,              # url a demo o repo (opcional)
+    }
+
+
+# Proyectos "inmersivos" — foto (.jpg/.png) o video (.mp4) en assets/projects/
 INMERSIVOS = [
-    {
-        "titulo": "Museo: el universo de Tim Burton",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/tim_burton.jpg",
-        "link": "",
-    },
-    {
-        "titulo": "Videojuego en VR: Vayquin",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/vayquin_vr.mp4",
-        "link": "",
-    },
-    {
-        "titulo": "Videojuego: Bruna Lab",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/bruna_lab.jpg",
-        "link": "",
-    },
-    {
-        "titulo": "Taller ABR/ABP",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/abr_abp.jpg",
-        "link": "",
-    },
+    proyecto(
+        titulo="Museo: el universo de Tim Burton",
+        resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
+        archivo="projects/tim_burton.jpg",
+        rol="Desarrollo y montaje.",
+        herramientas="Unity y Maya.",
+    ),
+    proyecto(
+        titulo="Videojuego en VR: Vayquin",
+        resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
+        archivo="projects/vayquin_vr.mp4",
+        rol="Desarrollo y montaje.",
+        herramientas="Unity.",
+    ),
+    proyecto(
+        titulo="Videojuego: Bruna Lab (En proceso)",
+        resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
+        archivo="projects/bruna_lab.jpg",
+        rol="Project Manager.",
+    ),
 ]
 
 # Proyectos de "Interfaces"
 INTERFACES = [
-    {
-        "titulo": "App: Mundo Ayuda Mayores",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/mundo_ayuda_mayores.jpg",
-        "link": "",
-    },
-    {
-        "titulo": "App: Parque Éxpora",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/parque_expora.jpg",
-        "link": "",
-    },
+    proyecto(
+        titulo="App: Mundo Ayuda Mayores",
+        resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
+        archivo="projects/mundo_ayuda_mayores.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI).",
+        herramientas="Figma y Canva.",
+    ),
+    proyecto(
+        titulo="App: Parque Éxpora",
+        resumen="Aplicativo para facilitar la experiencia de espera en la cafetería del parque.",
+        archivo="projects/parque_expora.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI).",
+        herramientas="Figma y Canva.",
+    ),
+    proyecto(
+        titulo="App: Antioquia, territorio multicultural (En proceso)",
+        resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
+        archivo="projects/parque_expora.jpg",
+        rol="Diseño de experiencia y de interfaz (UX/UI).",
+        herramientas="Figma y Canva.",
+    ),
 ]
 
-# Proyectos de "Visual" — modelado, animación 3D, piezas visuales
+# Proyectos de "Visual"
 VISUAL = [
-    {
-        "titulo": "Modelado 3D",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/modelado_3d.jpg",
-        "link": "",
-    },
-    {
-        "titulo": "Animación 3D: Eclipsaris",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/eclipsaris.mp4",
-        "link": "",
-    },
-    {
-        "titulo": "Visuales",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, qué hiciste y el resultado.",
-        "archivo": "projects/visuales.jpg",
-        "link": "",
-    },
+    proyecto(
+        titulo="Modelado 3D",
+        resumen="Selección de piezas y ejercicios de modelado 3D.",
+        galeria=[
+            "projects/modelado_3d_01.jpg",
+            "projects/modelado_3d_02.jpg",
+            "projects/modelado_3d_03.jpg",
+            "projects/modelado_3d_04.jpg",
+        ],
+        herramientas="Maya y Adobe Substance 3D Painter.",
+    ),
+    proyecto(
+        titulo="Animación 3D: Eclipsaris",
+        resumen="Cortometraje de animación 3D.",
+        galeria=[
+            "projects/eclipsaris_01.jpg",
+            "projects/eclipsaris_02.jpg",
+            "projects/eclipsaris_03.jpg",
+            "projects/eclipsaris_04.jpg",
+        ],
+        rol="Rig de personajes y desarrollo del animatic.",
+        herramientas="Maya y Filmora.",
+    ),
+    proyecto(
+        titulo="Visuales",
+        resumen="Visuales reactivas al movimiento y al sonido.",
+        galeria=[
+            "projects/visuales_01.jpg",
+            "projects/visuales_02.jpg",
+            "projects/visuales_03.jpg",
+            "projects/visuales_04.jpg",
+        ],
+        herramientas="TouchDesigner.",
+    ),
 ]
 
 # Proyectos de "Investigación"
 INVESTIGACION = [
-    {
-        "titulo": "Educación en los niños con TEA",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: contexto, metodología y hallazgos.",
-        "archivo": "projects/tea.jpg",
-        "link": "",
-    },
-    {
-        "titulo": "Investigación de mercados: Postobón",
-        "resumen": "Escribe aquí una sola línea que resuma el proyecto.",
-        "rol": "Tu rol en el proyecto",
-        "herramientas": "Herramienta 1, Herramienta 2",
-        "descripcion": "Descripción corta: objetivo del estudio y tu aporte.",
-        "archivo": "projects/postobon.jpg",
-        "link": "",
-    },
+    proyecto(
+        titulo="Educación en niños con TEA",
+        resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
+        archivo="projects/tea.jpg",
+    ),
+    proyecto(
+        titulo="Investigación de mercados: Postobón",
+        resumen="Estudio de mercado sobre el comportamiento posconsumo del consumidor.",
+        archivo="projects/postobon.jpg",
+    ),
 ]
 
 CONTACT = {
     "titulo_1": "TRABAJEMOS",
     "titulo_2": "JUNTOS",
     "texto": "¿Tienes un proyecto en mente? Escríbeme y hablemos.",
-    "email": "tu-correo@ejemplo.com",
+    "email": "lngarciac@eafit.edu.co",
+    "telefono": "+57 3103777407",
     "links": [
         {"nombre": "LinkedIn", "url": "https://linkedin.com/in/tu-usuario"},
-        {"nombre": "Instagram", "url": "https://instagram.com/tu-usuario"},
-        {"nombre": "Behance", "url": "https://behance.net/tu-usuario"},
     ],
 }
 
-# ---- Videos de fondo (loops hechos en TouchDesigner) ----------------------
-# Exporta desde TouchDesigner como .mp4, corto (5-15s), sin audio, y
-# comprímelo (H.264, <10-15 MB idealmente) para que la web cargue rápido.
-# Colócalos en /assets con estos nombres exactos:
-BG_VIDEOS = {
-    "hero": "hero_bg.mp4",        # fondo grande detrás del título principal
-    "divider": "divider_bg.mp4",  # franja angosta entre "Sobre mí" y "Herramientas"
-    "footer": "footer_bg.mp4",    # fondo detrás de "Trabajemos juntos"
-}
-
 # =============================================================================
-#  DISEÑO — paleta "heat map" + 70s retro. No necesitas tocar esto.
+# DISEÑO — paleta "heat map" + 70s retro. No necesitas tocar esto.
 # =============================================================================
 
 PALETTE = {
@@ -289,9 +253,6 @@ def inject_css():
         div[data-testid="stAppViewContainer"] {{
             background: var(--cream);
         }}
-        div[data-testid="stVerticalBlock"] {{
-            gap: 0 !important;
-        }}
 
         /* grain overlay, retro film texture over the whole page */
         div[data-testid="stAppViewContainer"]::after {{
@@ -308,11 +269,19 @@ def inject_css():
         h1, h2, h3, .heat-display {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
-            line-height: 1;
-            letter-spacing: -1px;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
             margin: 0;
-            padding-top: 0.12em;
+            padding: 0.15em 0;
             overflow: visible;
+        }}
+
+        /* make sure no Streamlit wrapper ever clips our headline glyphs */
+        div[data-testid="stVerticalBlock"],
+        div[data-testid="element-container"],
+        div[data-testid="stMarkdown"],
+        div[data-testid="stMarkdownContainer"] {{
+            overflow: visible !important;
         }}
 
         .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
@@ -427,14 +396,6 @@ def inject_css():
         .st-key-research    {{ background: var(--cream)   !important; color: var(--ink);   }}
         .st-key-contact     {{ background: var(--void)    !important; color: var(--cream); padding: 0 !important; }}
 
-        [class*="st-key-card-"] {{
-            border: 3px solid currentColor !important;
-            padding: 30px 26px !important;
-            margin: 22px 0 !important;
-            position: relative !important;
-            overflow: visible !important;
-        }}
-
         .halftone {{
             background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
             background-size: 14px 14px;
@@ -474,147 +435,106 @@ def inject_css():
         .hero-wrap {{ position: relative; overflow: hidden; }}
         .hero-inner {{ position: relative; z-index: 2; }}
 
-        .card {{
-            border: 3px solid currentColor;
-            padding: 26px;
-            height: 100%;
+        [data-testid="stImage"] img {{
+            border: 3px solid var(--ink);
         }}
-        .card h4 {{
-            font-family: '{FONT_DISPLAY}', sans-serif;
-            text-transform: uppercase;
-            font-size: 1.5rem;
-            margin: 0 0 10px 0;
-        }}
-        .card p {{ margin: 0; opacity: 0.9; line-height: 1.45; }}
-        .card ul {{ margin: 10px 0 0 18px; padding: 0; }}
-        .card li {{ margin-bottom: 4px; }}
+        video {{ border: 3px solid var(--ink); }}
 
-        [class*="st-key-card-"] h4 {{
-            font-family: '{FONT_DISPLAY}', sans-serif;
-            text-transform: uppercase;
-            font-size: 1.7rem;
-            letter-spacing: -0.5px;
-            margin: 0 0 10px 0;
+        /* ---------- project sections (no accordion, always visible) -------- */
+        [class*="st-key-proj-"] {{
+            border: 3px solid currentColor !important;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.3) !important;
+            padding: 26px !important;
+            margin: 0 0 34px 0 !important;
+            position: relative !important;
+            overflow: visible !important;
         }}
-        [class*="st-key-card-"] p {{ margin: 0; opacity: 0.9; line-height: 1.45; }}
-        [class*="st-key-card-"] p.resumen {{ opacity: 0.85; font-size: 0.95rem; margin-top: 2px; }}
-        [class*="st-key-card-"] ul {{ margin: 10px 0 0 18px; padding: 0; }}
-        [class*="st-key-card-"] li {{ margin-bottom: 4px; }}
-
-        /* desplegable de detalles de cada proyecto */
-        [class*="st-key-card-"] [data-testid="stExpander"] {{
-            margin-top: 16px;
-            border: 2px solid currentColor;
-            background: transparent;
-        }}
-        [class*="st-key-card-"] [data-testid="stExpander"] summary {{
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 8px 12px;
-        }}
-        [class*="st-key-card-"] [data-testid="stExpanderDetails"] {{
-            padding: 4px 14px 14px 14px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }}
-
-        .card-badge {{
+        [class*="st-key-proj-"]::before {{
+            content: "";
             position: absolute;
-            top: -22px; left: -22px;
-            width: 58px; height: 58px;
+            top: 0; right: 0;
+            width: 90px; height: 90px;
+            background-image: radial-gradient(currentColor 1.6px, transparent 1.6px);
+            background-size: 12px 12px;
+            opacity: 0.16;
+            clip-path: polygon(100% 0, 100% 100%, 0 0);
+            pointer-events: none;
+        }}
+        .proj-badge {{
+            position: absolute;
+            top: -20px; left: -20px;
+            width: 54px; height: 54px;
             border-radius: 50%;
             background: var(--ink);
             color: var(--amber);
             border: 3px solid currentColor;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.05rem;
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.95rem;
             transform: rotate(-8deg);
             box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
             z-index: 5;
         }}
-
-        .tool-chip {{
-            border: 2px solid currentColor;
-            padding: 10px 16px;
-            font-weight: 400;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 6px 10px 6px 0;
-            box-shadow: 4px 4px 0 var(--ink);
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        .proj-title {{
+            font-family: '{FONT_DISPLAY}', sans-serif;
+            text-transform: uppercase;
+            font-size: 1.5rem;
+            letter-spacing: -0.3px;
+            line-height: 1.15;
+            margin: 6px 0 16px 0;
         }}
-        .tool-chip:nth-child(odd) {{ transform: rotate(-2deg); }}
-        .tool-chip:nth-child(even) {{ transform: rotate(2deg); }}
-        .tool-chip:hover {{ transform: translate(4px, 4px) rotate(0deg); box-shadow: 0 0 0 var(--ink); }}
-
-        .cta-btn {{
+        .proj-resumen {{
+            font-size: 1rem;
+            line-height: 1.5;
+            opacity: 0.92;
+            margin: 16px 0 14px 0;
+        }}
+        .proj-meta {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0 0 14px 0;
+        }}
+        .proj-chip {{
+            border: 2px solid currentColor;
+            padding: 7px 12px;
+            font-size: 0.82rem;
+            line-height: 1.3;
+        }}
+        .proj-chip-label {{
+            display: block;
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.58rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.65;
+            margin-bottom: 3px;
+        }}
+        .proj-resultado {{
+            font-style: italic;
+            border-left: 3px solid currentColor;
+            padding: 2px 0 2px 12px;
+            margin: 0 0 16px 0;
+            opacity: 0.92;
+        }}
+        .proj-link-btn {{
             display: inline-block;
-            border: 3px solid var(--cream);
-            color: var(--cream) !important;
-            padding: 13px 24px;
-            font-size: 0.85rem;
+            border: 3px solid currentColor;
+            color: currentColor !important;
+            padding: 9px 18px;
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.75rem;
             letter-spacing: 0.5px;
             text-decoration: none;
-            margin: 8px 12px 8px 0;
-            box-shadow: 5px 5px 0 var(--amber);
-            transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+            box-shadow: 4px 4px 0 currentColor;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
         }}
-        .cta-btn:hover {{
-            background: var(--cream);
-            color: var(--void) !important;
-            transform: translate(5px, 5px);
-            box-shadow: 0 0 0 var(--amber);
-        }}
+        .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
 
-        /* ---------- background video / placeholder strips ------------------ */
-        .bgvideo-wrap {{
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-        .bgvideo-wrap video {{
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }}
-        .bgvideo-label {{
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            font-family: '{FONT_BODY}', sans-serif;
-            font-weight: 700;
-            color: var(--cream);
-            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-            padding: 20px;
-        }}
-        .heat-placeholder {{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, var(--void), var(--plum), var(--crimson), var(--ember), var(--amber), var(--void));
-            background-size: 300% 300%;
-            animation: heatshift 12s ease infinite;
-        }}
-        @keyframes heatshift {{
-            0%   {{ background-position: 0% 50%; }}
-            50%  {{ background-position: 100% 50%; }}
-            100% {{ background-position: 0% 50%; }}
-        }}
-
-        [data-testid="stImage"] img {{
-            border: 3px solid var(--ink);
-        }}
-        video {{ border: 3px solid var(--ink); }}
+        /* the carousel itself is the only piece that still lives in an
+           iframe (needed for the prev/next JS) — but its height is FIXED,
+           so it never has the resize problems an accordion would have. */
+        iframe {{ border: none !important; display: block; }}
 
         @media (max-width: 640px) {{
             .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
@@ -636,13 +556,14 @@ def eyebrow_and_nav():
         f'<div class="spine">{SITE["nombre"]} — {words[0]} · {words[1]} · {words[2]}</div>',
         unsafe_allow_html=True,
     )
+    nav_links = "".join(f'<a href="#{a}">{label}</a>' for label, a in NAV)
     st.markdown(
         f"""
         <div class="eyebrow-bar" style="background:var(--void);">
             <span>{words[0]}</span><span>{words[1]}</span><span>{words[2]}</span>
         </div>
         <div class="nav-bar">
-            {''.join(f'<a href="#{anchor}">{label}</a>' for label, anchor in NAV)}
+            {nav_links}
         </div>
         """,
         unsafe_allow_html=True,
@@ -658,10 +579,9 @@ def slugify(text: str) -> str:
 
 
 # =============================================================================
-#  Utilidades de medios: si el archivo no existe, se genera un reemplazo
-#  con la estética heat map en vez de romper la página.
+# Utilidades de medios: si el archivo no existe, se genera un reemplazo
+# con la estética heat map en vez de romper la página.
 # =============================================================================
-
 @st.cache_data(show_spinner=False)
 def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
     colors = [(28, 15, 20), (74, 18, 89), (163, 18, 44), (224, 80, 28), (242, 169, 34)]
@@ -709,45 +629,264 @@ def show_media(rel_path: str, label: str, height: int = None):
         st.image(placeholder_image(f"Añade: assets/{rel_path}"), use_container_width=True)
 
 
-def bg_video_section(key: str, height_px: int, fallback_text: str):
-    """Franja de fondo para loops de TouchDesigner. Usa base64 para que el
-    <video> cubra completamente el contenedor sin controles ni bordes."""
-    filename = BG_VIDEOS.get(key)
-    path = ASSETS / filename if filename else None
-    if path and path.exists():
+def _media_data_uri(rel_path: str, label: str):
+    """Convierte assets/<rel_path> en un data-uri para incrustarlo en HTML.
+    Si el archivo no existe, genera un placeholder heat map con el mismo
+    formato (imagen), para que el carrusel nunca se rompa."""
+    path = ASSETS / rel_path
+    if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
+        ext = path.suffix.lstrip(".").lower()
         data = base64.b64encode(path.read_bytes()).decode()
-        ext = path.suffix.lstrip(".")
-        st.markdown(
-            f"""
-            <div class="bgvideo-wrap" style="height:{height_px}px;">
-                <video autoplay muted loop playsinline>
-                    <source src="data:video/{ext};base64,{data}" type="video/{ext}">
-                </video>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class="bgvideo-wrap" style="height:{height_px}px;">
-                <div class="heat-placeholder"></div>
-                <div class="bgvideo-label">🎬 Espacio para loop de TouchDesigner<br>
-                <span style="font-weight:400; opacity:0.85;">coloca tu archivo en assets/{filename}</span></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        return "video", f"data:video/{ext};base64,{data}"
+    if path.exists():
+        ext = path.suffix.lstrip(".").lower()
+        mime = "jpeg" if ext in ("jpg", "jpeg") else ext
+        data = base64.b64encode(path.read_bytes()).decode()
+        return "image", f"data:image/{mime};base64,{data}"
+    data = base64.b64encode(placeholder_image(f"Añade: assets/{rel_path}")).decode()
+    return "image", f"data:image/jpeg;base64,{data}"
+
+
+def carousel_widget(media_list, label, height=280):
+    """Carrusel de fotos/video con altura FIJA. Al no depender de ningún
+    resize dinámico (a diferencia de un acordeón), es la parte que se
+    puede meter en un iframe sin que se corte ni se descuadre."""
+    if not media_list:
+        st.image(placeholder_image(f"Añade fotos/video: {label}"), use_container_width=True)
+        return
+
+    slides_html = []
+    for i, rel in enumerate(media_list):
+        kind, uri = _media_data_uri(rel, f"{label} {i + 1}")
+        if kind == "video":
+            autoplay = "autoplay " if i == 0 else ""
+            slides_html.append(f'<div class="hm-slide"><video src="{uri}" {autoplay}muted loop playsinline></video></div>')
+        else:
+            slides_html.append(f'<div class="hm-slide"><img src="{uri}" alt="{label}"></div>')
+
+    multi = len(slides_html) > 1
+    dots_html = "".join(
+        f'<span class="hm-dot{" active" if i == 0 else ""}" onclick="hmGo(this,{i})"></span>'
+        for i in range(len(slides_html))
+    )
+    nav_html = (
+        '<div class="hm-arrow hm-prev" onclick="hmPrev(this)">‹</div>'
+        '<div class="hm-arrow hm-next" onclick="hmNext(this)">›</div>'
+        if multi else ""
+    )
+    dots_wrap = f'<div class="hm-dots">{dots_html}</div>' if multi else ""
+
+    html = f"""
+    <style>
+        * {{ box-sizing: border-box; }}
+        html, body {{ margin: 0; padding: 0; background: transparent; }}
+        .hm-carousel {{
+            position: relative; width: 100%; height: {height}px;
+            overflow: hidden; border: 2px solid {PALETTE['ink']};
+            background: {PALETTE['void']};
+        }}
+        .hm-track {{ display: flex; height: 100%; transition: transform 0.4s ease; }}
+        .hm-slide {{ flex: 0 0 100%; height: 100%; }}
+        .hm-slide img, .hm-slide video {{ width: 100%; height: 100%; object-fit: cover; display: block; }}
+        .hm-arrow {{
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 34px; height: 34px; border-radius: 50%;
+            background: {PALETTE['ink']}; color: {PALETTE['amber']};
+            border: 2px solid {PALETTE['amber']};
+            font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0.88; z-index: 5; user-select: none;
+            transition: transform 0.12s ease;
+            font-family: sans-serif;
+        }}
+        .hm-arrow:hover {{ transform: translateY(-50%) scale(1.08); }}
+        .hm-prev {{ left: 10px; }}
+        .hm-next {{ right: 10px; }}
+        .hm-counter {{
+            position: absolute; bottom: 10px; right: 12px;
+            background: {PALETTE['ink']}; color: {PALETTE['cream']};
+            font-family: 'Bungee', sans-serif;
+            font-size: 0.6rem; letter-spacing: 1px;
+            padding: 3px 8px; border: 2px solid {PALETTE['amber']}; z-index: 5;
+        }}
+        .hm-dots {{ position: absolute; bottom: 12px; left: 12px; display: flex; gap: 6px; z-index: 5; }}
+        .hm-dot {{
+            width: 9px; height: 9px; border-radius: 50%;
+            background: transparent; border: 2px solid {PALETTE['cream']};
+            cursor: pointer; opacity: 0.65;
+        }}
+        .hm-dot.active {{ background: {PALETTE['amber']}; border-color: {PALETTE['amber']}; opacity: 1; }}
+    </style>
+    <div class="hm-carousel" data-index="0">
+        <div class="hm-track">{''.join(slides_html)}</div>
+        {nav_html}
+        <div class="hm-counter">01 / {len(slides_html):02d}</div>
+        {dots_wrap}
+    </div>
+    <script>
+        function hmSetIndex(root, idx) {{
+            const track = root.querySelector('.hm-track');
+            const slides = root.querySelectorAll('.hm-slide');
+            const n = slides.length;
+            idx = ((idx % n) + n) % n;
+            track.style.transform = 'translateX(' + (-idx * 100) + '%)';
+            root.querySelectorAll('.hm-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+            const counter = root.querySelector('.hm-counter');
+            if (counter) {{
+                counter.textContent = String(idx + 1).padStart(2, '0') + ' / ' + String(n).padStart(2, '0');
+            }}
+            slides.forEach((s, i) => {{
+                const v = s.querySelector('video');
+                if (v) {{
+                    if (i === idx) {{ v.currentTime = 0; v.play().catch(() => {{}}); }}
+                    else {{ v.pause(); }}
+                }}
+            }});
+            root.dataset.index = idx;
+        }}
+        function hmPrev(el) {{ const r = el.closest('.hm-carousel'); hmSetIndex(r, parseInt(r.dataset.index || '0') - 1); }}
+        function hmNext(el) {{ const r = el.closest('.hm-carousel'); hmSetIndex(r, parseInt(r.dataset.index || '0') + 1); }}
+        function hmGo(el, idx) {{ const r = el.closest('.hm-carousel'); hmSetIndex(r, idx); }}
+    </script>
+    """
+    st.components.v1.html(html, height=height + 4)
+
+
+def project_section(item, idx, fg_hex):
+    """Cada proyecto es su propio bloque, siempre visible (nada de
+    desplegable): número de catálogo, carrusel, título, resumen, ficha
+    corta (rol / herramientas), resultado y enlace opcional."""
+    with st.container(key=f"proj-{slugify(item['titulo'])}-{idx}"):
+        st.markdown(f'<div class="proj-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
+        carousel_widget(_project_media_list(item), item["titulo"])
+        st.markdown(f'<div class="proj-title">{item["titulo"]}</div>', unsafe_allow_html=True)
+        if item.get("resumen"):
+            st.markdown(f'<p class="proj-resumen">{item["resumen"]}</p>', unsafe_allow_html=True)
+
+        chips = ""
+        if item.get("rol"):
+            chips += f'<div class="proj-chip"><span class="proj-chip-label">Rol</span>{item["rol"]}</div>'
+        if item.get("herramientas"):
+            chips += f'<div class="proj-chip"><span class="proj-chip-label">Herramientas</span>{item["herramientas"]}</div>'
+        if chips:
+            st.markdown(f'<div class="proj-meta">{chips}</div>', unsafe_allow_html=True)
+
+        if item.get("resultado"):
+            st.markdown(f'<p class="proj-resultado">✦ {item["resultado"]}</p>', unsafe_allow_html=True)
+        if item.get("enlace"):
+            st.markdown(f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>', unsafe_allow_html=True)
+
+
+def render_flow_field_bg(height_px: int, density: float = 1.0, seed: int = 0):
+    """Fondo animado tipo 'loop de TouchDesigner' — partículas ámbar/ember
+    fluyendo sobre negro como un campo de ruido (flow field) — generado
+    100% con canvas + JS. No carga ningún archivo, así que reemplaza los
+    videos pesados (mp4 de varias decenas de MB) sin perder el look."""
+    html = f"""
+    <style>
+        html, body {{ margin: 0; padding: 0; background: {PALETTE['void']}; overflow: hidden; }}
+        #hm-bg-wrap {{ position: relative; width: 100%; height: {height_px}px; background: {PALETTE['void']}; }}
+        #hm-bg-canvas {{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }}
+    </style>
+    <div id="hm-bg-wrap"><canvas id="hm-bg-canvas"></canvas></div>
+    <script>
+    (function() {{
+        const canvas = document.getElementById('hm-bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const wrap = document.getElementById('hm-bg-wrap');
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
+        const colors = ['{PALETTE['amber']}', '{PALETTE['ember']}', '{PALETTE['crimson']}'];
+        const voidColor = '{PALETTE['void']}';
+        const seed = {seed};
+        const density = {density};
+        let W, H, particles = [];
+
+        function hexToRgb(hex) {{
+            hex = hex.replace('#', '');
+            const n = parseInt(hex, 16);
+            return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+        }}
+        const rgbColors = colors.map(hexToRgb);
+        const voidRgb = hexToRgb(voidColor);
+
+        function fieldAngle(x, y, t) {{
+            return (
+                Math.sin(x * 0.006 + t * 0.35 + seed) +
+                Math.cos(y * 0.008 - t * 0.28 + seed * 1.3) +
+                Math.sin((x + y) * 0.004 + t * 0.18)
+            ) * Math.PI * 0.6;
+        }}
+
+        function spawn() {{
+            const c = rgbColors[Math.floor(Math.random() * rgbColors.length)];
+            return {{
+                x: Math.random() * W,
+                y: Math.random() * H,
+                speed: 0.4 + Math.random() * 1.1,
+                r: 0.6 + Math.random() * 1.5,
+                life: 220 + Math.random() * 320,
+                age: Math.random() * 300,
+                color: c,
+            }};
+        }}
+
+        function resize() {{
+            W = wrap.clientWidth;
+            H = wrap.clientHeight;
+            canvas.width = W * DPR;
+            canvas.height = H * DPR;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+            ctx.fillStyle = voidColor;
+            ctx.fillRect(0, 0, W, H);
+            const count = Math.max(80, Math.floor((W * H) / 9000 * density));
+            particles = [];
+            for (let i = 0; i < count; i++) particles.push(spawn());
+        }}
+
+        let t = 0;
+        function frame() {{
+            t += 0.016;
+            ctx.fillStyle = 'rgba(' + voidRgb[0] + ',' + voidRgb[1] + ',' + voidRgb[2] + ',0.07)';
+            ctx.fillRect(0, 0, W, H);
+
+            for (let p of particles) {{
+                const angle = fieldAngle(p.x, p.y, t);
+                p.x += Math.cos(angle) * p.speed;
+                p.y += Math.sin(angle) * p.speed + 0.12;
+                p.age += 1;
+
+                if (p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10 || p.age > p.life) {{
+                    const fresh = spawn();
+                    Object.assign(p, fresh);
+                }}
+
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(' + p.color[0] + ',' + p.color[1] + ',' + p.color[2] + ',0.55)';
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fill();
+            }}
+            requestAnimationFrame(frame);
+        }}
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(frame);
+    }})();
+    </script>
+    """
+    st.components.v1.html(html, height=height_px + 4)
 
 
 # =============================================================================
-#  SECCIONES
+# SECCIONES
 # =============================================================================
 
 def section_hero():
     with st.container(key="hero"):
         anchor("inicio")
-        bg_video_section("hero", height_px=460, fallback_text="hero")
+        render_flow_field_bg(height_px=460, density=1.3, seed=1)
         st.markdown(
             f"""
             <div style="position:relative; padding:70px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
@@ -798,30 +937,22 @@ def section_tools():
         st.markdown(f'<div style="margin-top:30px;">{"".join(chips)}</div>', unsafe_allow_html=True)
 
 
-def project_card(item, idx):
-    with st.container(key=f"card-{slugify(item['titulo'])}-{idx}"):
-        st.markdown(f'<div class="card-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
-        show_media(item["archivo"], item["titulo"])
-        st.markdown(
-            f"""<h4>{item['titulo']}</h4><p class="resumen">{item.get('resumen', '')}</p>""",
-            unsafe_allow_html=True,
-        )
-        with st.expander("Ver detalles", key=f"exp-{slugify(item['titulo'])}-{idx}"):
-            if item.get("rol"):
-                st.markdown(f"**Rol:** {item['rol']}")
-            if item.get("herramientas"):
-                st.markdown(f"**Herramientas:** {item['herramientas']}")
-            if item.get("descripcion"):
-                st.markdown(item["descripcion"])
-            if item.get("link"):
-                st.markdown(f"[Ver proyecto ↗]({item['link']})")
+def _project_media_list(item):
+    """Une 'archivo' (un solo medio) y 'galeria' (varios) en una sola lista
+    para alimentar el carrusel, sin importar cómo esté definido el proyecto."""
+    if item.get("galeria"):
+        return list(item["galeria"])
+    if item.get("archivo"):
+        return [item["archivo"]]
+    return []
 
 
-def project_grid(items):
-    cols = st.columns(2, gap="large")
+def project_grid(items, columns=2, fg_hex=None):
+    fg_hex = fg_hex or PALETTE["cream"]
+    cols = st.columns(columns, gap="large")
     for idx, item in enumerate(items):
-        with cols[idx % 2]:
-            project_card(item, idx)
+        with cols[idx % columns]:
+            project_section(item, idx, fg_hex)
 
 
 def section_immersive():
@@ -835,12 +966,12 @@ def section_immersive():
             '<p class="body-md" style="margin:20px 0 44px 0;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
             unsafe_allow_html=True,
         )
-        project_grid(INMERSIVOS)
+        project_grid(INMERSIVOS, fg_hex=PALETTE["cream"])
 
 
 def section_divider():
     with st.container(key="divider"):
-        bg_video_section("divider", height_px=200, fallback_text="divider")
+        render_flow_field_bg(height_px=200, density=0.8, seed=2)
 
 
 def section_interfaces():
@@ -851,7 +982,7 @@ def section_interfaces():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        project_grid(INTERFACES)
+        project_grid(INTERFACES, fg_hex=PALETTE["cream"])
 
 
 def section_visual():
@@ -862,10 +993,7 @@ def section_visual():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        cols = st.columns(len(VISUAL), gap="medium")
-        for idx, (col, item) in enumerate(zip(cols, VISUAL)):
-            with col:
-                project_card(item, idx)
+        project_grid(VISUAL, columns=3, fg_hex=PALETTE["void"])
 
 
 def section_research():
@@ -876,13 +1004,16 @@ def section_research():
             unsafe_allow_html=True,
         )
         st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
-        project_grid(INVESTIGACION)
+        project_grid(INVESTIGACION, fg_hex=PALETTE["ink"])
 
 
 def section_contact():
     with st.container(key="contact"):
         anchor("contacto")
-        bg_video_section("footer", height_px=380, fallback_text="footer")
+        render_flow_field_bg(height_px=380, density=1.1, seed=3)
+        links_html = "".join(
+            f'<a class="cta-btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>' for l in CONTACT["links"]
+        )
         st.markdown(
             f"""
             <div style="position:relative; padding:60px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
@@ -891,7 +1022,7 @@ def section_contact():
                     <div class="heat-display display-xl" style="{echo_style(['var(--amber)', 'var(--ember)', 'var(--crimson)'])}">{CONTACT['titulo_1']}<br>{CONTACT['titulo_2']}</div>
                     <p class="body-lg" style="margin:24px 0 28px 0;">{CONTACT['texto']}</p>
                     <a class="cta-btn" href="mailto:{CONTACT['email']}">✉ {CONTACT['email']}</a>
-                    {''.join(f'<a class="cta-btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>' for l in CONTACT['links'])}
+                    {links_html}
                 </div>
             </div>
             """,
@@ -900,9 +1031,8 @@ def section_contact():
 
 
 # =============================================================================
-#  RENDER
+# RENDER
 # =============================================================================
-
 inject_css()
 eyebrow_and_nav()
 section_hero()
