@@ -55,17 +55,15 @@ NAV = [
 
 ABOUT = {
     "titulo": "SOBRE MÍ",
-    "texto": ## Sobre mí
+    "texto": "Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**."
 
-Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
+"Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir."
 
-Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
+"Me interesa especialmente ese punto donde **el diseño y la tecnología se encuentran con lo humano**. Por eso no busco hacer proyectos que simplemente se vean bien, sino experiencias que tengan una intención, despierten curiosidad y dejen algo en quien las vive."
 
-Me interesa especialmente ese punto donde **el diseño y la tecnología se encuentran con lo humano**. Por eso no busco hacer proyectos que simplemente se vean bien, sino experiencias que tengan una intención, despierten curiosidad y dejen algo en quien las vive.
+"Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas nuevas para llevar una idea un paso más allá."
 
-Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas nuevas para llevar una idea un paso más allá.
-
-**En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
+"**En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**"
 "
     ),
     # Coloca tu foto en: assets/perfil.jpg  (retrato, cualquier proporción)
