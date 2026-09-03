@@ -186,14 +186,22 @@ PALETTE = {
 }
 
 FONT_DISPLAY = "Anton"
+FONT_KICKER = "Bungee"
 FONT_BODY = "Space Grotesk"
+
+
+def echo_style(colors) -> str:
+    """Sombra de texto por capas, tipo mala alineación de tinta en impresión
+    offset de los 70 — es el efecto de firma del título principal."""
+    steps = [(3 + i * 3, 3 + i * 3, c) for i, c in enumerate(colors)]
+    return "text-shadow:" + ",".join(f"{x}px {y}px 0 {c}" for x, y, c in steps) + ";"
 
 
 def inject_css():
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bungee&family=Space+Grotesk:wght@400;500;700&display=swap');
 
         :root {{
             --void: {PALETTE['void']};
@@ -236,21 +244,81 @@ def inject_css():
         h1, h2, h3, .heat-display {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
-            line-height: 0.88;
-            letter-spacing: 0.5px;
+            line-height: 0.85;
+            letter-spacing: -1px;
             margin: 0;
         }}
+
+        .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
+            font-family: '{FONT_KICKER}', sans-serif;
+        }}
+
+        /* ---------- signature retro flourishes ------------------------------ */
+        .sunburst {{
+            position: absolute;
+            top: 50%; left: 6%;
+            width: 1000px; height: 1000px;
+            transform: translate(-50%, -50%);
+            background: repeating-conic-gradient(from 0deg, var(--crimson) 0deg 7deg, transparent 7deg 16deg);
+            opacity: 0.16;
+            border-radius: 50%;
+            animation: spin 70s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }}
+        @keyframes spin {{ to {{ transform: translate(-50%, -50%) rotate(360deg); }} }}
+
+        .halftone-block {{
+            position: absolute;
+            width: 240px; height: 240px;
+            background-image: radial-gradient(currentColor 3px, transparent 3px);
+            background-size: 17px 17px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }}
+        .halftone-block.tr {{ top: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
+        .halftone-block.bl {{ bottom: 0; left: 0; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
+
+        /* torn/scalloped seam between two sections of different color */
+        .torn-edge {{
+            position: absolute;
+            top: -23px; left: 0;
+            width: 100%; height: 46px;
+            z-index: 4;
+            filter: drop-shadow(0 3px 0 var(--ink));
+            pointer-events: none;
+        }}
+
+        /* fixed vertical "spine" label, readable through every color band */
+        .spine {{
+            position: fixed;
+            left: 8px; top: 50%;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            font-family: '{FONT_KICKER}', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: #ffffff;
+            mix-blend-mode: difference;
+            z-index: 300;
+            pointer-events: none;
+        }}
+        @media (max-width: 900px) {{ .spine {{ display: none; }} }}
 
         /* ---------- top nav (eyebrow words, matches original nav gimmick) --- */
         .eyebrow-bar {{
             display: flex;
             justify-content: space-between;
             padding: 14px 40px;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
             color: var(--cream);
             border-bottom: 3px solid var(--ink);
         }}
-        .eyebrow-bar span {{ opacity: 0.85; }}
+        .eyebrow-bar span {{ opacity: 0.9; }}
+        .eyebrow-bar span:nth-child(2) {{ color: var(--amber); }}
+        .eyebrow-bar span:nth-child(3) {{ color: var(--ember); }}
 
         .nav-bar {{
             position: sticky;
@@ -258,23 +326,26 @@ def inject_css():
             z-index: 100;
             display: flex;
             flex-wrap: wrap;
-            gap: 4px 22px;
-            padding: 12px 40px;
+            gap: 6px 20px;
+            padding: 14px 40px;
             background: var(--void);
             border-bottom: 3px solid var(--ink);
         }}
         .nav-bar a {{
             color: var(--cream);
             text-decoration: none;
-            font-weight: 500;
-            font-size: 0.92rem;
-            padding: 4px 2px;
-            border-bottom: 2px solid transparent;
-            transition: border-color 0.15s ease, color 0.15s ease;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            border: 2px solid transparent;
+            transition: transform 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+            display: inline-block;
         }}
         .nav-bar a:hover {{
             border-color: var(--amber);
             color: var(--amber);
+            transform: translate(-2px, -2px);
+            box-shadow: 3px 3px 0 var(--amber);
         }}
 
         /* ---------- generic section shells, one per "temperature" step -----
@@ -284,11 +355,12 @@ def inject_css():
            put a full background behind real Streamlit widgets). */
         .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
         .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
-            padding: 90px 60px !important;
-            border-bottom: 3px solid var(--ink);
+            padding: 100px 60px !important;
+            position: relative;
+            overflow: visible;
         }}
-        .st-key-divider {{ padding: 0 !important; border-bottom: 3px solid var(--ink); }}
-        .st-key-hero {{ padding: 0 !important; border-bottom: 3px solid var(--ink); }}
+        .st-key-divider {{ padding: 0 !important; position: relative; }}
+        .st-key-hero {{ padding: 0 !important; position: relative; overflow: hidden; }}
 
         .st-key-about       {{ background: var(--crimson) !important; color: var(--cream); }}
         .st-key-tools       {{ background: var(--amber)   !important; color: var(--void);  }}
@@ -300,8 +372,10 @@ def inject_css():
 
         [class*="st-key-card-"] {{
             border: 3px solid currentColor !important;
-            padding: 26px !important;
-            margin-bottom: 26px !important;
+            padding: 30px 26px !important;
+            margin: 22px 0 !important;
+            position: relative !important;
+            overflow: visible !important;
         }}
 
         .halftone {{
@@ -314,17 +388,22 @@ def inject_css():
         }}
 
         .kicker {{
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            opacity: 0.75;
-            margin-bottom: 6px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            display: inline-block;
+            background: var(--crimson);
+            color: var(--cream);
+            padding: 5px 12px;
+            transform: rotate(-2deg);
+            margin-bottom: 18px;
+            box-shadow: 4px 4px 0 var(--ink);
         }}
 
-        .display-xl {{ font-size: clamp(3rem, 9vw, 7.5rem); }}
-        .display-lg {{ font-size: clamp(2.2rem, 5vw, 4.2rem); }}
+        .display-xl {{ font-size: clamp(3.4rem, 11vw, 9.5rem); }}
+        .display-lg {{ font-size: clamp(2.6rem, 7vw, 5.6rem); }}
         .display-md {{ font-size: clamp(1.6rem, 3vw, 2.4rem); }}
 
-        .body-lg {{ font-size: 1.25rem; line-height: 1.5; max-width: 640px; }}
+        .body-lg {{ font-size: 1.3rem; line-height: 1.5; max-width: 640px; }}
         .body-md {{ font-size: 1.05rem; line-height: 1.55; max-width: 620px; }}
 
         .rule {{
@@ -353,27 +432,67 @@ def inject_css():
         .card ul {{ margin: 10px 0 0 18px; padding: 0; }}
         .card li {{ margin-bottom: 4px; }}
 
+        [class*="st-key-card-"] h4 {{
+            font-family: '{FONT_DISPLAY}', sans-serif;
+            text-transform: uppercase;
+            font-size: 1.7rem;
+            letter-spacing: -0.5px;
+            margin: 0 0 10px 0;
+        }}
+        [class*="st-key-card-"] p {{ margin: 0; opacity: 0.9; line-height: 1.45; }}
+        [class*="st-key-card-"] ul {{ margin: 10px 0 0 18px; padding: 0; }}
+        [class*="st-key-card-"] li {{ margin-bottom: 4px; }}
+
+        .card-badge {{
+            position: absolute;
+            top: -22px; left: -22px;
+            width: 58px; height: 58px;
+            border-radius: 50%;
+            background: var(--ink);
+            color: var(--amber);
+            border: 3px solid currentColor;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.05rem;
+            transform: rotate(-8deg);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+            z-index: 5;
+        }}
+
         .tool-chip {{
             border: 2px solid currentColor;
             padding: 10px 16px;
-            font-weight: 700;
+            font-weight: 400;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin: 4px;
+            margin: 6px 10px 6px 0;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
         }}
+        .tool-chip:nth-child(odd) {{ transform: rotate(-2deg); }}
+        .tool-chip:nth-child(even) {{ transform: rotate(2deg); }}
+        .tool-chip:hover {{ transform: translate(4px, 4px) rotate(0deg); box-shadow: 0 0 0 var(--ink); }}
 
         .cta-btn {{
             display: inline-block;
             border: 3px solid var(--cream);
             color: var(--cream) !important;
-            padding: 12px 26px;
-            font-weight: 700;
+            padding: 13px 24px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
             text-decoration: none;
-            margin: 6px 10px 6px 0;
-            transition: background 0.15s ease, color 0.15s ease;
+            margin: 8px 12px 8px 0;
+            box-shadow: 5px 5px 0 var(--amber);
+            transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
         }}
-        .cta-btn:hover {{ background: var(--cream); color: var(--void) !important; }}
+        .cta-btn:hover {{
+            background: var(--cream);
+            color: var(--void) !important;
+            transform: translate(5px, 5px);
+            box-shadow: 0 0 0 var(--amber);
+        }}
 
         /* ---------- background video / placeholder strips ------------------ */
         .bgvideo-wrap {{
@@ -422,8 +541,12 @@ def inject_css():
         video {{ border: 3px solid var(--ink); }}
 
         @media (max-width: 640px) {{
-            .sec {{ padding: 50px 22px; }}
+            .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
+            .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
+                padding: 60px 24px !important;
+            }}
             .eyebrow-bar, .nav-bar {{ padding: 12px 18px; }}
+            .sunburst {{ width: 600px; height: 600px; }}
         }}
         </style>
         """,
@@ -431,8 +554,28 @@ def inject_css():
     )
 
 
+def torn_edge(color_var: str, teeth: int = 16) -> str:
+    """Costura festoneada/rasgada entre dos secciones de color distinto:
+    un div con clip-path en zigzag, del color de la sección ACTUAL,
+    mordiendo hacia la sección anterior."""
+    pts = []
+    for i in range(teeth + 1):
+        x = round(i / teeth * 100, 2)
+        y = 0 if i % 2 == 1 else 100
+        pts.append(f"{x}% {y}%")
+    polygon = ", ".join(pts)
+    return (
+        f'<div class="torn-edge" style="background:{color_var}; '
+        f'clip-path: polygon({polygon});"></div>'
+    )
+
+
 def eyebrow_and_nav():
     words = SITE["eyebrow"]
+    st.markdown(
+        f'<div class="spine">{SITE["nombre"]} — {words[0]} · {words[1]} · {words[2]}</div>',
+        unsafe_allow_html=True,
+    )
     st.markdown(
         f"""
         <div class="eyebrow-bar" style="background:var(--void);">
@@ -547,10 +690,14 @@ def section_hero():
         bg_video_section("hero", height_px=460, fallback_text="hero")
         st.markdown(
             f"""
-            <div style="padding:60px 60px 70px 60px; background:var(--void); color:var(--cream);">
-                <div class="kicker">{SITE['nombre']}</div>
-                <div class="heat-display display-xl">{SITE['titulo_hero_1']}<br>{SITE['titulo_hero_2']}</div>
-                <p class="body-lg" style="margin-top:22px;">{SITE['tagline']}</p>
+            <div style="position:relative; padding:70px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
+                <div class="sunburst"></div>
+                <div class="halftone-block tr" style="color:var(--amber);"></div>
+                <div style="position:relative; z-index:2;">
+                    <div class="kicker">{SITE['nombre']}</div>
+                    <div class="heat-display display-xl" style="{echo_style(['var(--amber)', 'var(--ember)', 'var(--crimson)'])}">{SITE['titulo_hero_1']}<br>{SITE['titulo_hero_2']}</div>
+                    <p class="body-lg" style="margin-top:26px;">{SITE['tagline']}</p>
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -559,13 +706,14 @@ def section_hero():
 
 def section_about():
     with st.container(key="about"):
+        st.markdown(torn_edge("var(--crimson)"), unsafe_allow_html=True)
         anchor("sobre-mi")
         col1, col2 = st.columns([1.1, 1], gap="large")
         with col1:
             st.markdown(
                 f"""
-                <div class="heat-display display-lg">{ABOUT['titulo']}</div>
-                <p class="body-lg" style="margin-top:22px;">{ABOUT['texto']}</p>
+                <div class="heat-display display-lg" style="{echo_style(['var(--void)', 'var(--amber)'])}">{ABOUT['titulo']}</div>
+                <p class="body-lg" style="margin-top:26px;">{ABOUT['texto']}</p>
                 """,
                 unsafe_allow_html=True,
             )
@@ -575,8 +723,12 @@ def section_about():
 
 def section_tools():
     with st.container(key="tools"):
+        st.markdown(torn_edge("var(--amber)"), unsafe_allow_html=True)
         anchor("herramientas")
-        st.markdown('<div class="heat-display display-lg">HERRAMIENTAS</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">HERRAMIENTAS</div>',
+            unsafe_allow_html=True,
+        )
         chips = []
         for tool in TOOLS:
             logo_path = ASSETS / "tools" / tool["archivo"]
@@ -585,7 +737,7 @@ def section_tools():
             else:
                 icon_html = "◆"
             chips.append(f'<span class="tool-chip">{icon_html} {tool["nombre"]}</span>')
-        st.markdown(f'<div style="margin-top:26px;">{"".join(chips)}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="margin-top:30px;">{"".join(chips)}</div>', unsafe_allow_html=True)
 
 
 def project_grid(items, text_extra_key="datos"):
@@ -593,6 +745,7 @@ def project_grid(items, text_extra_key="datos"):
     for idx, item in enumerate(items):
         with cols[idx % 2]:
             with st.container(key=f"card-{slugify(item['titulo'])}-{idx}"):
+                st.markdown(f'<div class="card-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
                 show_media(item["archivo"], item["titulo"])
                 extra = ""
                 if item.get(text_extra_key):
@@ -605,10 +758,14 @@ def project_grid(items, text_extra_key="datos"):
 
 def section_immersive():
     with st.container(key="immersive"):
+        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         anchor("inmersivos")
-        st.markdown('<div class="heat-display display-lg">INMERSIVOS</div>', unsafe_allow_html=True)
         st.markdown(
-            '<p class="body-md" style="margin:18px 0 40px 0;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
+            f'<div class="heat-display display-lg" style="{echo_style(["var(--ember)", "var(--amber)"])}">INMERSIVOS</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<p class="body-md" style="margin:20px 0 44px 0;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
             unsafe_allow_html=True,
         )
         project_grid(INMERSIVOS)
@@ -616,49 +773,67 @@ def section_immersive():
 
 def section_divider():
     with st.container(key="divider"):
+        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         bg_video_section("divider", height_px=200, fallback_text="divider")
 
 
 def section_interfaces():
     with st.container(key="interfaces"):
+        st.markdown(torn_edge("var(--plum)"), unsafe_allow_html=True)
         anchor("interfaces")
-        st.markdown('<div class="heat-display display-lg">INTERFACES</div>', unsafe_allow_html=True)
-        st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--amber)"])}">INTERFACES</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
         project_grid(INTERFACES)
 
 
 def section_visual():
     with st.container(key="visual"):
+        st.markdown(torn_edge("var(--ember)"), unsafe_allow_html=True)
         anchor("visual")
-        st.markdown('<div class="heat-display display-lg">VISUAL</div>', unsafe_allow_html=True)
-        st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="heat-display display-lg" style="{echo_style(["var(--plum)", "var(--crimson)"])}">VISUAL</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
         cols = st.columns(len(VISUAL), gap="medium")
         for idx, (col, item) in enumerate(zip(cols, VISUAL)):
             with col:
                 with st.container(key=f"card-visual-{idx}"):
+                    st.markdown(f'<div class="card-badge">N°{idx + 1:02d}</div>', unsafe_allow_html=True)
                     show_media(item["archivo"], item["titulo"])
                     st.markdown(f"<h4>{item['titulo']}</h4><p>{item['descripcion']}</p>", unsafe_allow_html=True)
 
 
 def section_research():
     with st.container(key="research"):
+        st.markdown(torn_edge("var(--cream)"), unsafe_allow_html=True)
         anchor("investigacion")
-        st.markdown('<div class="heat-display display-lg">INVESTIGACIÓN</div>', unsafe_allow_html=True)
-        st.markdown("<div style='height:30px;'></div>", unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">INVESTIGACIÓN</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div style='height:34px;'></div>", unsafe_allow_html=True)
         project_grid(INVESTIGACION)
 
 
 def section_contact():
     with st.container(key="contact"):
+        st.markdown(torn_edge("var(--void)"), unsafe_allow_html=True)
         anchor("contacto")
         bg_video_section("footer", height_px=380, fallback_text="footer")
         st.markdown(
             f"""
-            <div style="padding:50px 60px 70px 60px; background:var(--void); color:var(--cream);">
-                <div class="heat-display display-xl">{CONTACT['titulo_1']}<br>{CONTACT['titulo_2']}</div>
-                <p class="body-lg" style="margin:20px 0 26px 0;">{CONTACT['texto']}</p>
-                <a class="cta-btn" href="mailto:{CONTACT['email']}">✉ {CONTACT['email']}</a>
-                {''.join(f'<a class="cta-btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>' for l in CONTACT['links'])}
+            <div style="position:relative; padding:60px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
+                <div class="halftone-block bl" style="color:var(--amber);"></div>
+                <div style="position:relative; z-index:2;">
+                    <div class="heat-display display-xl" style="{echo_style(['var(--amber)', 'var(--ember)', 'var(--crimson)'])}">{CONTACT['titulo_1']}<br>{CONTACT['titulo_2']}</div>
+                    <p class="body-lg" style="margin:24px 0 28px 0;">{CONTACT['texto']}</p>
+                    <a class="cta-btn" href="mailto:{CONTACT['email']}">✉ {CONTACT['email']}</a>
+                    {''.join(f'<a class="cta-btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>' for l in CONTACT['links'])}
+                </div>
             </div>
             """,
             unsafe_allow_html=True,
