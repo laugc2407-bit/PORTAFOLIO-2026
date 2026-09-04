@@ -107,7 +107,7 @@ INMERSIVOS = [
     proyecto(
         titulo="Museo: el universo de Tim Burton",
         resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
-        archivo="https://player.vimeo.com/video/1223905053?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+        archivo="https://player.vimeo.com/video/1223905053",
     ),
     proyecto(
         titulo="Videojuego en VR: Vayquin",
@@ -115,7 +115,7 @@ INMERSIVOS = [
 
         # AQUÍ VA EL VIDEO DE VIMEO
         # Reemplaza 123456789 por el ID real de tu video.
-        archivo="https://player.vimeo.com/video/1223905112?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+        archivo="https://player.vimeo.com/video/1223905112",
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
     ),
@@ -186,8 +186,8 @@ VISUAL = [
         titulo="Visuales",
         resumen="Visuales reactivas al movimiento y al sonido.",
         galeria=[
-            "https://player.vimeo.com/video/1223905305?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
-            "https://player.vimeo.com/video/1223905258?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+            "https://player.vimeo.com/video/1223905305",
+            "https://player.vimeo.com/video/1223905258",
         ],
         herramientas="TouchDesigner.",
     ),
@@ -611,31 +611,26 @@ def inject_css():
         }}
         .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
 
-        /* ---------- grilla de proyectos: centrada y con tarjetas del
-           mismo tamaño, sin importar cuánto texto tenga cada una --------- */
-        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] {{
+        /* ---------- tarjetas: el ancho lo controla st.columns ----------- */
+        [class*="st-key-proj-"] {{
+            width: 100% !important;
+            min-width: 0 !important;
             display: flex !important;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: stretch;
-            gap: 34px;
+            flex-direction: column !important;
         }}
-        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
-            margin: 0 !important;
-            display: flex;
-        }}
-        [class*="st-key-grid-"] [class*="st-key-proj-"] {{
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }}
-        [class*="st-key-grid-"] .proj-resumen {{
+
+        [class*="st-key-proj-"] .proj-resumen {{
             flex: 0 0 auto;
         }}
-        [class*="st-key-grid-"] .proj-link-btn {{
+
+        [class*="st-key-proj-"] .proj-link-btn {{
             margin-top: auto;
             align-self: flex-start;
+        }}
+
+        /* Espacio consistente entre filas de proyectos. */
+        .project-row-gap {{
+            height: 34px;
         }}
 
         /* the carousel itself is the only piece that still lives in an
@@ -1636,7 +1631,7 @@ def render_missing_assets_banner():
     """Aviso de desarrollo (solo para ti, no para reclutadores): revisa qué
     imágenes/videos referenciados en el código NO se encontraron en /assets
     y muestra la ruta EXACTA que se buscó, para detectar rápido errores de
-    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites."""
+    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites.\n    Los enlaces de Vimeo se ignoran en esta comprobación."""
 
     expected = [
         ABOUT["imagen"]
@@ -1681,32 +1676,66 @@ def render_missing_assets_banner():
 
 
 def project_grid(items, section_key, columns=2, fg_hex=None):
-    """Todos los proyectos de una sección se ponen en una sola fila
-    flexible que se envuelve (wrap) y se CENTRA — así, si el último
-    renglón queda incompleto, no se ve pegado a la izquierda, y como
-    todas las tarjetas se estiran (align-items: stretch) a la altura
-    del renglón, quedan del mismo tamaño sin importar cuánto texto
-    tenga cada una."""
+    """Renderiza proyectos en filas estables usando st.columns.
+
+    Regla importante:
+    - Con 2 columnas, cada tarjeta ocupa 50%.
+    - Si queda un tercer proyecto, se crea una fila de 3 columnas
+      [25% | 50% | 25%], dejando la tarjeta exactamente del mismo
+      ancho que las dos anteriores y perfectamente centrada.
+    - Con 3 columnas, las tres tarjetas ocupan el mismo ancho.
+    """
+    if not items:
+        return
+
     fg_hex = fg_hex or PALETTE["cream"]
-    # nunca pidas más columnas que proyectos hay: si no, sobra un
-    # espacio vacío que descentra la fila.
-    columns = max(1, min(columns, len(items))) if items else columns
-    gap = 34
+    columns = max(1, min(int(columns), 3))
 
     with st.container(key=f"grid-{section_key}"):
-        st.markdown(
-            f"""
-            <style>
-            .st-key-grid-{section_key} > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
-                flex: 0 1 calc((100% - {(columns - 1) * gap}px) / {columns});
-                min-width: 260px;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-        for idx, item in enumerate(items):
-            project_section(item, idx, fg_hex)
+        if columns == 3:
+            # Filas de 3 tarjetas iguales.
+            for row_start in range(0, len(items), 3):
+                row_items = items[row_start:row_start + 3]
+                cols = st.columns(3, gap="large")
+
+                for offset, item in enumerate(row_items):
+                    with cols[offset]:
+                        project_section(item, row_start + offset, fg_hex)
+
+                if row_start + 3 < len(items):
+                    st.markdown(
+                        '<div class="project-row-gap"></div>',
+                        unsafe_allow_html=True,
+                    )
+
+        else:
+            # Filas de 2 tarjetas iguales.
+            for row_start in range(0, len(items), 2):
+                row_items = items[row_start:row_start + 2]
+
+                if len(row_items) == 2:
+                    cols = st.columns(2, gap="large")
+
+                    with cols[0]:
+                        project_section(row_items[0], row_start, fg_hex)
+
+                    with cols[1]:
+                        project_section(row_items[1], row_start + 1, fg_hex)
+
+                else:
+                    # Última tarjeta: 25% | 50% | 25%.
+                    # El 50% central coincide con el ancho de las
+                    # tarjetas de la fila anterior.
+                    left, center, right = st.columns([1, 2, 1], gap="large")
+
+                    with center:
+                        project_section(row_items[0], row_start, fg_hex)
+
+                if row_start + 2 < len(items):
+                    st.markdown(
+                        '<div class="project-row-gap"></div>',
+                        unsafe_allow_html=True,
+                    )
 
 
 def section_immersive():
