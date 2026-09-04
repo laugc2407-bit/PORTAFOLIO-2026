@@ -5,7 +5,10 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image, ImageDraw, ImageFont
 
-ASSETS = Path(__file__).parent / "assets"
+# Las imágenes/videos están directamente en la raíz del repositorio
+# (la misma carpeta donde vive este script), así que buscamos ahí y no
+# en una subcarpeta "assets/".
+ASSETS = Path(__file__).parent
 
 st.set_page_config(
     page_title="Portafolio",
@@ -46,11 +49,12 @@ Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas 
 
 **En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
 """,
-    # Coloca tu foto en: assets/perfil.jpg
+    # Coloca tu foto en la raíz del repo: perfil.jpg
     "imagen": "perfil.jpg",
 }
 
-# Para cada herramienta puedes (opcional) poner un logo en assets/tools/<archivo>
+# Para cada herramienta puedes (opcional) poner un logo en tools/<archivo>
+# (la carpeta "tools" dentro de la raíz del repo)
 # Si el archivo no existe, se muestra una "ficha" con el nombre en texto,
 # así que puedes dejarlo así de fácil sin subir ningún logo.
 TOOLS = [
@@ -78,7 +82,7 @@ def proyecto(titulo, resumen, archivo="", galeria=None, rol="", herramientas="",
     return {
         "titulo": titulo,              # nombre del proyecto
         "resumen": resumen,            # 1 frase corta
-        "archivo": archivo,            # UNA imagen o video en assets/projects/
+        "archivo": archivo,            # UNA imagen o video en la raíz del repo
         "galeria": galeria or [],      # o VARIAS imágenes/videos (carrusel)
         "rol": rol,                    # tu rol, ej: "Diseño UX + modelado 3D"
         "herramientas": herramientas,  # ej: "Unity, Blender, C++"
@@ -87,26 +91,26 @@ def proyecto(titulo, resumen, archivo="", galeria=None, rol="", herramientas="",
     }
 
 
-# Proyectos "inmersivos" — foto (.jpg/.png) o video (.mp4) en assets/projects/
+# Proyectos "inmersivos" — foto (.jpg/.png) o video (.mp4) en la raíz del repo
 INMERSIVOS = [
     proyecto(
         titulo="Museo: el universo de Tim Burton",
         resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
-        archivo="projects/tim_burton.jpg",
+        archivo="tim_burton.jpg",
         rol="Desarrollo y montaje.",
         herramientas="Unity y Maya.",
     ),
     proyecto(
         titulo="Videojuego en VR: Vayquin",
         resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
-        archivo="projects/vayquin_vr.mp4",
+        archivo="vayquin_vr.mp4",
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
     ),
     proyecto(
         titulo="Videojuego: Bruna Lab (En proceso)",
         resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
-        archivo="projects/bruna_lab.jpg",
+        archivo="bruna_lab.jpg",
         rol="Project Manager.",
     ),
 ]
@@ -170,8 +174,8 @@ VISUAL = [
         titulo="Animación 3D: Eclipsaris",
         resumen="Cortometraje de animación 3D.",
         galeria=[
-            "projects/eclipsaris_01.jpg",
-            "projects/eclipsaris_02.jpg",
+            "eclipsaris_01.jpg",
+            "eclipsaris_02.jpg",
     
         ],
         rol="Rig de personajes y desarrollo del animatic.",
@@ -181,10 +185,10 @@ VISUAL = [
         titulo="Visuales",
         resumen="Visuales reactivas al movimiento y al sonido.",
         galeria=[
-            "projects/visuales_01.jpg",
-            "projects/visuales_02.jpg",
-            "projects/visuales_03.jpg",
-            "projects/visuales_04.jpg",
+            "visuales_01.jpg",
+            "visuales_02.jpg",
+            "visuales_03.jpg",
+            "visuales_04.jpg",
         ],
         herramientas="TouchDesigner.",
     ),
@@ -686,20 +690,22 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
 
 def show_media(rel_path: str, label: str, height: int = None):
-    """Muestra assets/<rel_path>. Si no existe, muestra un placeholder heat map."""
+    """Muestra <rel_path> (buscado en la raíz del repo). Si no existe,
+    muestra un placeholder heat map."""
     path = ASSETS / rel_path
     if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
         st.video(str(path), loop=True, autoplay=True, muted=True)
     elif path.exists():
         st.image(str(path), use_container_width=True)
     else:
-        st.image(placeholder_image(f"Añade: assets/{rel_path}"), use_container_width=True)
+        st.image(placeholder_image(f"Añade: {rel_path}"), use_container_width=True)
 
 
 def _media_data_uri(rel_path: str, label: str):
-    """Convierte assets/<rel_path> en un data-uri para incrustarlo en HTML.
-    Si el archivo no existe, genera un placeholder heat map con el mismo
-    formato (imagen), para que el carrusel nunca se rompa."""
+    """Convierte <rel_path> (buscado en la raíz del repo) en un data-uri
+    para incrustarlo en HTML. Si el archivo no existe, genera un
+    placeholder heat map con el mismo formato (imagen), para que el
+    carrusel nunca se rompa."""
     path = ASSETS / rel_path
     if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
         ext = path.suffix.lstrip(".").lower()
@@ -710,7 +716,7 @@ def _media_data_uri(rel_path: str, label: str):
         mime = "jpeg" if ext in ("jpg", "jpeg") else ext
         data = base64.b64encode(path.read_bytes()).decode()
         return "image", f"data:image/{mime};base64,{data}"
-    data = base64.b64encode(placeholder_image(f"Añade: assets/{rel_path}")).decode()
+    data = base64.b64encode(placeholder_image(f"Añade: {rel_path}")).decode()
     return "image", f"data:image/jpeg;base64,{data}"
 
 
@@ -1026,13 +1032,13 @@ def render_missing_assets_banner():
 
     missing = [p for p in expected if p and not (ASSETS / p).exists()]
     if missing:
-        with st.expander(f"⚠️ DEV: faltan {len(missing)} archivo(s) en /assets (clic para ver rutas exactas)"):
+        with st.expander(f"⚠️ DEV: faltan {len(missing)} archivo(s) en la raíz del repo (clic para ver rutas exactas)"):
             st.write(
                 "Streamlit no encontró estos archivos con ese nombre exacto "
                 "(revisa mayúsculas/minúsculas, extensión y carpeta):"
             )
             for p in missing:
-                st.code(f"assets/{p}")
+                st.code(str(ASSETS / p))
 
 
 def project_grid(items, columns=2, fg_hex=None):
