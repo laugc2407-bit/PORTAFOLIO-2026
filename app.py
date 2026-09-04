@@ -36,7 +36,7 @@ NAV = [
 ABOUT = {
     "titulo": "SOBRE MÍ",
     "texto": """
-Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
+Me gusta crear cosas que hagan que las personas *quieran interactuar con ellas*.
 
 Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
 
