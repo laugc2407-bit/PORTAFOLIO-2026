@@ -115,7 +115,7 @@ INMERSIVOS = [
 
         # AQUÍ VA EL VIDEO DE VIMEO
         # Reemplaza 123456789 por el ID real de tu video.
-        archivo="https://player.vimeo.com/video/123456789",
+        archivo="https://player.vimeo.com/video/1223905112?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
 
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
@@ -187,10 +187,8 @@ VISUAL = [
         titulo="Visuales",
         resumen="Visuales reactivas al movimiento y al sonido.",
         galeria=[
-            "visuales_01.jpg",
-            "visuales_02.jpg",
-            "visuales_03.jpg",
-            "visuales_04.jpg",
+            "https://player.vimeo.com/video/1223905305?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+            "https://player.vimeo.com/video/1223905258?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
         ],
         herramientas="TouchDesigner.",
     ),
