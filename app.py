@@ -111,7 +111,7 @@ INMERSIVOS = [
     proyecto(
         titulo="Videojuego: Bruna Lab (En proceso)",
         resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
-        archivo="bruna_lab.jpg",
+        archivo="brunalab.png",
         rol="Project Manager.",
     ),
 ]
