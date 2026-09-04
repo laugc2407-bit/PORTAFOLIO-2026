@@ -41,11 +41,22 @@ ABOUT = {
     "texto": """
 Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
 
-Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear.
+Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
+
+Me interesa especialmente ese punto donde **el diseño y la tecnología se encuentran con lo humano**. Por eso no busco hacer proyectos que simplemente se vean bien, sino experiencias que tengan una intención, despierten curiosidad y dejen algo en quien las vive.
+
+Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas nuevas para llevar una idea un paso más allá.
+
+**En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
 """,
+    # Coloca tu foto en la raíz del repo: perfil.jpg
     "imagen": "perfil.jpg",
 }
 
+# Para cada herramienta puedes (opcional) poner un logo en tools/<archivo>
+# (la carpeta "tools" dentro de la raíz del repo)
+# Si el archivo no existe, se muestra una "ficha" con el nombre en texto,
+# así que puedes dejarlo así de fácil sin subir ningún logo.
 TOOLS = [
     {"nombre": "Illustrator", "archivo": "ai.png"},
     {"nombre": "Photoshop", "archivo": "ps.png"},
@@ -61,6 +72,12 @@ TOOLS = [
 ]
 
 
+# -----------------------------------------------------------------------
+# PROYECTOS — cada uno se muestra como su propio bloque, con carrusel.
+# Usa la función proyecto(...) para cada uno; solo llena estos 6 campos
+# cortos. Dejar "" en enlace o herramientas está bien, simplemente no
+# se muestra esa línea.
+# -----------------------------------------------------------------------
 def proyecto(
     titulo,
     resumen,
@@ -72,67 +89,97 @@ def proyecto(
     enlace="",
 ):
     return {
-        "titulo": titulo,
-        "resumen": resumen,
-        "archivo": archivo,
-        "galeria": galeria or [],
-        "rol": rol,
-        "herramientas": herramientas,
-        "resultado": resultado,
-        "enlace": enlace,
+        "titulo": titulo,              # nombre del proyecto
+        "resumen": resumen,            # 1 frase corta
+        "archivo": archivo,            # UNA imagen, video local o URL de Vimeo
+        "galeria": galeria or [],      # o VARIAS imágenes/videos/URLs de Vimeo
+        "rol": rol,                    # tu rol, ej: "Diseño UX + modelado 3D"
+        "herramientas": herramientas,  # ej: "Unity, Blender, C++"
+        "resultado": resultado,        # 1 frase: qué se logró / impacto
+        "enlace": enlace,              # url a demo o repo (opcional)
     }
 
 
+# Proyectos "inmersivos" — foto (.jpg/.png) o video local (.mp4)
+# o video de Vimeo mediante:
+# https://player.vimeo.com/video/ID
 INMERSIVOS = [
     proyecto(
         titulo="Museo: el universo de Tim Burton",
-        resumen="Experiencia inmersiva.",
+        resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
         archivo="https://player.vimeo.com/video/1223905053?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
     ),
     proyecto(
         titulo="Videojuego en VR: Vayquin",
-        resumen="Videojuego de realidad virtual.",
+        resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
+
+        # AQUÍ VA EL VIDEO DE VIMEO
+        # Reemplaza 123456789 por el ID real de tu video.
         archivo="https://player.vimeo.com/video/1223905112?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
     ),
     proyecto(
         titulo="Videojuego: Bruna Lab (En proceso)",
-        resumen="Videojuego 2D.",
+        resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
         archivo="brunalab.png",
         rol="Project Manager.",
     ),
 ]
 
+# Proyectos de "Interfaces"
 INTERFACES = [
     proyecto(
         titulo="App: Mundo Ayuda Mayores",
-        resumen="Aplicativo para mayores de edad.",
-        galeria=["mundo1.png", "mundo2.png"],
+        resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
+        galeria=[
+            "mundo1.png",
+            "mundo2.png",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
     proyecto(
         titulo="App: Parque Éxpora",
-        resumen="Aplicativo para facilitar la experiencia de espera.",
-        galeria=["1.jpg","2.jpg","3.jpg","4.jpg","5.jpg","6.jpg","7.jpg","8.jpg","9.jpg","10.jpg"],
+        resumen="Aplicativo para facilitar la experiencia de espera en la cafetería del parque.",
+        galeria=[
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+            "9.jpg",
+            "10.jpg",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
     proyecto(
         titulo="App: Antioquia, territorio multicultural (En proceso)",
-        resumen="Aplicativo para aprender sobre la diversidad cultural.",
-        galeria=["mundo1.jpg", "mundo2.jpg"],
+        resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
+        galeria=[
+            "mundo1.jpg",
+            "mundo2.jpg",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
 ]
 
+# Proyectos de "Visual"
 VISUAL = [
     proyecto(
         titulo="Modelado 3D",
-        resumen="Selección de piezas.",
-        galeria=["3d1.jpg","3d2.jpg","3d3.jpg","3d4.jpg"],
+        resumen="Selección de piezas y ejercicios de modelado 3D.",
+        galeria=[
+            "3d1.jpg",
+            "3d2.jpg",
+            "3d3.jpg",
+            "3d4.jpg",
+        ],
         herramientas="Maya y Adobe Substance 3D Painter.",
     ),
     proyecto(
@@ -146,16 +193,29 @@ VISUAL = [
     ),
 ]
 
+# Proyectos de "Investigación"
 INVESTIGACION = [
     proyecto(
         titulo="Educación en niños con TEA",
-        resumen="Investigación sobre estrategias.",
-        galeria=["1.1.png","2.1.png","3.1.png"],
+        resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
+        galeria=[
+            "1.1.png",
+            "2.1.png",
+            "3.1.png",
+        ],
     ),
     proyecto(
         titulo="Investigación de mercados: Postobón",
-        resumen="Estudio de mercado.",
-        galeria=["p1.jpg","p2.jpg","p3.jpg","p4.jpg","p5.jpg","p6.jpg","p7.jpg"],
+        resumen="Estudio de mercado sobre el comportamiento posconsumo del consumidor.",
+        galeria=[
+            "p1.jpg",
+            "p2.jpg",
+            "p3.jpg",
+            "p4.jpg",
+            "p5.jpg",
+            "p6.jpg",
+            "p7.jpg",
+        ],
     ),
 ]
 
@@ -170,14 +230,18 @@ CONTACT = {
     ],
 }
 
+# =============================================================================
+# DISEÑO — paleta "heat map" + 70s retro. No necesitas tocar esto.
+# =============================================================================
+
 PALETTE = {
-    "void": "#1c0f14",
-    "plum": "#4a1259",
-    "crimson": "#a3122c",
-    "ember": "#e0501c",
-    "amber": "#f2a922",
-    "cream": "#f6ecd2",
-    "ink": "#20120a",
+    "void": "#1c0f14",      # casi negro, base fría del "mapa de calor"
+    "plum": "#4a1259",      # violeta profundo
+    "crimson": "#a3122c",   # rojo intenso
+    "ember": "#e0501c",     # naranja quemado
+    "amber": "#f2a922",     # mostaza / ámbar
+    "cream": "#f6ecd2",     # crema papel retro
+    "ink": "#20120a",       # texto oscuro sobre crema
 }
 
 FONT_DISPLAY = "Anton"
@@ -186,6 +250,8 @@ FONT_BODY = "Space Grotesk"
 
 
 def echo_style(colors) -> str:
+    """Sombra de texto por capas, tipo mala alineación de tinta en impresión
+    offset de los 70 — es el efecto de firma del título principal."""
     steps = [(3 + i * 3, 3 + i * 3, c) for i, c in enumerate(colors)]
     return "text-shadow:" + ",".join(f"{x}px {y}px 0 {c}" for x, y, c in steps) + ";"
 
@@ -219,6 +285,7 @@ def inject_css():
             background: var(--cream);
         }}
 
+        /* grain overlay, retro film texture over the whole page */
         div[data-testid="stAppViewContainer"]::after {{
             content: "";
             position: fixed;
@@ -240,6 +307,7 @@ def inject_css():
             overflow: visible;
         }}
 
+        /* make sure no Streamlit wrapper ever clips our headline glyphs */
         div[data-testid="stVerticalBlock"],
         div[data-testid="element-container"],
         div[data-testid="stMarkdown"],
@@ -251,6 +319,7 @@ def inject_css():
             font-family: '{FONT_KICKER}', sans-serif;
         }}
 
+        /* ---------- signature retro flourishes ------------------------------ */
         .sunburst {{
             position: absolute;
             top: 50%; left: 6%;
@@ -277,6 +346,7 @@ def inject_css():
         .halftone-block.tr {{ top: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
         .halftone-block.bl {{ bottom: 0; left: 0; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
 
+        /* fixed vertical "spine" label, readable through every color band */
         .spine {{
             position: fixed;
             left: 8px; top: 50%;
@@ -292,6 +362,7 @@ def inject_css():
         }}
         @media (max-width: 900px) {{ .spine {{ display: none; }} }}
 
+        /* ---------- top nav (eyebrow words, matches original nav gimmick) --- */
         .eyebrow-bar {{
             display: flex;
             justify-content: space-between;
@@ -333,6 +404,11 @@ def inject_css():
             box-shadow: 3px 3px 0 var(--amber);
         }}
 
+        /* ---------- generic section shells, one per "temperature" step -----
+           Streamlit gives every st.container(key="...") a class
+           "st-key-<key>" on its own wrapper div, so we style sections by
+           targeting that class directly (this is the only reliable way to
+           put a full background behind real Streamlit widgets). */
         .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
         .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
             padding: 100px 60px !important;
@@ -390,6 +466,7 @@ def inject_css():
         .hero-wrap {{ position: relative; overflow: hidden; }}
         .hero-inner {{ position: relative; z-index: 2; }}
 
+        /* ---------- herramientas: fichas tipo sticker con sombra dura ------- */
         .tool-chip {{
             border: 2px solid currentColor;
             padding: 10px 16px;
@@ -407,6 +484,7 @@ def inject_css():
         .tool-chip:nth-child(even) {{ transform: rotate(2deg); }}
         .tool-chip:hover {{ transform: translate(4px, 4px) rotate(0deg); box-shadow: 0 0 0 var(--ink); }}
 
+        /* ---------- botones de contacto: mismo trato "pop" retro ------------ */
         .cta-btn {{
             display: inline-block;
             border: 3px solid var(--cream);
@@ -434,6 +512,7 @@ def inject_css():
             border: 3px solid var(--ink);
         }}
 
+        /* Vimeo dentro del carrusel */
         .hm-slide iframe {{
             width: 100%;
             height: 100%;
@@ -441,35 +520,14 @@ def inject_css():
             display: block;
         }}
 
-        div[data-testid="stHorizontalBlock"] {{
-            align-items: stretch !important;
-        }}
-        div[data-testid="stColumn"] {{
-            display: flex !important;
-            flex-direction: column !important;
-        }}
-        div[data-testid="stColumn"] > div {{
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-        }}
-        div[data-testid="stColumn"] div[data-testid="stVerticalBlock"] {{
-            flex: 1 1 auto;
-            height: 100%;
-        }}
-
+        /* ---------- project sections (no accordion, always visible) -------- */
         [class*="st-key-proj-"] {{
             border: 3px solid currentColor !important;
             box-shadow: 6px 6px 0 rgba(0,0,0,0.3) !important;
             padding: 26px !important;
-            margin: 0 0 34px 0 !important;
+            margin: 0 !important;
             position: relative !important;
             overflow: visible !important;
-            height: 100% !important;
-            box-sizing: border-box !important;
-            display: flex !important;
-            flex-direction: column !important;
         }}
         [class*="st-key-proj-"]::before {{
             content: "";
@@ -497,15 +555,6 @@ def inject_css():
             box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
             z-index: 5;
         }}
-        [class*="st-key-proj-"] > div:has(iframe) {{
-            flex: 0 0 auto;
-        }}
-        .proj-body {{
-            flex: 1 1 auto;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }}
         .proj-title {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
@@ -518,11 +567,7 @@ def inject_css():
             font-size: 1rem;
             line-height: 1.5;
             opacity: 0.92;
-            margin: 0 0 14px 0;
-            flex: 1 1 auto;
-        }}
-        .proj-footer {{
-            margin-top: auto;
+            margin: 16px 0 14px 0;
         }}
         .proj-meta {{
             display: flex;
@@ -566,6 +611,36 @@ def inject_css():
         }}
         .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
 
+        /* ---------- grilla de proyectos: centrada y con tarjetas del
+           mismo tamaño, sin importar cuánto texto tenga cada una --------- */
+        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] {{
+            display: flex !important;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: stretch;
+            gap: 34px;
+        }}
+        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
+            margin: 0 !important;
+            display: flex;
+        }}
+        [class*="st-key-grid-"] [class*="st-key-proj-"] {{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }}
+        [class*="st-key-grid-"] .proj-resumen {{
+            flex: 0 0 auto;
+        }}
+        [class*="st-key-grid-"] .proj-link-btn {{
+            margin-top: auto;
+            align-self: flex-start;
+        }}
+
+        /* the carousel itself is the only piece that still lives in an
+           iframe (needed for the prev/next JS) — but its height is FIXED,
+           so it never has the resize problems an accordion would have. */
         iframe {{ border: none !important; display: block; }}
 
         @media (max-width: 640px) {{
@@ -610,6 +685,10 @@ def slugify(text: str) -> str:
     return "".join(c if c.isalnum() else "-" for c in text.lower()).strip("-")
 
 
+# =============================================================================
+# Utilidades de medios: si el archivo no existe, se genera un reemplazo
+# con la estética heat map en vez de romper la página.
+# =============================================================================
 @st.cache_data(show_spinner=False)
 def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
     colors = [
@@ -681,6 +760,9 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
 
 def show_media(rel_path: str, label: str, height: int = None):
+    """Muestra <rel_path> (buscado en la raíz del repo). Si no existe,
+    muestra un placeholder heat map."""
+
     path = ASSETS / rel_path
 
     if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
@@ -694,20 +776,31 @@ def show_media(rel_path: str, label: str, height: int = None):
     elif path.exists():
         st.image(
             str(path),
-            width="stretch",
+            use_container_width=True,
         )
 
     else:
         st.image(
             placeholder_image(f"Añade: {rel_path}"),
-            width="stretch",
+            use_container_width=True,
         )
 
 
 def _media_data_uri(rel_path: str, label: str):
+    """Convierte medios locales en data-uri y detecta enlaces de Vimeo
+    para reproducirlos directamente dentro del carrusel."""
+
+    # ================================================================
+    # 🎬 VIMEO
+    # ================================================================
+    # Si recibimos una URL del reproductor de Vimeo, NO intentamos
+    # convertirla a base64. La devolvemos como iframe embebido.
     if isinstance(rel_path, str) and "player.vimeo.com/video/" in rel_path:
         return "vimeo", rel_path
 
+    # ================================================================
+    # 🎥 VIDEO LOCAL
+    # ================================================================
     path = ASSETS / rel_path
 
     if path.exists() and path.suffix.lower() in (
@@ -723,6 +816,9 @@ def _media_data_uri(rel_path: str, label: str):
             f"data:video/{ext};base64,{data}",
         )
 
+    # ================================================================
+    # 🖼️ IMAGEN LOCAL
+    # ================================================================
     if path.exists():
         ext = path.suffix.lstrip(".").lower()
         mime = "jpeg" if ext in ("jpg", "jpeg") else ext
@@ -733,6 +829,9 @@ def _media_data_uri(rel_path: str, label: str):
             f"data:image/{mime};base64,{data}",
         )
 
+    # ================================================================
+    # ❌ ARCHIVO NO ENCONTRADO
+    # ================================================================
     data = base64.b64encode(
         placeholder_image(f"Añade: {rel_path}")
     ).decode()
@@ -744,10 +843,19 @@ def _media_data_uri(rel_path: str, label: str):
 
 
 def carousel_widget(media_list, label, height=280):
+    """Carrusel de fotos/video con altura FIJA.
+
+    Soporta:
+    - imágenes locales
+    - videos locales
+    - videos de Vimeo usando:
+      https://player.vimeo.com/video/ID
+    """
+
     if not media_list:
         st.image(
             placeholder_image(f"Añade fotos/video: {label}"),
-            width="stretch",
+            use_container_width=True,
         )
         return
 
@@ -759,6 +867,9 @@ def carousel_widget(media_list, label, height=280):
             f"{label} {i + 1}",
         )
 
+        # ============================================================
+        # 🎥 VIDEO LOCAL
+        # ============================================================
         if kind == "video":
             autoplay = "autoplay " if i == 0 else ""
 
@@ -776,6 +887,9 @@ def carousel_widget(media_list, label, height=280):
                 '''
             )
 
+        # ============================================================
+        # 🎬 VIDEO VIMEO
+        # ============================================================
         elif kind == "vimeo":
             slides_html.append(
                 f'''
@@ -792,6 +906,9 @@ def carousel_widget(media_list, label, height=280):
                 '''
             )
 
+        # ============================================================
+        # 🖼️ IMAGEN
+        # ============================================================
         else:
             slides_html.append(
                 f'''
@@ -984,6 +1101,7 @@ def carousel_widget(media_list, label, height=280):
                     String(n).padStart(2, '0');
             }}
 
+            // Pausar/reproducir videos locales.
             slides.forEach((s, i) => {{
                 const v = s.querySelector('video');
 
@@ -1026,13 +1144,16 @@ def carousel_widget(media_list, label, height=280):
     </script>
     """
 
-    st.iframe(
+    st.components.v1.html(
         html,
         height=height + 4,
     )
 
 
 def project_section(item, idx, fg_hex):
+    """Cada proyecto es su propio bloque, siempre visible (nada de
+    desplegable): número de catálogo, carrusel, título, resumen, ficha
+    corta (rol / herramientas), resultado y enlace opcional."""
     with st.container(key=f"proj-{slugify(item['titulo'])}-{idx}"):
         st.markdown(
             f'<div class="proj-badge">N°{idx + 1:02d}</div>',
@@ -1043,6 +1164,17 @@ def project_section(item, idx, fg_hex):
             _project_media_list(item),
             item["titulo"],
         )
+
+        st.markdown(
+            f'<div class="proj-title">{item["titulo"]}</div>',
+            unsafe_allow_html=True,
+        )
+
+        if item.get("resumen"):
+            st.markdown(
+                f'<p class="proj-resumen">{item["resumen"]}</p>',
+                unsafe_allow_html=True,
+            )
 
         chips = ""
 
@@ -1062,29 +1194,25 @@ def project_section(item, idx, fg_hex):
                 '</div>'
             )
 
-        resultado_html = (
-            f'<p class="proj-resultado">✦ {item["resultado"]}</p>'
-            if item.get("resultado") else ""
-        )
-        enlace_html = (
-            f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>'
-            if item.get("enlace") else ""
-        )
+        if chips:
+            st.markdown(
+                f'<div class="proj-meta">{chips}</div>',
+                unsafe_allow_html=True,
+            )
 
-        st.markdown(
-            f"""
-            <div class="proj-body">
-                <div class="proj-title">{item['titulo']}</div>
-                <p class="proj-resumen">{item['resumen']}</p>
-                <div class="proj-footer">
-                    {f'<div class="proj-meta">{chips}</div>' if chips else ''}
-                    {resultado_html}
-                    {enlace_html}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        if item.get("resultado"):
+            st.markdown(
+                f'<p class="proj-resultado">✦ {item["resultado"]}</p>',
+                unsafe_allow_html=True,
+            )
+
+        if item.get("enlace"):
+            st.markdown(
+                f'<a class="proj-link-btn" '
+                f'href="{item["enlace"]}" '
+                f'target="_blank">Ver proyecto ↗</a>',
+                unsafe_allow_html=True,
+            )
 
 
 def render_flow_field_bg(
@@ -1092,6 +1220,11 @@ def render_flow_field_bg(
     density: float = 1.0,
     seed: int = 0,
 ):
+    """Fondo animado tipo 'loop de TouchDesigner' — partículas ámbar/ember
+    fluyendo sobre negro como un campo de ruido (flow field) — generado
+    100% con canvas + JS. No carga ningún archivo, así que reemplaza los
+    videos pesados (mp4 de varias decenas de MB) sin perder el look."""
+
     html = f"""
     <style>
         html, body {{
@@ -1361,11 +1494,15 @@ def render_flow_field_bg(
     </script>
     """
 
-    st.iframe(
+    st.components.v1.html(
         html,
         height=height_px + 4,
     )
 
+
+# =============================================================================
+# SECCIONES
+# =============================================================================
 
 def section_hero():
     with st.container(key="hero"):
@@ -1483,6 +1620,9 @@ def section_tools():
 
 
 def _project_media_list(item):
+    """Une 'archivo' (un solo medio) y 'galeria' (varios) en una sola lista
+    para alimentar el carrusel, sin importar cómo esté definido el proyecto."""
+
     if item.get("galeria"):
         return list(item["galeria"])
 
@@ -1493,6 +1633,11 @@ def _project_media_list(item):
 
 
 def render_missing_assets_banner():
+    """Aviso de desarrollo (solo para ti, no para reclutadores): revisa qué
+    imágenes/videos referenciados en el código NO se encontraron en /assets
+    y muestra la ruta EXACTA que se buscó, para detectar rápido errores de
+    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites."""
+
     expected = [
         ABOUT["imagen"]
     ]
@@ -1508,6 +1653,8 @@ def render_missing_assets_banner():
                 _project_media_list(item)
             )
 
+    # Los enlaces de Vimeo no son archivos locales,
+    # así que NO deben aparecer como archivos faltantes.
     missing = [
         p
         for p in expected
@@ -1533,20 +1680,33 @@ def render_missing_assets_banner():
                 )
 
 
-def project_grid(items, columns=2, fg_hex=None):
+def project_grid(items, section_key, columns=2, fg_hex=None):
+    """Todos los proyectos de una sección se ponen en una sola fila
+    flexible que se envuelve (wrap) y se CENTRA — así, si el último
+    renglón queda incompleto, no se ve pegado a la izquierda, y como
+    todas las tarjetas se estiran (align-items: stretch) a la altura
+    del renglón, quedan del mismo tamaño sin importar cuánto texto
+    tenga cada una."""
     fg_hex = fg_hex or PALETTE["cream"]
+    # nunca pidas más columnas que proyectos hay: si no, sobra un
+    # espacio vacío que descentra la fila.
+    columns = max(1, min(columns, len(items))) if items else columns
+    gap = 34
 
-    if not items:
-        return
-
-    for row_start in range(0, len(items), columns):
-        row_items = items[row_start:row_start + columns]
-        row_cols = st.columns(len(row_items), gap="large")
-
-        for i, item in enumerate(row_items):
-            idx = row_start + i
-            with row_cols[i]:
-                project_section(item, idx, fg_hex)
+    with st.container(key=f"grid-{section_key}"):
+        st.markdown(
+            f"""
+            <style>
+            .st-key-grid-{section_key} > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
+                flex: 0 1 calc((100% - {(columns - 1) * gap}px) / {columns});
+                min-width: 260px;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )
+        for idx, item in enumerate(items):
+            project_section(item, idx, fg_hex)
 
 
 def section_immersive():
@@ -1565,6 +1725,7 @@ def section_immersive():
 
         project_grid(
             INMERSIVOS,
+            "immersivos",
             fg_hex=PALETTE["cream"],
         )
 
@@ -1594,6 +1755,7 @@ def section_interfaces():
 
         project_grid(
             INTERFACES,
+            "interfaces",
             fg_hex=PALETTE["cream"],
         )
 
@@ -1614,6 +1776,7 @@ def section_visual():
 
         project_grid(
             VISUAL,
+            "visual",
             columns=3,
             fg_hex=PALETTE["void"],
         )
@@ -1635,6 +1798,7 @@ def section_research():
 
         project_grid(
             INVESTIGACION,
+            "investigacion",
             fg_hex=PALETTE["ink"],
         )
 
@@ -1690,6 +1854,10 @@ def section_contact():
             unsafe_allow_html=True,
         )
 
+
+# =============================================================================
+# RENDER
+# =============================================================================
 
 inject_css()
 render_missing_assets_banner()
