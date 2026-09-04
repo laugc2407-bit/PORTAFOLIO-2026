@@ -40,7 +40,7 @@ NAV = [
 ABOUT = {
     "titulo": "SOBRE MÍ",
     "texto": """
-Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas**.
+Me gusta crear cosas que hagan que las personas **quieran interactuar con ellas.**
 
 Soy estudiante de Diseño Interactivo y disfruto moverme entre diferentes formas de crear: desde pensar una experiencia y diseñar una interfaz, hasta modelar un objeto en 3D, experimentar con código o convertir una idea en algo que se pueda jugar, explorar y vivir.
 
@@ -97,21 +97,21 @@ INMERSIVOS = [
     proyecto(
         titulo="Museo: el universo de Tim Burton",
         resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
-        archivo="tim_burton.jpg",
+        archivo="https://player.vimeo.com/video/1223905053?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         rol="Desarrollo y montaje.",
         herramientas="Unity y Maya.",
     ),
     proyecto(
         titulo="Videojuego en VR: Vayquin",
         resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
-        archivo="vayquin_vr.mp4",
+        archivo="https://player.vimeo.com/video/1223905112?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
     ),
     proyecto(
         titulo="Videojuego: Bruna Lab (En proceso)",
         resumen="Videojuego 2D para niños que quieren aprender sobre química sin el riesgo de un laboratorio.",
-        archivo="bruna_lab.jpg",
+        archivo="brunalab.png",
         rol="Project Manager.",
     ),
 ]
@@ -122,8 +122,8 @@ INTERFACES = [
         titulo="App: Mundo Ayuda Mayores",
         resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
           galeria=[
-            "mundo1.jpg",
-            "mundo2.jpg",
+            "mundo1.png",
+            "mundo2.png",
         ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
@@ -150,8 +150,8 @@ INTERFACES = [
         titulo="App: Antioquia, territorio multicultural (En proceso)",
         resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
         galeria=[
-            "mundo1.jpg",
-            "mundo2.jpg",
+            "antioquia1.jpg",
+            "antioquia2.jpg",
         ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
@@ -172,24 +172,12 @@ VISUAL = [
         herramientas="Maya y Adobe Substance 3D Painter.",
     ),
     proyecto(
-        titulo="Animación 3D: Eclipsaris",
-        resumen="Cortometraje de animación 3D.",
-        galeria=[
-            "eclipsaris_01.jpg",
-            "eclipsaris_02.jpg",
-    
-        ],
-        rol="Rig de personajes y desarrollo del animatic.",
-        herramientas="Maya y Filmora.",
-    ),
-    proyecto(
         titulo="Visuales",
         resumen="Visuales reactivas al movimiento y al sonido.",
         galeria=[
-            "visuales_01.jpg",
-            "visuales_02.jpg",
-            "visuales_03.jpg",
-            "visuales_04.jpg",
+            "https://player.vimeo.com/video/1223905258?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+            "https://player.vimeo.com/video/1223905305?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
+         
         ],
         herramientas="TouchDesigner.",
     ),
@@ -201,9 +189,9 @@ INVESTIGACION = [
         titulo="Educación en niños con TEA",
         resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
         galeria=[
-            "1.1.jpg",
-            "2.1.jpg",
-            "3.1.jpg",
+            "1.1.png",
+            "2.1.png",
+            "3.1.png",
         ],
     ),
     proyecto(
