@@ -435,6 +435,44 @@ def inject_css():
         .hero-wrap {{ position: relative; overflow: hidden; }}
         .hero-inner {{ position: relative; z-index: 2; }}
 
+        /* ---------- herramientas: fichas tipo sticker con sombra dura ------- */
+        .tool-chip {{
+            border: 2px solid currentColor;
+            padding: 10px 16px;
+            font-weight: 400;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 10px 6px 0;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }}
+        .tool-chip:nth-child(odd) {{ transform: rotate(-2deg); }}
+        .tool-chip:nth-child(even) {{ transform: rotate(2deg); }}
+        .tool-chip:hover {{ transform: translate(4px, 4px) rotate(0deg); box-shadow: 0 0 0 var(--ink); }}
+
+        /* ---------- botones de contacto: mismo trato "pop" retro ------------ */
+        .cta-btn {{
+            display: inline-block;
+            border: 3px solid var(--cream);
+            color: var(--cream) !important;
+            padding: 13px 24px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            margin: 8px 12px 8px 0;
+            box-shadow: 5px 5px 0 var(--amber);
+            transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+        }}
+        .cta-btn:hover {{
+            background: var(--cream);
+            color: var(--void) !important;
+            transform: translate(5px, 5px);
+            box-shadow: 0 0 0 var(--amber);
+        }}
+
         [data-testid="stImage"] img {{
             border: 3px solid var(--ink);
         }}
