@@ -116,21 +116,38 @@ INTERFACES = [
     proyecto(
         titulo="App: Mundo Ayuda Mayores",
         resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
-        archivo="projects/mundo_ayuda_mayores.jpg",
+          galeria=[
+            "mundo1.jpg",
+            "mundo2.jpg",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
     proyecto(
         titulo="App: Parque Éxpora",
         resumen="Aplicativo para facilitar la experiencia de espera en la cafetería del parque.",
-        archivo="projects/parque_expora.jpg",
+          galeria=[
+            "1.jpg",
+            "2.jpg",
+            "3.jpg",
+            "4.jpg",
+            "5.jpg",
+            "6.jpg",
+            "7.jpg",
+            "8.jpg",
+            "9.jpg",
+            "10.jpg",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
     proyecto(
         titulo="App: Antioquia, territorio multicultural (En proceso)",
         resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
-        archivo="projects/parque_expora.jpg",
+        galeria=[
+            "mundo1.jpg",
+            "mundo2.jpg",
+        ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
     ),
@@ -142,10 +159,10 @@ VISUAL = [
         titulo="Modelado 3D",
         resumen="Selección de piezas y ejercicios de modelado 3D.",
         galeria=[
-            "projects/modelado_3d_01.jpg",
-            "projects/modelado_3d_02.jpg",
-            "projects/modelado_3d_03.jpg",
-            "projects/modelado_3d_04.jpg",
+            "3d1.jpg",
+            "3d2.jpg",
+            "3d3.jpg",
+            "3d4.jpg",
         ],
         herramientas="Maya y Adobe Substance 3D Painter.",
     ),
@@ -155,8 +172,7 @@ VISUAL = [
         galeria=[
             "projects/eclipsaris_01.jpg",
             "projects/eclipsaris_02.jpg",
-            "projects/eclipsaris_03.jpg",
-            "projects/eclipsaris_04.jpg",
+    
         ],
         rol="Rig de personajes y desarrollo del animatic.",
         herramientas="Maya y Filmora.",
@@ -179,12 +195,25 @@ INVESTIGACION = [
     proyecto(
         titulo="Educación en niños con TEA",
         resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
-        archivo="projects/tea.jpg",
+        galeria=[
+            "1.1.jpg",
+            "2.1.jpg",
+            "3.1.jpg",
+        ],
     ),
     proyecto(
         titulo="Investigación de mercados: Postobón",
         resumen="Estudio de mercado sobre el comportamiento posconsumo del consumidor.",
-        archivo="projects/postobon.jpg",
+       galeria=[
+            "p1.jpg",
+            "p2.jpg",
+            "p3.jpg",
+            "p4.jpg",
+            "p5.jpg",
+            "p6.jpg",
+           "p7.jpg",
+        
+        ],
     ),
 ]
 
@@ -985,6 +1014,27 @@ def _project_media_list(item):
     return []
 
 
+def render_missing_assets_banner():
+    """Aviso de desarrollo (solo para ti, no para reclutadores): revisa qué
+    imágenes/videos referenciados en el código NO se encontraron en /assets
+    y muestra la ruta EXACTA que se buscó, para detectar rápido errores de
+    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites."""
+    expected = [ABOUT["imagen"]]
+    for lst in (INMERSIVOS, INTERFACES, VISUAL, INVESTIGACION):
+        for item in lst:
+            expected.extend(_project_media_list(item))
+
+    missing = [p for p in expected if p and not (ASSETS / p).exists()]
+    if missing:
+        with st.expander(f"⚠️ DEV: faltan {len(missing)} archivo(s) en /assets (clic para ver rutas exactas)"):
+            st.write(
+                "Streamlit no encontró estos archivos con ese nombre exacto "
+                "(revisa mayúsculas/minúsculas, extensión y carpeta):"
+            )
+            for p in missing:
+                st.code(f"assets/{p}")
+
+
 def project_grid(items, columns=2, fg_hex=None):
     fg_hex = fg_hex or PALETTE["cream"]
     cols = st.columns(columns, gap="large")
@@ -1072,6 +1122,7 @@ def section_contact():
 # RENDER
 # =============================================================================
 inject_css()
+render_missing_assets_banner()
 eyebrow_and_nav()
 section_hero()
 section_about()
