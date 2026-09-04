@@ -112,9 +112,6 @@ INMERSIVOS = [
     proyecto(
         titulo="Videojuego en VR: Vayquin",
         resumen="Videojuego de realidad virtual tipo exploratorio, navegando por un planeta desconocido para reparar la nave y volver a casa.",
-
-        # AQUÍ VA EL VIDEO DE VIMEO
-        # Reemplaza 123456789 por el ID real de tu video.
         archivo="https://player.vimeo.com/video/1223905112?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479",
         rol="Desarrollo y montaje.",
         herramientas="Unity.",
@@ -520,14 +517,40 @@ def inject_css():
             display: block;
         }}
 
-        /* ---------- project sections (no accordion, always visible) -------- */
+        /* ---------- project grid: filas parejas, tarjetas de igual alto ---- */
+        /* Streamlit estira las columnas de una misma fila a la misma altura
+           por defecto (flex + align-items:stretch), pero el contenido de
+           cada columna no llena solo esa altura — por eso lo forzamos aquí
+           hacia abajo por toda la cadena de contenedores hasta la tarjeta. */
+        div[data-testid="stHorizontalBlock"] {{
+            align-items: stretch !important;
+        }}
+        div[data-testid="stColumn"] {{
+            display: flex !important;
+            flex-direction: column !important;
+        }}
+        div[data-testid="stColumn"] > div {{
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }}
+        div[data-testid="stColumn"] div[data-testid="stVerticalBlock"] {{
+            flex: 1 1 auto;
+            height: 100%;
+        }}
+
         [class*="st-key-proj-"] {{
             border: 3px solid currentColor !important;
             box-shadow: 6px 6px 0 rgba(0,0,0,0.3) !important;
             padding: 26px !important;
-            margin: 0 !important;
+            margin: 0 0 34px 0 !important;
             position: relative !important;
             overflow: visible !important;
+            height: 100% !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
         }}
         [class*="st-key-proj-"]::before {{
             content: "";
@@ -555,6 +578,19 @@ def inject_css():
             box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
             z-index: 5;
         }}
+        /* el carrusel (altura fija) nunca crece; el bloque de texto sí, y
+           dentro de él el resumen absorbe el espacio extra mientras que
+           chips/resultado/enlace quedan siempre pegados abajo — así todas
+           las tarjetas de una fila terminan a la misma altura, alineadas. */
+        [class*="st-key-proj-"] > div:has(iframe) {{
+            flex: 0 0 auto;
+        }}
+        .proj-body {{
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }}
         .proj-title {{
             font-family: '{FONT_DISPLAY}', sans-serif;
             text-transform: uppercase;
@@ -567,7 +603,11 @@ def inject_css():
             font-size: 1rem;
             line-height: 1.5;
             opacity: 0.92;
-            margin: 16px 0 14px 0;
+            margin: 0 0 14px 0;
+            flex: 1 1 auto;
+        }}
+        .proj-footer {{
+            margin-top: auto;
         }}
         .proj-meta {{
             display: flex;
@@ -610,33 +650,6 @@ def inject_css():
             transition: transform 0.12s ease, box-shadow 0.12s ease;
         }}
         .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
-
-        /* ---------- grilla de proyectos: centrada y con tarjetas del
-           mismo tamaño, sin importar cuánto texto tenga cada una --------- */
-        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] {{
-            display: flex !important;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: stretch;
-            gap: 34px;
-        }}
-        [class*="st-key-grid-"] > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
-            margin: 0 !important;
-            display: flex;
-        }}
-        [class*="st-key-grid-"] [class*="st-key-proj-"] {{
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }}
-        [class*="st-key-grid-"] .proj-resumen {{
-            flex: 0 0 auto;
-        }}
-        [class*="st-key-grid-"] .proj-link-btn {{
-            margin-top: auto;
-            align-self: flex-start;
-        }}
 
         /* the carousel itself is the only piece that still lives in an
            iframe (needed for the prev/next JS) — but its height is FIXED,
@@ -1153,7 +1166,13 @@ def carousel_widget(media_list, label, height=280):
 def project_section(item, idx, fg_hex):
     """Cada proyecto es su propio bloque, siempre visible (nada de
     desplegable): número de catálogo, carrusel, título, resumen, ficha
-    corta (rol / herramientas), resultado y enlace opcional."""
+    corta (rol / herramientas), resultado y enlace opcional.
+
+    El texto (título + resumen + footer) va en UN solo bloque HTML
+    (.proj-body) para que el CSS pueda estirar el resumen y anclar el
+    footer abajo — así todas las tarjetas de una misma fila quedan a la
+    misma altura, con el pie alineado, sin importar cuánto texto tenga
+    cada una."""
     with st.container(key=f"proj-{slugify(item['titulo'])}-{idx}"):
         st.markdown(
             f'<div class="proj-badge">N°{idx + 1:02d}</div>',
@@ -1164,17 +1183,6 @@ def project_section(item, idx, fg_hex):
             _project_media_list(item),
             item["titulo"],
         )
-
-        st.markdown(
-            f'<div class="proj-title">{item["titulo"]}</div>',
-            unsafe_allow_html=True,
-        )
-
-        if item.get("resumen"):
-            st.markdown(
-                f'<p class="proj-resumen">{item["resumen"]}</p>',
-                unsafe_allow_html=True,
-            )
 
         chips = ""
 
@@ -1194,25 +1202,29 @@ def project_section(item, idx, fg_hex):
                 '</div>'
             )
 
-        if chips:
-            st.markdown(
-                f'<div class="proj-meta">{chips}</div>',
-                unsafe_allow_html=True,
-            )
+        resultado_html = (
+            f'<p class="proj-resultado">✦ {item["resultado"]}</p>'
+            if item.get("resultado") else ""
+        )
+        enlace_html = (
+            f'<a class="proj-link-btn" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>'
+            if item.get("enlace") else ""
+        )
 
-        if item.get("resultado"):
-            st.markdown(
-                f'<p class="proj-resultado">✦ {item["resultado"]}</p>',
-                unsafe_allow_html=True,
-            )
-
-        if item.get("enlace"):
-            st.markdown(
-                f'<a class="proj-link-btn" '
-                f'href="{item["enlace"]}" '
-                f'target="_blank">Ver proyecto ↗</a>',
-                unsafe_allow_html=True,
-            )
+        st.markdown(
+            f"""
+            <div class="proj-body">
+                <div class="proj-title">{item['titulo']}</div>
+                <p class="proj-resumen">{item['resumen']}</p>
+                <div class="proj-footer">
+                    {f'<div class="proj-meta">{chips}</div>' if chips else ''}
+                    {resultado_html}
+                    {enlace_html}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
 def render_flow_field_bg(
@@ -1634,9 +1646,10 @@ def _project_media_list(item):
 
 def render_missing_assets_banner():
     """Aviso de desarrollo (solo para ti, no para reclutadores): revisa qué
-    imágenes/videos referenciados en el código NO se encontraron en /assets
-    y muestra la ruta EXACTA que se buscó, para detectar rápido errores de
-    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites."""
+    imágenes/videos referenciados en el código NO se encontraron en la raíz
+    del repo y muestra la ruta EXACTA que se buscó, para detectar rápido
+    errores de mayúsculas, extensión o carpeta. Bórralo cuando ya no lo
+    necesites."""
 
     expected = [
         ABOUT["imagen"]
@@ -1680,33 +1693,28 @@ def render_missing_assets_banner():
                 )
 
 
-def project_grid(items, section_key, columns=2, fg_hex=None):
-    """Todos los proyectos de una sección se ponen en una sola fila
-    flexible que se envuelve (wrap) y se CENTRA — así, si el último
-    renglón queda incompleto, no se ve pegado a la izquierda, y como
-    todas las tarjetas se estiran (align-items: stretch) a la altura
-    del renglón, quedan del mismo tamaño sin importar cuánto texto
-    tenga cada una."""
+def project_grid(items, columns=2, fg_hex=None):
+    """Arma la grilla en FILAS reales: cada tanda de 'columns' proyectos
+    abre su propia fila de columnas nuevas. Antes se repartían por turno
+    en columnas fijas (idx % columns), así que si sobraba un proyecto
+    (ej. 3 proyectos en 2 columnas), una columna terminaba apilando el
+    doble de tarjetas que la otra — de ahí que se vieran disparejas. Con
+    filas nuevas por tanda, y la fila incompleta usando solo las columnas
+    que realmente tiene, cada tarjeta queda del mismo tamaño que sus
+    vecinas y ninguna columna se desborda sobre las demás."""
     fg_hex = fg_hex or PALETTE["cream"]
-    # nunca pidas más columnas que proyectos hay: si no, sobra un
-    # espacio vacío que descentra la fila.
-    columns = max(1, min(columns, len(items))) if items else columns
-    gap = 34
 
-    with st.container(key=f"grid-{section_key}"):
-        st.markdown(
-            f"""
-            <style>
-            .st-key-grid-{section_key} > [data-testid="stVerticalBlock"] > [data-testid="element-container"] {{
-                flex: 0 1 calc((100% - {(columns - 1) * gap}px) / {columns});
-                min-width: 260px;
-            }}
-            </style>
-            """,
-            unsafe_allow_html=True,
-        )
-        for idx, item in enumerate(items):
-            project_section(item, idx, fg_hex)
+    if not items:
+        return
+
+    for row_start in range(0, len(items), columns):
+        row_items = items[row_start:row_start + columns]
+        row_cols = st.columns(len(row_items), gap="large")
+
+        for i, item in enumerate(row_items):
+            idx = row_start + i
+            with row_cols[i]:
+                project_section(item, idx, fg_hex)
 
 
 def section_immersive():
@@ -1725,7 +1733,6 @@ def section_immersive():
 
         project_grid(
             INMERSIVOS,
-            "immersivos",
             fg_hex=PALETTE["cream"],
         )
 
@@ -1755,7 +1762,6 @@ def section_interfaces():
 
         project_grid(
             INTERFACES,
-            "interfaces",
             fg_hex=PALETTE["cream"],
         )
 
@@ -1776,7 +1782,6 @@ def section_visual():
 
         project_grid(
             VISUAL,
-            "visual",
             columns=3,
             fg_hex=PALETTE["void"],
         )
@@ -1798,7 +1803,6 @@ def section_research():
 
         project_grid(
             INVESTIGACION,
-            "investigacion",
             fg_hex=PALETTE["ink"],
         )
 
