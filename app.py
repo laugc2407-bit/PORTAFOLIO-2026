@@ -107,9 +107,7 @@ INMERSIVOS = [
     proyecto(
         titulo="Museo: el universo de Tim Burton",
         resumen="Experiencia inmersiva de tipo exploratoria para una exhibición temática sobre el universo de Tim Burton, recorriendo algunas de sus obras más emblemáticas.",
-        archivo="tim_burton.jpg",
-        rol="Desarrollo y montaje.",
-        herramientas="Unity y Maya.",
+        archivo="https://player.vimeo.com/video/1223905053?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
     ),
     proyecto(
         titulo="Videojuego en VR: Vayquin",
