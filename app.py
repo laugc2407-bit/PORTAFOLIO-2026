@@ -121,8 +121,8 @@ INTERFACES = [
         titulo="App: Mundo Ayuda Mayores",
         resumen="Aplicativo para mayores de edad con baja alfabetización digital para facilitar tareas diarias.",
           galeria=[
-            "mundo1.jpg",
-            "mundo2.jpg",
+            "mundo1.png",
+            "mundo2.png",
         ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
@@ -200,9 +200,9 @@ INVESTIGACION = [
         titulo="Educación en niños con TEA",
         resumen="Investigación sobre estrategias usadas en la educación para niños con TEA y propuestas a través del diseño.",
         galeria=[
-            "1.1.jpg",
-            "2.1.jpg",
-            "3.1.jpg",
+            "1.1.png",
+            "2.1.png",
+            "3.1.png",
         ],
     ),
     proyecto(
