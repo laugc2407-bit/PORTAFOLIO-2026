@@ -69,6 +69,7 @@ TOOLS = [
     {"nombre": "Figma", "archivo": "figma.png"},
     {"nombre": "MediaPipe", "archivo": "mediapipe.png"},
     {"nombre": "Maya", "archivo": "maya.png"},
+
 ]
 
 
