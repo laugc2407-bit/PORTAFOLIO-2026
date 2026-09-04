@@ -231,22 +231,22 @@ CONTACT = {
 }
 
 # =============================================================================
-# DISEÑO — paleta "heat map" + 70s retro. No necesitas tocar esto.
+# DISEÑO — dirección de arte "revista editorial años 70". No necesitas tocar esto.
 # =============================================================================
 
 PALETTE = {
-    "void": "#1c0f14",      # casi negro, base fría del "mapa de calor"
-    "plum": "#4a1259",      # violeta profundo
-    "crimson": "#a3122c",   # rojo intenso
-    "ember": "#e0501c",     # naranja quemado
-    "amber": "#f2a922",     # mostaza / ámbar
-    "cream": "#f6ecd2",     # crema papel retro
-    "ink": "#20120a",       # texto oscuro sobre crema
+    "void": "#20150e",      # marrón tinta, casi negro (fondos profundos)
+    "plum": "#4a4a2a",      # verde oliva oscuro
+    "crimson": "#9c3b28",   # rojo terracota
+    "ember": "#cf6a2c",     # naranja quemado
+    "amber": "#e0a83c",     # mostaza
+    "cream": "#f3e7cf",     # papel crema de imprenta
+    "ink": "#2b1c10",       # tinta marrón para texto y filetes
 }
 
-FONT_DISPLAY = "Anton"
-FONT_KICKER = "Bungee"
-FONT_BODY = "Space Grotesk"
+FONT_DISPLAY = "Bodoni Moda"
+FONT_KICKER = "Bebas Neue"
+FONT_BODY = "EB Garamond"
 
 
 def echo_style(colors) -> str:
@@ -260,7 +260,7 @@ def inject_css():
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bungee&family=Space+Grotesk:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Bebas+Neue&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap');
 
         :root {{
             --void: {PALETTE['void']};
@@ -273,7 +273,7 @@ def inject_css():
         }}
 
         html, body, [class*="css"] {{
-            font-family: '{FONT_BODY}', sans-serif;
+            font-family: '{FONT_BODY}', Georgia, serif;
         }}
 
         #MainMenu, footer, header {{visibility: hidden;}}
@@ -285,23 +285,38 @@ def inject_css():
             background: var(--cream);
         }}
 
-        /* grain overlay, retro film texture over the whole page */
+        /* textura de papel: fibra sutil + veladura cálida, sin tocar legibilidad */
+        div[data-testid="stAppViewContainer"]::before {{
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 998;
+            opacity: 0.35;
+            mix-blend-mode: multiply;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(43,28,16,0.035) 0 1px, transparent 1px 4px),
+                repeating-linear-gradient(90deg, rgba(43,28,16,0.025) 0 1px, transparent 1px 6px);
+        }}
+
+        /* grano de impresión analógica sobre toda la página */
         div[data-testid="stAppViewContainer"]::after {{
             content: "";
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 999;
-            opacity: 0.05;
+            opacity: 0.075;
             mix-blend-mode: multiply;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }}
 
         h1, h2, h3, .heat-display {{
-            font-family: '{FONT_DISPLAY}', sans-serif;
+            font-family: '{FONT_DISPLAY}', 'Times New Roman', serif;
+            font-weight: 900;
             text-transform: uppercase;
-            line-height: 1.15;
-            letter-spacing: -0.5px;
+            line-height: 1.02;
+            letter-spacing: -1px;
             margin: 0;
             padding: 0.15em 0;
             overflow: visible;
@@ -316,7 +331,7 @@ def inject_css():
         }}
 
         .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
-            font-family: '{FONT_KICKER}', sans-serif;
+            font-family: '{FONT_KICKER}', 'Helvetica Neue', sans-serif;
         }}
 
         /* ---------- signature retro flourishes ------------------------------ */
@@ -325,10 +340,10 @@ def inject_css():
             top: 50%; left: 6%;
             width: 1000px; height: 1000px;
             transform: translate(-50%, -50%);
-            background: repeating-conic-gradient(from 0deg, var(--crimson) 0deg 7deg, transparent 7deg 16deg);
-            opacity: 0.16;
+            background: repeating-conic-gradient(from 0deg, var(--ember) 0deg 9deg, transparent 9deg 20deg);
+            opacity: 0.13;
             border-radius: 50%;
-            animation: spin 70s linear infinite;
+            animation: spin 90s linear infinite;
             pointer-events: none;
             z-index: 0;
         }}
@@ -339,7 +354,7 @@ def inject_css():
             width: 240px; height: 240px;
             background-image: radial-gradient(currentColor 3px, transparent 3px);
             background-size: 17px 17px;
-            opacity: 0.3;
+            opacity: 0.28;
             pointer-events: none;
             z-index: 0;
         }}
@@ -349,12 +364,13 @@ def inject_css():
         /* fixed vertical "spine" label, readable through every color band */
         .spine {{
             position: fixed;
-            left: 8px; top: 50%;
+            left: 10px; top: 50%;
             writing-mode: vertical-rl;
             transform: rotate(180deg);
             font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 4px;
+            font-size: 0.72rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
             color: #ffffff;
             mix-blend-mode: difference;
             z-index: 300;
@@ -362,17 +378,19 @@ def inject_css():
         }}
         @media (max-width: 900px) {{ .spine {{ display: none; }} }}
 
-        /* ---------- top nav (eyebrow words, matches original nav gimmick) --- */
+        /* ---------- masthead / nav (misma mecánica, look de revista) -------- */
         .eyebrow-bar {{
             display: flex;
             justify-content: space-between;
-            padding: 14px 40px;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
+            align-items: baseline;
+            padding: 12px 44px;
+            font-size: 0.82rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
             color: var(--cream);
-            border-bottom: 3px solid var(--ink);
+            border-bottom: 1px solid rgba(243,231,207,0.35);
         }}
-        .eyebrow-bar span {{ opacity: 0.9; }}
+        .eyebrow-bar span {{ opacity: 0.95; }}
         .eyebrow-bar span:nth-child(2) {{ color: var(--amber); }}
         .eyebrow-bar span:nth-child(3) {{ color: var(--ember); }}
 
@@ -382,26 +400,27 @@ def inject_css():
             z-index: 100;
             display: flex;
             flex-wrap: wrap;
-            gap: 6px 20px;
-            padding: 14px 40px;
-            background: var(--void);
-            border-bottom: 3px solid var(--ink);
+            gap: 4px 8px;
+            padding: 12px 44px;
+            background: var(--cream);
+            border-top: 3px double var(--ink);
+            border-bottom: 3px double var(--ink);
         }}
         .nav-bar a {{
-            color: var(--cream);
+            color: var(--ink);
             text-decoration: none;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            padding: 6px 10px;
-            border: 2px solid transparent;
-            transition: transform 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+            font-size: 0.95rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border: 1px solid transparent;
+            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
             display: inline-block;
         }}
         .nav-bar a:hover {{
-            border-color: var(--amber);
-            color: var(--amber);
-            transform: translate(-2px, -2px);
-            box-shadow: 3px 3px 0 var(--amber);
+            background: var(--crimson);
+            border-color: var(--ink);
+            color: var(--cream);
         }}
 
         /* ---------- generic section shells, one per "temperature" step -----
@@ -411,21 +430,33 @@ def inject_css():
            put a full background behind real Streamlit widgets). */
         .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
         .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
-            padding: 100px 60px !important;
+            padding: 110px 72px !important;
             position: relative;
             overflow: visible;
-            border-bottom: 3px solid var(--ink);
+            border-bottom: 4px double var(--ink);
         }}
-        .st-key-divider {{ padding: 0 !important; position: relative; border-bottom: 3px solid var(--ink); }}
+        .st-key-divider {{ padding: 0 !important; position: relative; border-bottom: 4px double var(--ink); }}
         .st-key-hero {{ padding: 0 !important; position: relative; overflow: hidden; }}
 
         .st-key-about       {{ background: var(--crimson) !important; color: var(--cream); }}
-        .st-key-tools       {{ background: var(--amber)   !important; color: var(--void);  }}
+        .st-key-tools       {{ background: var(--amber)   !important; color: var(--ink);   }}
         .st-key-immersive   {{ background: var(--void)    !important; color: var(--cream); }}
         .st-key-interfaces  {{ background: var(--plum)    !important; color: var(--cream); }}
-        .st-key-visual      {{ background: var(--ember)   !important; color: var(--void);  }}
+        .st-key-visual      {{ background: var(--ember)   !important; color: var(--ink);   }}
         .st-key-research    {{ background: var(--cream)   !important; color: var(--ink);   }}
         .st-key-contact     {{ background: var(--void)    !important; color: var(--cream); padding: 0 !important; }}
+
+        /* filete superior fino dentro de cada sección, como caja de artículo */
+        .st-key-about::before, .st-key-tools::before, .st-key-immersive::before,
+        .st-key-interfaces::before, .st-key-visual::before, .st-key-research::before {{
+            content: "";
+            position: absolute;
+            top: 34px; left: 72px; right: 72px;
+            height: 0;
+            border-top: 1px solid currentColor;
+            opacity: 0.4;
+            pointer-events: none;
+        }}
 
         .halftone {{
             background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
@@ -437,79 +468,101 @@ def inject_css():
         }}
 
         .kicker {{
-            font-size: 0.8rem;
-            letter-spacing: 2px;
+            font-size: 0.95rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
             display: inline-block;
-            background: var(--crimson);
-            color: var(--cream);
-            padding: 5px 12px;
-            transform: rotate(-2deg);
-            margin-bottom: 18px;
-            box-shadow: 4px 4px 0 var(--ink);
+            background: transparent;
+            color: var(--amber);
+            padding: 4px 0 8px 0;
+            border-bottom: 1px solid currentColor;
+            transform: none;
+            margin-bottom: 22px;
+            box-shadow: none;
         }}
 
-        .display-xl {{ font-size: clamp(3.4rem, 11vw, 9.5rem); }}
-        .display-lg {{ font-size: clamp(2.6rem, 7vw, 5.6rem); }}
-        .display-md {{ font-size: clamp(1.6rem, 3vw, 2.4rem); }}
+        .display-xl {{ font-size: clamp(3.2rem, 10.5vw, 9rem); }}
+        .display-lg {{ font-size: clamp(2.4rem, 6.6vw, 5.2rem); }}
+        .display-md {{ font-size: clamp(1.5rem, 3vw, 2.3rem); }}
 
-        .body-lg {{ font-size: 1.3rem; line-height: 1.5; max-width: 640px; }}
-        .body-md {{ font-size: 1.05rem; line-height: 1.55; max-width: 620px; }}
+        .body-lg {{ font-size: 1.32rem; line-height: 1.62; max-width: 34em; }}
+        .body-md {{ font-size: 1.12rem; line-height: 1.66; max-width: 34em; }}
+
+        /* capitular editorial en el texto "Sobre mí" (puro CSS) */
+        .st-key-about .body-lg > p:first-of-type::first-letter,
+        .st-key-about p.body-lg::first-letter {{
+            font-family: '{FONT_DISPLAY}', serif;
+            font-weight: 900;
+            font-size: 3.4em;
+            line-height: 0.78;
+            float: left;
+            margin: 0.06em 0.09em 0 0;
+            color: var(--amber);
+        }}
 
         .rule {{
-            height: 2px;
-            background: currentColor;
-            opacity: 0.35;
-            margin: 26px 0;
-            border: none;
+            height: 0;
+            background: transparent;
+            border-top: 3px double currentColor;
+            opacity: 0.5;
+            margin: 30px 0;
         }}
 
         .hero-wrap {{ position: relative; overflow: hidden; }}
         .hero-inner {{ position: relative; z-index: 2; }}
 
-        /* ---------- herramientas: fichas tipo sticker con sombra dura ------- */
+        /* ---------- herramientas: fichas de catálogo impreso --------------- */
         .tool-chip {{
-            border: 2px solid currentColor;
-            padding: 10px 16px;
+            border: 1px solid currentColor;
+            border-bottom-width: 3px;
+            padding: 9px 16px;
             font-weight: 400;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            font-size: 1rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            margin: 6px 10px 6px 0;
-            box-shadow: 4px 4px 0 var(--ink);
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            gap: 10px;
+            margin: 7px 10px 7px 0;
+            background: rgba(243,231,207,0.35);
+            box-shadow: none;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
         }}
-        .tool-chip:nth-child(odd) {{ transform: rotate(-2deg); }}
-        .tool-chip:nth-child(even) {{ transform: rotate(2deg); }}
-        .tool-chip:hover {{ transform: translate(4px, 4px) rotate(0deg); box-shadow: 0 0 0 var(--ink); }}
+        .tool-chip:nth-child(odd) {{ transform: rotate(-1deg); }}
+        .tool-chip:nth-child(even) {{ transform: rotate(1deg); }}
+        .tool-chip:hover {{ transform: rotate(0deg) translateY(-2px); background: var(--ink); color: var(--cream); }}
 
-        /* ---------- botones de contacto: mismo trato "pop" retro ------------ */
+        /* ---------- botones de contacto: cintillo tipográfico -------------- */
         .cta-btn {{
             display: inline-block;
-            border: 3px solid var(--cream);
+            border: 1px solid var(--cream);
+            border-bottom-width: 3px;
             color: var(--cream) !important;
-            padding: 13px 24px;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            padding: 12px 26px;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             text-decoration: none;
-            margin: 8px 12px 8px 0;
-            box-shadow: 5px 5px 0 var(--amber);
-            transition: background 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+            margin: 10px 14px 10px 0;
+            box-shadow: none;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
         }}
         .cta-btn:hover {{
-            background: var(--cream);
+            background: var(--amber);
+            border-color: var(--amber);
             color: var(--void) !important;
-            transform: translate(5px, 5px);
-            box-shadow: 0 0 0 var(--amber);
+            transform: translateY(-2px);
         }}
 
         [data-testid="stImage"] img {{
-            border: 3px solid var(--ink);
+            border: 1px solid var(--ink);
+            outline: 6px solid var(--cream);
+            outline-offset: -12px;
+            filter: saturate(0.92) sepia(0.08) contrast(1.02);
         }}
 
         video {{
-            border: 3px solid var(--ink);
+            border: 1px solid var(--ink);
         }}
 
         /* Vimeo dentro del carrusel */
@@ -522,9 +575,11 @@ def inject_css():
 
         /* ---------- project sections (no accordion, always visible) -------- */
         [class*="st-key-proj-"] {{
-            border: 3px solid currentColor !important;
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.3) !important;
-            padding: 26px !important;
+            border: 1px solid currentColor !important;
+            border-top: 5px double currentColor !important;
+            box-shadow: none !important;
+            background: rgba(243,231,207,0.06) !important;
+            padding: 30px 30px 34px 30px !important;
             margin: 0 !important;
             position: relative !important;
             overflow: visible !important;
@@ -533,83 +588,93 @@ def inject_css():
             content: "";
             position: absolute;
             top: 0; right: 0;
-            width: 90px; height: 90px;
+            width: 86px; height: 86px;
             background-image: radial-gradient(currentColor 1.6px, transparent 1.6px);
             background-size: 12px 12px;
-            opacity: 0.16;
+            opacity: 0.14;
             clip-path: polygon(100% 0, 100% 100%, 0 0);
             pointer-events: none;
         }}
         .proj-badge {{
             position: absolute;
-            top: -20px; left: -20px;
-            width: 54px; height: 54px;
-            border-radius: 50%;
+            top: -18px; left: 24px;
+            width: auto; height: auto;
+            border-radius: 0;
             background: var(--ink);
             color: var(--amber);
-            border: 3px solid currentColor;
-            display: flex; align-items: center; justify-content: center;
+            border: 1px solid currentColor;
+            display: inline-flex; align-items: center; justify-content: center;
             font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.95rem;
-            transform: rotate(-8deg);
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.35);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            padding: 4px 12px;
+            transform: none;
+            box-shadow: none;
             z-index: 5;
         }}
         .proj-title {{
-            font-family: '{FONT_DISPLAY}', sans-serif;
+            font-family: '{FONT_DISPLAY}', serif;
+            font-weight: 900;
             text-transform: uppercase;
-            font-size: 1.5rem;
-            letter-spacing: -0.3px;
-            line-height: 1.15;
-            margin: 6px 0 16px 0;
+            font-size: 1.62rem;
+            letter-spacing: -0.4px;
+            line-height: 1.06;
+            margin: 18px 0 12px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px double currentColor;
         }}
         .proj-resumen {{
-            font-size: 1rem;
-            line-height: 1.5;
-            opacity: 0.92;
-            margin: 16px 0 14px 0;
+            font-size: 1.08rem;
+            line-height: 1.6;
+            opacity: 0.94;
+            margin: 14px 0 16px 0;
         }}
         .proj-meta {{
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin: 0 0 14px 0;
+            gap: 12px;
+            margin: 0 0 16px 0;
         }}
         .proj-chip {{
-            border: 2px solid currentColor;
-            padding: 7px 12px;
-            font-size: 0.82rem;
-            line-height: 1.3;
+            border: none;
+            border-left: 1px solid currentColor;
+            padding: 4px 0 4px 12px;
+            font-size: 0.98rem;
+            line-height: 1.35;
         }}
         .proj-chip-label {{
             display: block;
             font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.58rem;
-            letter-spacing: 1px;
+            font-size: 0.72rem;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            opacity: 0.65;
+            opacity: 0.7;
             margin-bottom: 3px;
         }}
         .proj-resultado {{
             font-style: italic;
-            border-left: 3px solid currentColor;
-            padding: 2px 0 2px 12px;
-            margin: 0 0 16px 0;
+            font-size: 1.05rem;
+            border-left: none;
+            border-top: 1px solid currentColor;
+            padding: 12px 0 2px 0;
+            margin: 0 0 18px 0;
             opacity: 0.92;
         }}
         .proj-link-btn {{
             display: inline-block;
-            border: 3px solid currentColor;
+            border: 1px solid currentColor;
+            border-bottom-width: 3px;
             color: currentColor !important;
-            padding: 9px 18px;
+            padding: 9px 20px;
             font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             text-decoration: none;
-            box-shadow: 4px 4px 0 currentColor;
-            transition: transform 0.12s ease, box-shadow 0.12s ease;
+            box-shadow: none;
+            transition: transform 0.15s ease, opacity 0.15s ease;
         }}
-        .proj-link-btn:hover {{ transform: translate(4px,4px); box-shadow: 0 0 0 currentColor; }}
+        .proj-link-btn:hover {{ transform: translateY(-2px); opacity: 0.75; }}
 
         /* the carousel itself is the only piece that still lives in an
            iframe (needed for the prev/next JS) — but its height is FIXED,
@@ -619,9 +684,13 @@ def inject_css():
         @media (max-width: 640px) {{
             .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
             .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
-                padding: 60px 24px !important;
+                padding: 64px 24px !important;
             }}
-            .eyebrow-bar, .nav-bar {{ padding: 12px 18px; }}
+            .st-key-about::before, .st-key-tools::before, .st-key-immersive::before,
+            .st-key-interfaces::before, .st-key-visual::before, .st-key-research::before {{
+                left: 24px; right: 24px; top: 22px;
+            }}
+            .eyebrow-bar, .nav-bar {{ padding: 12px 18px; letter-spacing: 3px; }}
             .sunburst {{ width: 600px; height: 600px; }}
         }}
         </style>
@@ -639,7 +708,7 @@ def eyebrow_and_nav():
     nav_links = "".join(f'<a href="#{a}">{label}</a>' for label, a in NAV)
     st.markdown(
         f"""
-        <div class="eyebrow-bar" style="background:var(--void);">
+        <div class="eyebrow-bar" style="background:var(--ink);">
             <span>{words[0]}</span><span>{words[1]}</span><span>{words[2]}</span>
         </div>
         <div class="nav-bar">
@@ -660,16 +729,16 @@ def slugify(text: str) -> str:
 
 # =============================================================================
 # Utilidades de medios: si el archivo no existe, se genera un reemplazo
-# con la estética heat map en vez de romper la página.
+# con la estética editorial 70s en vez de romper la página.
 # =============================================================================
 @st.cache_data(show_spinner=False)
 def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
     colors = [
-        (28, 15, 20),
-        (74, 18, 89),
-        (163, 18, 44),
-        (224, 80, 28),
-        (242, 169, 34),
+        (32, 21, 14),
+        (74, 74, 42),
+        (156, 59, 40),
+        (207, 106, 44),
+        (224, 168, 60),
     ]
 
     img = Image.new("RGB", (w, h))
@@ -699,13 +768,19 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
     try:
         font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
             26,
         )
     except Exception:
-        font = ImageFont.load_default()
+        try:
+            font = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                26,
+            )
+        except Exception:
+            font = ImageFont.load_default()
 
-    text = f"📷  {label}"
+    text = f"❧  {label}"
     bbox = draw.textbbox((0, 0), text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
@@ -716,14 +791,14 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
             w / 2 + tw / 2 + 20,
             h / 2 + th / 2 + 14,
         ],
-        fill=(28, 15, 20, 210),
+        fill=(32, 21, 14, 215),
     )
 
     draw.text(
         (w / 2 - tw / 2, h / 2 - th / 2 - 4),
         text,
         font=font,
-        fill=(246, 236, 210, 255),
+        fill=(243, 231, 207, 255),
     )
 
     buf = io.BytesIO()
@@ -734,7 +809,7 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
 def show_media(rel_path: str, label: str, height: int = None):
     """Muestra <rel_path> (buscado en la raíz del repo). Si no existe,
-    muestra un placeholder heat map."""
+    muestra un placeholder editorial."""
 
     path = ASSETS / rel_path
 
@@ -920,6 +995,8 @@ def carousel_widget(media_list, label, height=280):
 
     html = f"""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
         * {{
             box-sizing: border-box;
         }}
@@ -935,14 +1012,14 @@ def carousel_widget(media_list, label, height=280):
             width: 100%;
             height: {height}px;
             overflow: hidden;
-            border: 2px solid {PALETTE['ink']};
+            border: 1px solid {PALETTE['ink']};
             background: {PALETTE['void']};
         }}
 
         .hm-track {{
             display: flex;
             height: 100%;
-            transition: transform 0.4s ease;
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
         .hm-slide {{
@@ -959,71 +1036,77 @@ def carousel_widget(media_list, label, height=280):
             display: block;
         }}
 
+        .hm-slide img,
+        .hm-slide video {{
+            filter: saturate(0.92) sepia(0.08) contrast(1.02);
+        }}
+
         .hm-arrow {{
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: {PALETTE['ink']};
-            color: {PALETTE['amber']};
-            border: 2px solid {PALETTE['amber']};
-            font-size: 1.2rem;
+            width: 30px;
+            height: 38px;
+            border-radius: 0;
+            background: {PALETTE['cream']};
+            color: {PALETTE['ink']};
+            border: 1px solid {PALETTE['ink']};
+            font-size: 1.15rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0.88;
+            opacity: 0.92;
             z-index: 5;
             user-select: none;
-            transition: transform 0.12s ease;
-            font-family: sans-serif;
+            transition: background 0.15s ease, color 0.15s ease;
+            font-family: 'Bebas Neue', sans-serif;
         }}
 
         .hm-arrow:hover {{
-            transform: translateY(-50%) scale(1.08);
+            background: {PALETTE['crimson']};
+            color: {PALETTE['cream']};
         }}
 
         .hm-prev {{
-            left: 10px;
+            left: 12px;
         }}
 
         .hm-next {{
-            right: 10px;
+            right: 12px;
         }}
 
         .hm-counter {{
             position: absolute;
-            bottom: 10px;
+            bottom: 12px;
             right: 12px;
-            background: {PALETTE['ink']};
-            color: {PALETTE['cream']};
-            font-family: 'Bungee', sans-serif;
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            padding: 3px 8px;
-            border: 2px solid {PALETTE['amber']};
+            background: {PALETTE['cream']};
+            color: {PALETTE['ink']};
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 3px;
+            padding: 2px 10px;
+            border: 1px solid {PALETTE['ink']};
             z-index: 5;
         }}
 
         .hm-dots {{
             position: absolute;
-            bottom: 12px;
+            bottom: 14px;
             left: 12px;
             display: flex;
-            gap: 6px;
+            gap: 7px;
             z-index: 5;
         }}
 
         .hm-dot {{
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 0;
             background: transparent;
-            border: 2px solid {PALETTE['cream']};
+            border: 1px solid {PALETTE['cream']};
             cursor: pointer;
-            opacity: 0.65;
+            opacity: 0.7;
         }}
 
         .hm-dot.active {{
@@ -1175,7 +1258,7 @@ def project_section(item, idx, fg_hex):
 
         if item.get("resultado"):
             st.markdown(
-                f'<p class="proj-resultado">✦ {item["resultado"]}</p>',
+                f'<p class="proj-resultado">❧ {item["resultado"]}</p>',
                 unsafe_allow_html=True,
             )
 
@@ -1193,10 +1276,10 @@ def render_flow_field_bg(
     density: float = 1.0,
     seed: int = 0,
 ):
-    """Fondo animado tipo 'loop de TouchDesigner' — partículas ámbar/ember
-    fluyendo sobre negro como un campo de ruido (flow field) — generado
-    100% con canvas + JS. No carga ningún archivo, así que reemplaza los
-    videos pesados (mp4 de varias decenas de MB) sin perder el look."""
+    """Fondo animado tipo 'loop de TouchDesigner' — partículas mostaza/naranja
+    quemado fluyendo sobre tinta marrón como un campo de ruido (flow field) —
+    generado 100% con canvas + JS. No carga ningún archivo, así que reemplaza
+    los videos pesados (mp4 de varias decenas de MB) sin perder el look."""
 
     html = f"""
     <style>
@@ -1229,20 +1312,11 @@ def render_flow_field_bg(
 
     <script>
     (function() {{
-        const canvas =
-            document.getElementById('hm-bg-canvas');
+        const canvas = document.getElementById('hm-bg-canvas');
+        const ctx = canvas.getContext('2d');
+        const wrap = document.getElementById('hm-bg-wrap');
 
-        const ctx =
-            canvas.getContext('2d');
-
-        const wrap =
-            document.getElementById('hm-bg-wrap');
-
-        const DPR =
-            Math.min(
-                window.devicePixelRatio || 1,
-                2
-            );
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
         const colors = [
             '{PALETTE['amber']}',
@@ -1250,8 +1324,7 @@ def render_flow_field_bg(
             '{PALETTE['crimson']}'
         ];
 
-        const voidColor =
-            '{PALETTE['void']}';
+        const voidColor = '{PALETTE['void']}';
 
         const seed = {seed};
         const density = {density};
@@ -1269,41 +1342,21 @@ def render_flow_field_bg(
             ];
         }}
 
-        const rgbColors =
-            colors.map(hexToRgb);
-
-        const voidRgb =
-            hexToRgb(voidColor);
+        const rgbColors = colors.map(hexToRgb);
+        const voidRgb = hexToRgb(voidColor);
 
         function fieldAngle(x, y, t) {{
             return (
-                Math.sin(
-                    x * 0.006 +
-                    t * 0.35 +
-                    seed
-                ) +
-
-                Math.cos(
-                    y * 0.008 -
-                    t * 0.28 +
-                    seed * 1.3
-                ) +
-
-                Math.sin(
-                    (x + y) * 0.004 +
-                    t * 0.18
-                )
+                Math.sin(x * 0.006 + t * 0.35 + seed) +
+                Math.cos(y * 0.008 - t * 0.28 + seed * 1.3) +
+                Math.sin((x + y) * 0.004 + t * 0.18)
             ) * Math.PI * 0.6;
         }}
 
         function spawn() {{
-            const c =
-                rgbColors[
-                    Math.floor(
-                        Math.random() *
-                        rgbColors.length
-                    )
-                ];
+            const c = rgbColors[
+                Math.floor(Math.random() * rgbColors.length)
+            ];
 
             return {{
                 x: Math.random() * W,
@@ -1320,57 +1373,26 @@ def render_flow_field_bg(
             W = wrap.clientWidth;
             H = wrap.clientHeight;
 
-            canvas.width =
-                W * DPR;
+            canvas.width = W * DPR;
+            canvas.height = H * DPR;
 
-            canvas.height =
-                H * DPR;
+            canvas.style.width = W + 'px';
+            canvas.style.height = H + 'px';
 
-            canvas.style.width =
-                W + 'px';
+            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-            canvas.style.height =
-                H + 'px';
+            ctx.fillStyle = voidColor;
+            ctx.fillRect(0, 0, W, H);
 
-            ctx.setTransform(
-                DPR,
-                0,
-                0,
-                DPR,
-                0,
-                0
+            const count = Math.max(
+                80,
+                Math.floor((W * H) / 9000 * density)
             );
-
-            ctx.fillStyle =
-                voidColor;
-
-            ctx.fillRect(
-                0,
-                0,
-                W,
-                H
-            );
-
-            const count =
-                Math.max(
-                    80,
-                    Math.floor(
-                        (W * H) /
-                        9000 *
-                        density
-                    )
-                );
 
             particles = [];
 
-            for (
-                let i = 0;
-                i < count;
-                i++
-            ) {{
-                particles.push(
-                    spawn()
-                );
+            for (let i = 0; i < count; i++) {{
+                particles.push(spawn());
             }}
         }}
 
@@ -1386,29 +1408,13 @@ def render_flow_field_bg(
                 voidRgb[2] + ',' +
                 '0.07)';
 
-            ctx.fillRect(
-                0,
-                0,
-                W,
-                H
-            );
+            ctx.fillRect(0, 0, W, H);
 
             for (let p of particles) {{
-                const angle =
-                    fieldAngle(
-                        p.x,
-                        p.y,
-                        t
-                    );
+                const angle = fieldAngle(p.x, p.y, t);
 
-                p.x +=
-                    Math.cos(angle) *
-                    p.speed;
-
-                p.y +=
-                    Math.sin(angle) *
-                    p.speed +
-                    0.12;
+                p.x += Math.cos(angle) * p.speed;
+                p.y += Math.sin(angle) * p.speed + 0.12;
 
                 p.age += 1;
 
@@ -1419,13 +1425,8 @@ def render_flow_field_bg(
                     p.y > H + 10 ||
                     p.age > p.life
                 ) {{
-                    const fresh =
-                        spawn();
-
-                    Object.assign(
-                        p,
-                        fresh
-                    );
+                    const fresh = spawn();
+                    Object.assign(p, fresh);
                 }}
 
                 ctx.beginPath();
@@ -1437,32 +1438,16 @@ def render_flow_field_bg(
                     p.color[2] + ',' +
                     '0.55)';
 
-                ctx.arc(
-                    p.x,
-                    p.y,
-                    p.r,
-                    0,
-                    Math.PI * 2
-                );
-
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
             }}
 
-            requestAnimationFrame(
-                frame
-            );
+            requestAnimationFrame(frame);
         }}
 
         resize();
-
-        window.addEventListener(
-            'resize',
-            resize
-        );
-
-        requestAnimationFrame(
-            frame
-        );
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(frame);
     }})();
     </script>
     """
@@ -1489,7 +1474,7 @@ def section_hero():
 
         st.markdown(
             f"""
-            <div style="position:relative; padding:70px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
+            <div style="position:relative; padding:80px 72px 96px 72px; background:var(--void); color:var(--cream); overflow:hidden; border-top:1px solid rgba(243,231,207,0.25);">
                 <div class="sunburst"></div>
                 <div class="halftone-block tr" style="color:var(--amber);"></div>
 
@@ -1503,9 +1488,11 @@ def section_hero():
                         {SITE['titulo_hero_2']}
                     </div>
 
+                    <div style="border-top:3px double rgba(243,231,207,0.5); max-width:38em; margin:34px 0 0 0;"></div>
+
                     <p
                         class="body-lg"
-                        style="margin-top:26px;">
+                        style="margin-top:22px; font-style:italic;">
                         {SITE['tagline']}
                     </p>
                 </div>
@@ -1520,7 +1507,7 @@ def section_about():
         anchor("sobre-mi")
 
         col1, col2 = st.columns(
-            [1.1, 1],
+            [1.15, 1],
             gap="large",
         )
 
@@ -1533,9 +1520,11 @@ def section_about():
                     {ABOUT['titulo']}
                 </div>
 
+                <div style="border-top:3px double rgba(243,231,207,0.55); max-width:34em; margin:26px 0 0 0;"></div>
+
                 <p
                     class="body-lg"
-                    style="margin-top:26px;">
+                    style="margin-top:24px;">
                     {ABOUT['texto']}
                 </p>
                 """,
@@ -1543,6 +1532,10 @@ def section_about():
             )
 
         with col2:
+            st.markdown(
+                "<div style='height:52px;'></div>",
+                unsafe_allow_html=True,
+            )
             show_media(
                 ABOUT["imagen"],
                 "tu foto de perfil",
@@ -1555,6 +1548,11 @@ def section_tools():
 
         st.markdown(
             f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">HERRAMIENTAS</div>',
+            unsafe_allow_html=True,
+        )
+
+        st.markdown(
+            "<div style='border-top:3px double rgba(43,28,16,0.55); margin:24px 0 0 0;'></div>",
             unsafe_allow_html=True,
         )
 
@@ -1575,7 +1573,7 @@ def section_tools():
                     'style="height:22px;">'
                 )
             else:
-                icon_html = "◆"
+                icon_html = "✦"
 
             chips.append(
                 f'<span class="tool-chip">'
@@ -1585,7 +1583,7 @@ def section_tools():
             )
 
         st.markdown(
-            f'<div style="margin-top:30px;">'
+            f'<div style="margin-top:32px;">'
             f'{"".join(chips)}'
             f'</div>',
             unsafe_allow_html=True,
@@ -1700,7 +1698,7 @@ def section_immersive():
         )
 
         st.markdown(
-            '<p class="body-md" style="margin:20px 0 44px 0;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
+            '<p class="body-md" style="margin:22px 0 50px 0; border-top:3px double rgba(243,231,207,0.5); padding-top:22px; font-style:italic;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
             unsafe_allow_html=True,
         )
 
@@ -1730,7 +1728,7 @@ def section_interfaces():
         )
 
         st.markdown(
-            "<div style='height:34px;'></div>",
+            "<div style='border-top:3px double rgba(243,231,207,0.5); margin:24px 0 0 0; height:40px;'></div>",
             unsafe_allow_html=True,
         )
 
@@ -1751,7 +1749,7 @@ def section_visual():
         )
 
         st.markdown(
-            "<div style='height:34px;'></div>",
+            "<div style='border-top:3px double rgba(43,28,16,0.5); margin:24px 0 0 0; height:40px;'></div>",
             unsafe_allow_html=True,
         )
 
@@ -1773,7 +1771,7 @@ def section_research():
         )
 
         st.markdown(
-            "<div style='height:34px;'></div>",
+            "<div style='border-top:3px double rgba(43,28,16,0.5); margin:24px 0 0 0; height:40px;'></div>",
             unsafe_allow_html=True,
         )
 
@@ -1805,7 +1803,7 @@ def section_contact():
 
         st.markdown(
             f"""
-            <div style="position:relative; padding:60px 60px 80px 60px; background:var(--void); color:var(--cream); overflow:hidden;">
+            <div style="position:relative; padding:70px 72px 96px 72px; background:var(--void); color:var(--cream); overflow:hidden; border-top:1px solid rgba(243,231,207,0.25);">
                 <div class="halftone-block bl" style="color:var(--amber);"></div>
 
                 <div style="position:relative; z-index:2;">
@@ -1816,9 +1814,11 @@ def section_contact():
                         {CONTACT['titulo_2']}
                     </div>
 
+                    <div style="border-top:3px double rgba(243,231,207,0.5); max-width:38em; margin:32px 0 0 0;"></div>
+
                     <p
                         class="body-lg"
-                        style="margin:24px 0 28px 0;">
+                        style="margin:22px 0 30px 0; font-style:italic;">
                         {CONTACT['texto']}
                     </p>
 
