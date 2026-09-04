@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 # (la misma carpeta donde vive este script), así que buscamos ahí y no
 # en una subcarpeta "assets/".
 ASSETS = Path(__file__).parent
-
+TOOLS = Path(__file__).parent
 st.set_page_config(
     page_title="Portafolio",
     page_icon="☀️",
