@@ -223,9 +223,13 @@ INVESTIGACION = [
         titulo="Investigación de mercados: Postobón",
         resumen="Estudio de mercado sobre el comportamiento posconsumo del consumidor.",
         galeria=[
-            "1.1.jpg",
-            "2.1.jpg",
-            "3.1.jpg",
+            "p1.jpg",
+            "p2.jpg",
+            "p3.jpg",
+            "p4.jpg",
+            "p5.jpg",
+            "p6.jpg",
+            "p7.jpg",
         ],
     ),
 ]
