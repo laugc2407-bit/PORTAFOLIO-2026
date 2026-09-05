@@ -50,7 +50,7 @@ Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas 
 **En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
 """,
     # Coloca tu foto en la raíz del repo: perfil.jpg
-    "imagen": "perfil.jpg",
+    "imagen": "perfil.png",
 }
 
 # Para cada herramienta puedes (opcional) poner un logo en tools/<archivo>
@@ -686,6 +686,14 @@ def inject_css_pieces():
             letter-spacing: 0.22em; text-transform: uppercase;
             min-width: 104px; opacity: 0.7;
         }}
+        .back-cover {{ position: relative; padding: 64px 0 8px 0; }}
+        .back-inner {{ position: relative; z-index: 2; }}
+        .back-inner .folio {{ display: block; margin-bottom: 12px; }}
+        .back-inner .l2 {{
+            display: block; color: var(--mustard);
+            margin-left: clamp(0px, 5vw, 110px);
+        }}
+        .contact-block {{ max-width: 44em; margin-bottom: 26px; }}
 
         /* pie de imprenta */
         .colofon-final {{
@@ -1451,56 +1459,43 @@ def section_contact():
             for l in CONTACT["links"]
         )
 
-        st.markdown(
-            f"""
-            <div style="position:relative; padding:64px 0 8px 0;">
-                <div class="halftone bl" style="color:var(--mustard);"></div>
-
-                <div style="position:relative; z-index:2;">
-                    <div class="folio" style="margin-bottom:12px;">
-                        {SECTION_NUM['contacto']:02d} — {SITE['eyebrow'][0]}
-                    </div>
-
-                    <div class="disp disp-xxl"
-                         style="{offset_ink(['var(--terracotta)', 'var(--espresso)'], 5)}">
-                        {CONTACT['titulo_1']}
-                        <span class="l2 accent" style="display:block; margin-left:clamp(0px,5vw,110px); color:var(--mustard);">{CONTACT['titulo_2']}</span>
-                    </div>
-
-                    <div class="rule-d" style="margin:34px 0 22px 0; max-width:40em;"></div>
-
-                    <p class="lede" style="margin:0 0 30px 0;">{CONTACT['texto']}</p>
-
-                    <div style="max-width:44em; margin-bottom:26px;">
-                        <div class="contact-line">
-                            <span class="k">Correo</span>
-                            <span>{CONTACT['email']}</span>
-                        </div>
-                        <div class="contact-line">
-                            <span class="k">Teléfono</span>
-                            <span>{CONTACT['telefono']}</span>
-                        </div>
-                    </div>
-
-                    <a class="btn" href="mailto:{CONTACT['email']}">✉ {CONTACT['email']}</a>
-                    {links_html}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
+        # OJO: este HTML se envía en UNA sola línea y sin líneas en blanco.
+        # Si se deja indentado o con saltos, Streamlit lo interpreta como
+        # bloque de código y muestra el código en crudo.
+        contacto_html = (
+            '<div class="back-cover">'
+            '<div class="halftone bl" style="color:var(--mustard);"></div>'
+            '<div class="back-inner">'
+            f'<div class="folio">{SECTION_NUM["contacto"]:02d} — {SITE["eyebrow"][0]}</div>'
+            f'<div class="disp disp-xxl" style="{offset_ink(["var(--terracotta)", "var(--espresso)"], 5)}">'
+            f'{CONTACT["titulo_1"]}'
+            f'<span class="l2 accent">{CONTACT["titulo_2"]}</span>'
+            '</div>'
+            '<div class="rule-d" style="margin:34px 0 22px 0; max-width:40em;"></div>'
+            f'<p class="lede" style="margin:0 0 30px 0;">{CONTACT["texto"]}</p>'
+            '<div class="contact-block">'
+            '<div class="contact-line"><span class="k">Correo</span>'
+            f'<span>{CONTACT["email"]}</span></div>'
+            '<div class="contact-line"><span class="k">Teléfono</span>'
+            f'<span>{CONTACT["telefono"]}</span></div>'
+            '</div>'
+            f'<a class="btn" href="mailto:{CONTACT["email"]}">✉ {CONTACT["email"]}</a>'
+            f'{links_html}'
+            '</div>'
+            '</div>'
         )
+
+        st.markdown(contacto_html, unsafe_allow_html=True)
 
 
 def final_colophon():
     words = SITE["eyebrow"]
     st.markdown(
-        f"""
-        <div class="colofon-final">
-            <span class="folio">{SITE['nombre']}</span>
-            <span class="folio">{words[0]} · {words[1]} · {words[2]}</span>
-            <span class="folio">{SITE['titulo_hero_1']} {SITE['titulo_hero_2']}</span>
-        </div>
-        """,
+        '<div class="colofon-final">'
+        f'<span class="folio">{SITE["nombre"]}</span>'
+        f'<span class="folio">{words[0]} · {words[1]} · {words[2]}</span>'
+        f'<span class="folio">{SITE["titulo_hero_1"]} {SITE["titulo_hero_2"]}</span>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
