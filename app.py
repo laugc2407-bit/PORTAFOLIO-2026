@@ -231,467 +231,177 @@ CONTACT = {
 }
 
 # =============================================================================
-# DISEÑO — dirección de arte "revista editorial años 70". No necesitas tocar esto.
+# DIRECCIÓN DE ARTE — "revista de arte y moda, 1974"
+# Paleta impresa en offset: papel crema, tinta cálida, terracota, mostaza,
+# oliva y rojo óxido. Todo el sitio lee de aquí.
 # =============================================================================
 
 PALETTE = {
-    "void": "#20150e",      # marrón tinta, casi negro (fondos profundos)
-    "plum": "#4a4a2a",      # verde oliva oscuro
-    "crimson": "#9c3b28",   # rojo terracota
-    "ember": "#cf6a2c",     # naranja quemado
-    "amber": "#e0a83c",     # mostaza
-    "cream": "#f3e7cf",     # papel crema de imprenta
-    "ink": "#2b1c10",       # tinta marrón para texto y filetes
+    "paper": "#f1e6cf",       # papel crema
+    "paper2": "#e4d3b2",      # papel envejecido
+    "ink": "#1d1611",         # tinta negra cálida
+    "espresso": "#4a2c1a",    # marrón oscuro
+    "terracotta": "#a84428",  # terracota
+    "burnt": "#c9622a",       # naranja quemado
+    "mustard": "#d9a02b",     # mostaza
+    "olive": "#5a6238",       # verde oliva
+    "oxblood": "#6d1f22",     # rojo óxido
 }
 
-FONT_DISPLAY = "Bodoni Moda"
-FONT_KICKER = "Bebas Neue"
-FONT_BODY = "EB Garamond"
+FONT_DISPLAY = "Bodoni Moda"    # titulares didone, alto contraste
+FONT_ACCENT = "Abril Fatface"   # acentos gordos de portada
+FONT_COND = "Oswald"            # condensada para folios, rótulos y nav
+FONT_BODY = "EB Garamond"       # cuerpo de texto editorial
+
+# Temas por sección (fondo / tinta / acento) — cada bloque es una página
+# distinta de la revista, impresa con otra tinta.
+THEMES = {
+    "inmersivos": {"bg": PALETTE["ink"], "fg": PALETTE["paper"], "ac": PALETTE["mustard"]},
+    "interfaces": {"bg": PALETTE["olive"], "fg": PALETTE["paper"], "ac": PALETTE["mustard"]},
+    "visual": {"bg": PALETTE["burnt"], "fg": PALETTE["ink"], "ac": PALETTE["paper"]},
+    "investigacion": {"bg": PALETTE["paper2"], "fg": PALETTE["ink"], "ac": PALETTE["terracotta"]},
+}
 
 
-def echo_style(colors) -> str:
-    """Sombra de texto por capas, tipo mala alineación de tinta en impresión
-    offset de los 70 — es el efecto de firma del título principal."""
-    steps = [(3 + i * 3, 3 + i * 3, c) for i, c in enumerate(colors)]
-    return "text-shadow:" + ",".join(f"{x}px {y}px 0 {c}" for x, y, c in steps) + ";"
+def offset_ink(colors, step: int = 4) -> str:
+    """Registro de tinta desalineado (offset de los 70): capas de sombra
+    dura desplazadas en diagonal."""
+    return "text-shadow:" + ",".join(
+        f"{step * (i + 1)}px {step * (i + 1)}px 0 {c}" for i, c in enumerate(colors)
+    ) + ";"
+
+
+def slugify(text: str) -> str:
+    return "".join(c if c.isalnum() else "-" for c in text.lower()).strip("-")
+
+
+def anchor(name: str):
+    st.markdown(f'<div id="{name}"></div>', unsafe_allow_html=True)
 
 
 def inject_css():
     st.markdown(
         f"""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Bebas+Neue&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Abril+Fatface&family=Oswald:wght@300;400;500;600&family=EB+Garamond:ital,wght@0,400..700;1,400..700&display=swap');
 
         :root {{
-            --void: {PALETTE['void']};
-            --plum: {PALETTE['plum']};
-            --crimson: {PALETTE['crimson']};
-            --ember: {PALETTE['ember']};
-            --amber: {PALETTE['amber']};
-            --cream: {PALETTE['cream']};
+            --paper: {PALETTE['paper']};
+            --paper2: {PALETTE['paper2']};
             --ink: {PALETTE['ink']};
+            --espresso: {PALETTE['espresso']};
+            --terracotta: {PALETTE['terracotta']};
+            --burnt: {PALETTE['burnt']};
+            --mustard: {PALETTE['mustard']};
+            --olive: {PALETTE['olive']};
+            --oxblood: {PALETTE['oxblood']};
         }}
 
         html, body, [class*="css"] {{
             font-family: '{FONT_BODY}', Georgia, serif;
+            color: var(--ink);
         }}
 
-        #MainMenu, footer, header {{visibility: hidden;}}
-        .block-container {{
-            padding: 0 !important;
-            max-width: 100% !important;
-        }}
-        div[data-testid="stAppViewContainer"] {{
-            background: var(--cream);
-        }}
+        #MainMenu, footer, header {{ visibility: hidden; }}
+        .block-container {{ padding: 0 !important; max-width: 100% !important; }}
+        div[data-testid="stAppViewContainer"] {{ background: var(--paper); }}
 
-        /* textura de papel: fibra sutil + veladura cálida, sin tocar legibilidad */
-        div[data-testid="stAppViewContainer"]::before {{
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 998;
-            opacity: 0.35;
-            mix-blend-mode: multiply;
-            background-image:
-                repeating-linear-gradient(0deg, rgba(43,28,16,0.035) 0 1px, transparent 1px 4px),
-                repeating-linear-gradient(90deg, rgba(43,28,16,0.025) 0 1px, transparent 1px 6px);
-        }}
-
-        /* grano de impresión analógica sobre toda la página */
-        div[data-testid="stAppViewContainer"]::after {{
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 999;
-            opacity: 0.075;
-            mix-blend-mode: multiply;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-        }}
-
-        h1, h2, h3, .heat-display {{
-            font-family: '{FONT_DISPLAY}', 'Times New Roman', serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            line-height: 1.02;
-            letter-spacing: -1px;
-            margin: 0;
-            padding: 0.15em 0;
-            overflow: visible;
-        }}
-
-        /* make sure no Streamlit wrapper ever clips our headline glyphs */
+        /* nada debe recortar los titulares grandes */
         div[data-testid="stVerticalBlock"],
         div[data-testid="element-container"],
         div[data-testid="stMarkdown"],
-        div[data-testid="stMarkdownContainer"] {{
-            overflow: visible !important;
-        }}
+        div[data-testid="stMarkdownContainer"],
+        div[data-testid="column"] {{ overflow: visible !important; }}
 
-        .kicker, .nav-bar a, .tool-chip, .card-badge, .cta-btn, .eyebrow-bar span {{
-            font-family: '{FONT_KICKER}', 'Helvetica Neue', sans-serif;
-        }}
-
-        /* ---------- signature retro flourishes ------------------------------ */
-        .sunburst {{
-            position: absolute;
-            top: 50%; left: 6%;
-            width: 1000px; height: 1000px;
-            transform: translate(-50%, -50%);
-            background: repeating-conic-gradient(from 0deg, var(--ember) 0deg 9deg, transparent 9deg 20deg);
-            opacity: 0.13;
-            border-radius: 50%;
-            animation: spin 90s linear infinite;
-            pointer-events: none;
-            z-index: 0;
-        }}
-        @keyframes spin {{ to {{ transform: translate(-50%, -50%) rotate(360deg); }} }}
-
-        .halftone-block {{
-            position: absolute;
-            width: 240px; height: 240px;
-            background-image: radial-gradient(currentColor 3px, transparent 3px);
-            background-size: 17px 17px;
-            opacity: 0.28;
-            pointer-events: none;
-            z-index: 0;
-        }}
-        .halftone-block.tr {{ top: 0; right: 0; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
-        .halftone-block.bl {{ bottom: 0; left: 0; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
-
-        /* fixed vertical "spine" label, readable through every color band */
-        .spine {{
-            position: fixed;
-            left: 10px; top: 50%;
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.72rem;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: #ffffff;
-            mix-blend-mode: difference;
-            z-index: 300;
-            pointer-events: none;
-        }}
-        @media (max-width: 900px) {{ .spine {{ display: none; }} }}
-
-        /* ---------- masthead / nav (misma mecánica, look de revista) -------- */
-        .eyebrow-bar {{
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            padding: 12px 44px;
-            font-size: 0.82rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--cream);
-            border-bottom: 1px solid rgba(243,231,207,0.35);
-        }}
-        .eyebrow-bar span {{ opacity: 0.95; }}
-        .eyebrow-bar span:nth-child(2) {{ color: var(--amber); }}
-        .eyebrow-bar span:nth-child(3) {{ color: var(--ember); }}
-
-        .nav-bar {{
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px 8px;
-            padding: 12px 44px;
-            background: var(--cream);
-            border-top: 3px double var(--ink);
-            border-bottom: 3px double var(--ink);
-        }}
-        .nav-bar a {{
-            color: var(--ink);
-            text-decoration: none;
-            font-size: 0.95rem;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            padding: 5px 14px;
-            border: 1px solid transparent;
-            transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-            display: inline-block;
-        }}
-        .nav-bar a:hover {{
-            background: var(--crimson);
-            border-color: var(--ink);
-            color: var(--cream);
-        }}
-
-        /* ---------- generic section shells, one per "temperature" step -----
-           Streamlit gives every st.container(key="...") a class
-           "st-key-<key>" on its own wrapper div, so we style sections by
-           targeting that class directly (this is the only reliable way to
-           put a full background behind real Streamlit widgets). */
-        .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
-        .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
-            padding: 110px 72px !important;
-            position: relative;
-            overflow: visible;
-            border-bottom: 4px double var(--ink);
-        }}
-        .st-key-divider {{ padding: 0 !important; position: relative; border-bottom: 4px double var(--ink); }}
-        .st-key-hero {{ padding: 0 !important; position: relative; overflow: hidden; }}
-
-        .st-key-about       {{ background: var(--crimson) !important; color: var(--cream); }}
-        .st-key-tools       {{ background: var(--amber)   !important; color: var(--ink);   }}
-        .st-key-immersive   {{ background: var(--void)    !important; color: var(--cream); }}
-        .st-key-interfaces  {{ background: var(--plum)    !important; color: var(--cream); }}
-        .st-key-visual      {{ background: var(--ember)   !important; color: var(--ink);   }}
-        .st-key-research    {{ background: var(--cream)   !important; color: var(--ink);   }}
-        .st-key-contact     {{ background: var(--void)    !important; color: var(--cream); padding: 0 !important; }}
-
-        /* filete superior fino dentro de cada sección, como caja de artículo */
-        .st-key-about::before, .st-key-tools::before, .st-key-immersive::before,
-        .st-key-interfaces::before, .st-key-visual::before, .st-key-research::before {{
+        /* ---------- textura de imprenta: fibra de papel + grano ----------- */
+        div[data-testid="stAppViewContainer"]::before {{
             content: "";
-            position: absolute;
-            top: 34px; left: 72px; right: 72px;
-            height: 0;
-            border-top: 1px solid currentColor;
-            opacity: 0.4;
-            pointer-events: none;
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 997;
+            opacity: 0.4; mix-blend-mode: multiply;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(29,22,17,0.030) 0 1px, transparent 1px 4px),
+                repeating-linear-gradient(90deg, rgba(29,22,17,0.022) 0 1px, transparent 1px 7px);
+        }}
+        div[data-testid="stAppViewContainer"]::after {{
+            content: "";
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 999;
+            opacity: 0.085; mix-blend-mode: multiply;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
         }}
 
-        .halftone {{
-            background-image: radial-gradient(currentColor 1.4px, transparent 1.4px);
-            background-size: 14px 14px;
-            opacity: 0.12;
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-        }}
-
-        .kicker {{
-            font-size: 0.95rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            display: inline-block;
-            background: transparent;
-            color: var(--amber);
-            padding: 4px 0 8px 0;
-            border-bottom: 1px solid currentColor;
-            transform: none;
-            margin-bottom: 22px;
-            box-shadow: none;
-        }}
-
-        .display-xl {{ font-size: clamp(3.2rem, 10.5vw, 9rem); }}
-        .display-lg {{ font-size: clamp(2.4rem, 6.6vw, 5.2rem); }}
-        .display-md {{ font-size: clamp(1.5rem, 3vw, 2.3rem); }}
-
-        .body-lg {{ font-size: 1.32rem; line-height: 1.62; max-width: 34em; }}
-        .body-md {{ font-size: 1.12rem; line-height: 1.66; max-width: 34em; }}
-
-        /* capitular editorial en el texto "Sobre mí" (puro CSS) */
-        .st-key-about .body-lg > p:first-of-type::first-letter,
-        .st-key-about p.body-lg::first-letter {{
-            font-family: '{FONT_DISPLAY}', serif;
+        /* ---------- sistema tipográfico ---------------------------------- */
+        h1, h2, h3, .disp {{
+            font-family: '{FONT_DISPLAY}', 'Times New Roman', serif;
             font-weight: 900;
-            font-size: 3.4em;
-            line-height: 0.78;
-            float: left;
-            margin: 0.06em 0.09em 0 0;
-            color: var(--amber);
+            text-transform: uppercase;
+            line-height: 0.92;
+            letter-spacing: -0.02em;
+            margin: 0; padding: 0;
         }}
+        .disp-xxl {{ font-size: clamp(3.6rem, 15vw, 13rem); }}
+        .disp-xl  {{ font-size: clamp(3rem, 9vw, 7.4rem); }}
+        .disp-lg  {{ font-size: clamp(2.2rem, 5.6vw, 4.6rem); }}
+        .disp-md  {{ font-size: clamp(1.5rem, 2.6vw, 2.3rem); line-height: 1.02; }}
 
-        .rule {{
-            height: 0;
-            background: transparent;
-            border-top: 3px double currentColor;
-            opacity: 0.5;
-            margin: 30px 0;
-        }}
-
-        .hero-wrap {{ position: relative; overflow: hidden; }}
-        .hero-inner {{ position: relative; z-index: 2; }}
-
-        /* ---------- herramientas: fichas de catálogo impreso --------------- */
-        .tool-chip {{
-            border: 1px solid currentColor;
-            border-bottom-width: 3px;
-            padding: 9px 16px;
+        .accent {{
+            font-family: '{FONT_ACCENT}', '{FONT_DISPLAY}', serif;
             font-weight: 400;
-            font-size: 1rem;
-            letter-spacing: 2.5px;
             text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin: 7px 10px 7px 0;
-            background: rgba(243,231,207,0.35);
-            box-shadow: none;
-            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+            letter-spacing: -0.01em;
         }}
-        .tool-chip:nth-child(odd) {{ transform: rotate(-1deg); }}
-        .tool-chip:nth-child(even) {{ transform: rotate(1deg); }}
-        .tool-chip:hover {{ transform: rotate(0deg) translateY(-2px); background: var(--ink); color: var(--cream); }}
+        .ital {{ font-style: italic; text-transform: none; letter-spacing: 0; }}
 
-        /* ---------- botones de contacto: cintillo tipográfico -------------- */
-        .cta-btn {{
-            display: inline-block;
-            border: 1px solid var(--cream);
-            border-bottom-width: 3px;
-            color: var(--cream) !important;
-            padding: 12px 26px;
-            font-size: 1rem;
-            letter-spacing: 3px;
+        .label {{
+            font-family: '{FONT_COND}', sans-serif;
+            font-weight: 500;
             text-transform: uppercase;
-            text-decoration: none;
-            margin: 10px 14px 10px 0;
-            box-shadow: none;
-            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+            letter-spacing: 0.34em;
+            font-size: 0.72rem;
         }}
-        .cta-btn:hover {{
-            background: var(--amber);
-            border-color: var(--amber);
-            color: var(--void) !important;
-            transform: translateY(-2px);
+        .folio {{
+            font-family: '{FONT_COND}', sans-serif;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.85;
         }}
-
-        [data-testid="stImage"] img {{
-            border: 1px solid var(--ink);
-            outline: 6px solid var(--cream);
-            outline-offset: -12px;
-            filter: saturate(0.92) sepia(0.08) contrast(1.02);
-        }}
-
-        video {{
-            border: 1px solid var(--ink);
-        }}
-
-        /* Vimeo dentro del carrusel */
-        .hm-slide iframe {{
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }}
-
-        /* ---------- project sections (no accordion, always visible) -------- */
-        [class*="st-key-proj-"] {{
-            border: 1px solid currentColor !important;
-            border-top: 5px double currentColor !important;
-            box-shadow: none !important;
-            background: rgba(243,231,207,0.06) !important;
-            padding: 30px 30px 34px 30px !important;
-            margin: 0 !important;
-            position: relative !important;
-            overflow: visible !important;
-        }}
-        [class*="st-key-proj-"]::before {{
-            content: "";
-            position: absolute;
-            top: 0; right: 0;
-            width: 86px; height: 86px;
-            background-image: radial-gradient(currentColor 1.6px, transparent 1.6px);
-            background-size: 12px 12px;
-            opacity: 0.14;
-            clip-path: polygon(100% 0, 100% 100%, 0 0);
-            pointer-events: none;
-        }}
-        .proj-badge {{
-            position: absolute;
-            top: -18px; left: 24px;
-            width: auto; height: auto;
-            border-radius: 0;
-            background: var(--ink);
-            color: var(--amber);
-            border: 1px solid currentColor;
-            display: inline-flex; align-items: center; justify-content: center;
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 3px;
-            padding: 4px 12px;
-            transform: none;
-            box-shadow: none;
-            z-index: 5;
-        }}
-        .proj-title {{
+        .num-big {{
             font-family: '{FONT_DISPLAY}', serif;
             font-weight: 900;
-            text-transform: uppercase;
-            font-size: 1.62rem;
-            letter-spacing: -0.4px;
-            line-height: 1.06;
-            margin: 18px 0 12px 0;
-            padding-bottom: 12px;
-            border-bottom: 3px double currentColor;
+            font-size: clamp(2.6rem, 6vw, 5.4rem);
+            line-height: 0.8;
         }}
-        .proj-resumen {{
-            font-size: 1.08rem;
-            line-height: 1.6;
-            opacity: 0.94;
-            margin: 14px 0 16px 0;
-        }}
-        .proj-meta {{
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 0 0 16px 0;
-        }}
-        .proj-chip {{
-            border: none;
-            border-left: 1px solid currentColor;
-            padding: 4px 0 4px 12px;
-            font-size: 0.98rem;
-            line-height: 1.35;
-        }}
-        .proj-chip-label {{
-            display: block;
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.72rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            opacity: 0.7;
-            margin-bottom: 3px;
-        }}
-        .proj-resultado {{
+        .lede {{
+            font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+            line-height: 1.5;
             font-style: italic;
-            font-size: 1.05rem;
-            border-left: none;
-            border-top: 1px solid currentColor;
-            padding: 12px 0 2px 0;
-            margin: 0 0 18px 0;
-            opacity: 0.92;
+            max-width: 30em;
         }}
-        .proj-link-btn {{
-            display: inline-block;
-            border: 1px solid currentColor;
-            border-bottom-width: 3px;
-            color: currentColor !important;
-            padding: 9px 20px;
-            font-family: '{FONT_KICKER}', sans-serif;
-            font-size: 0.95rem;
-            letter-spacing: 3px;
+        .body {{ font-size: 1.14rem; line-height: 1.62; }}
+        .body p {{ margin: 0 0 1em 0; }}
+        .caption {{
+            font-family: '{FONT_COND}', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
-            text-decoration: none;
-            box-shadow: none;
-            transition: transform 0.15s ease, opacity 0.15s ease;
+            opacity: 0.78;
+            padding-top: 8px;
         }}
-        .proj-link-btn:hover {{ transform: translateY(-2px); opacity: 0.75; }}
 
-        /* the carousel itself is the only piece that still lives in an
-           iframe (needed for the prev/next JS) — but its height is FIXED,
-           so it never has the resize problems an accordion would have. */
-        iframe {{ border: none !important; display: block; }}
+        .rule-d {{ border-top: 3px double currentColor; opacity: 0.55; margin: 0; }}
+        .rule-t {{ border-top: 1px solid currentColor; opacity: 0.45; margin: 0; }}
 
-        @media (max-width: 640px) {{
-            .st-key-hero, .st-key-about, .st-key-tools, .st-key-immersive,
-            .st-key-interfaces, .st-key-visual, .st-key-research, .st-key-contact {{
-                padding: 64px 24px !important;
-            }}
-            .st-key-about::before, .st-key-tools::before, .st-key-immersive::before,
-            .st-key-interfaces::before, .st-key-visual::before, .st-key-research::before {{
-                left: 24px; right: 24px; top: 22px;
-            }}
-            .eyebrow-bar, .nav-bar {{ padding: 12px 18px; letter-spacing: 3px; }}
-            .sunburst {{ width: 600px; height: 600px; }}
+        /* capitular de revista */
+        .dropcap > p:first-of-type::first-letter {{
+            font-family: '{FONT_ACCENT}', serif;
+            font-size: 4.1em;
+            line-height: 0.74;
+            float: left;
+            margin: 0.08em 0.1em 0 0;
+            color: var(--mustard);
         }}
         </style>
         """,
@@ -699,46 +409,327 @@ def inject_css():
     )
 
 
-def eyebrow_and_nav():
-    words = SITE["eyebrow"]
-    st.markdown(
-        f'<div class="spine">{SITE["nombre"]} — {words[0]} · {words[1]} · {words[2]}</div>',
-        unsafe_allow_html=True,
-    )
-    nav_links = "".join(f'<a href="#{a}">{label}</a>' for label, a in NAV)
+def inject_css_layout():
     st.markdown(
         f"""
-        <div class="eyebrow-bar" style="background:var(--ink);">
-            <span>{words[0]}</span><span>{words[1]}</span><span>{words[2]}</span>
-        </div>
-        <div class="nav-bar">
-            {nav_links}
-        </div>
+        <style>
+        /* =====================================================================
+           MAQUETA — cada st.container(key="x") recibe la clase .st-key-x,
+           así que cada bloque se comporta como una página de la revista.
+           ===================================================================== */
+
+        .st-key-cover, .st-key-about, .st-key-tools, .st-key-contact,
+        .st-key-work-inmersivos, .st-key-work-interfaces,
+        .st-key-work-visual, .st-key-work-investigacion {{
+            position: relative;
+            overflow: visible;
+            padding: clamp(56px, 7vw, 118px) clamp(22px, 5vw, 84px) !important;
+        }}
+        .st-key-cover {{ padding-bottom: clamp(40px, 4vw, 60px) !important; }}
+
+        .st-key-cover    {{ background: var(--ink) !important; color: var(--paper); }}
+        .st-key-about    {{ background: var(--paper) !important; color: var(--ink); }}
+        .st-key-tools    {{ background: var(--oxblood) !important; color: var(--paper); }}
+        .st-key-contact  {{ background: var(--ink) !important; color: var(--paper); padding-top: 0 !important; }}
+
+        .st-key-work-inmersivos    {{ background: {THEMES['inmersivos']['bg']} !important; color: {THEMES['inmersivos']['fg']}; }}
+        .st-key-work-interfaces    {{ background: {THEMES['interfaces']['bg']} !important; color: {THEMES['interfaces']['fg']}; }}
+        .st-key-work-visual        {{ background: {THEMES['visual']['bg']} !important; color: {THEMES['visual']['fg']}; }}
+        .st-key-work-investigacion {{ background: {THEMES['investigacion']['bg']} !important; color: {THEMES['investigacion']['fg']}; }}
+
+        .st-key-strip-1, .st-key-strip-2, .st-key-strip-3 {{
+            padding: 0 !important; position: relative; background: var(--ink) !important;
+        }}
+
+        /* marco de página impresa: filete interior en cada sección */
+        .st-key-about::after, .st-key-tools::after, .st-key-work-inmersivos::after,
+        .st-key-work-interfaces::after, .st-key-work-visual::after,
+        .st-key-work-investigacion::after {{
+            content: "";
+            position: absolute;
+            inset: clamp(20px, 2.4vw, 40px);
+            border: 1px solid currentColor;
+            opacity: 0.22;
+            pointer-events: none;
+        }}
+
+        /* ---------- cabecera / navegación como sumario ------------------- */
+        .mast {{
+            display: flex; justify-content: space-between; align-items: baseline;
+            gap: 18px; flex-wrap: wrap;
+            padding: 12px clamp(22px, 5vw, 84px);
+            background: var(--ink); color: var(--paper);
+        }}
+        .mast .label {{ opacity: 0.9; }}
+        .mast .label:nth-child(2) {{ color: var(--mustard); }}
+        .mast .label:nth-child(3) {{ color: var(--burnt); }}
+
+        .nav {{
+            position: sticky; top: 0; z-index: 120;
+            display: flex; flex-wrap: wrap; align-items: center;
+            gap: 2px 4px;
+            padding: 10px clamp(18px, 5vw, 84px);
+            background: var(--paper);
+            border-top: 3px double var(--ink);
+            border-bottom: 3px double var(--ink);
+        }}
+        .nav .nav-name {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 0.02em;
+            font-size: 0.98rem; margin-right: 22px; white-space: nowrap;
+        }}
+        .nav a {{
+            font-family: '{FONT_COND}', sans-serif;
+            font-weight: 400; font-size: 0.82rem;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--ink); text-decoration: none;
+            padding: 5px 11px; border: 1px solid transparent;
+            transition: background .18s ease, color .18s ease, border-color .18s ease;
+        }}
+        .nav a sup {{ font-size: 0.6em; opacity: 0.6; margin-right: 4px; }}
+        .nav a:hover {{ background: var(--terracotta); color: var(--paper); border-color: var(--ink); }}
+
+        /* lomo vertical fijo */
+        .spine {{
+            position: fixed; left: 9px; top: 50%;
+            writing-mode: vertical-rl; transform: rotate(180deg);
+            font-family: '{FONT_COND}', sans-serif;
+            font-size: 0.66rem; letter-spacing: 0.42em; text-transform: uppercase;
+            color: #ffffff; mix-blend-mode: difference;
+            z-index: 300; pointer-events: none;
+        }}
+        @media (max-width: 1000px) {{ .spine {{ display: none; }} }}
+
+        /* ---------- portada ---------------------------------------------- */
+        .sunburst {{
+            position: absolute; top: 42%; left: 62%;
+            width: 1250px; height: 1250px; transform: translate(-50%, -50%);
+            background: repeating-conic-gradient(from 0deg, var(--terracotta) 0deg 8deg, transparent 8deg 22deg);
+            opacity: 0.16; border-radius: 50%;
+            animation: spin 120s linear infinite;
+            pointer-events: none; z-index: 0;
+        }}
+        @keyframes spin {{ to {{ transform: translate(-50%, -50%) rotate(360deg); }} }}
+
+        .halftone {{
+            position: absolute; pointer-events: none; z-index: 0;
+            background-image: radial-gradient(currentColor 2.6px, transparent 2.6px);
+            background-size: 15px 15px; opacity: 0.3;
+        }}
+        .halftone.tr {{ top: 0; right: 0; width: 300px; height: 300px; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
+        .halftone.bl {{ bottom: 0; left: 0; width: 300px; height: 300px; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
+
+        .cover-grid {{ position: relative; z-index: 2; }}
+        .cover-title {{ margin: 6px 0 0 0; }}
+        .cover-title .l2 {{ display: block; margin-left: clamp(0px, 6vw, 130px); color: var(--mustard); }}
+        .rise {{ animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }}
+        .rise-2 {{ animation: rise 1.1s cubic-bezier(.2,.7,.2,1) both; }}
+        @keyframes rise {{ from {{ opacity: 0; transform: translateY(26px); }} to {{ opacity: 1; transform: none; }} }}
+
+        /* sumario de portada */
+        .toc {{ display: grid; gap: 0; border-top: 1px solid currentColor; }}
+        .toc a {{
+            display: flex; align-items: baseline; gap: 14px;
+            padding: 9px 2px; text-decoration: none; color: inherit;
+            border-bottom: 1px solid rgba(241,230,207,0.28);
+            transition: padding-left .2s ease, background .2s ease, color .2s ease;
+        }}
+        .toc a:hover {{ padding-left: 12px; background: rgba(217,160,43,0.14); color: var(--mustard); }}
+        .toc .n {{ font-family: '{FONT_COND}', sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; opacity: 0.65; }}
+        .toc .t {{ font-family: '{FONT_DISPLAY}', serif; font-weight: 900; text-transform: uppercase; font-size: 1.02rem; }}
+        .toc .d {{ flex: 1; border-bottom: 1px dotted currentColor; opacity: 0.35; transform: translateY(-4px); }}
+
+        /* ---------- cinta tipográfica (ticker impreso) -------------------- */
+        .ticker {{
+            overflow: hidden; white-space: nowrap;
+            background: var(--mustard); color: var(--ink);
+            border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
+            padding: 9px 0;
+        }}
+        .ticker-inner {{ display: inline-block; animation: slide 34s linear infinite; }}
+        .ticker span {{
+            font-family: '{FONT_COND}', sans-serif; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.36em; font-size: 0.76rem;
+            padding: 0 22px;
+        }}
+        @keyframes slide {{ from {{ transform: translateX(0); }} to {{ transform: translateX(-50%); }} }}
+        </style>
         """,
         unsafe_allow_html=True,
     )
 
 
-def anchor(name: str):
-    st.markdown(f'<div id="{name}"></div>', unsafe_allow_html=True)
+def inject_css_pieces():
+    st.markdown(
+        f"""
+        <style>
+        /* ---------- fichas de proyecto = artículos de revista ------------- */
+        [class*="st-key-art-"] {{
+            position: relative !important;
+            overflow: visible !important;
+            padding: 0 !important;
+        }}
+        .art-num {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            font-size: clamp(3rem, 7vw, 6.2rem); line-height: 0.78;
+            color: transparent;
+            -webkit-text-stroke: 1.4px currentColor;
+            opacity: 0.75;
+            margin: 0 0 6px 0;
+        }}
+        .art-kicker {{
+            font-family: '{FONT_COND}', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.28em; font-size: 0.68rem; opacity: 0.8;
+            display: block; margin-bottom: 10px;
+        }}
+        .art-title {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            text-transform: uppercase; line-height: 0.98;
+            font-size: clamp(1.55rem, 2.5vw, 2.5rem);
+            letter-spacing: -0.015em;
+            margin: 4px 0 14px 0;
+        }}
+        .art-lede {{
+            font-size: 1.12rem; line-height: 1.58; font-style: italic;
+            margin: 0 0 18px 0; max-width: 34em;
+        }}
+        .art-meta {{ margin: 0 0 18px 0; }}
+        .art-row {{
+            display: flex; gap: 16px; align-items: baseline;
+            border-top: 1px solid currentColor; padding: 9px 0;
+            opacity: 0.95;
+        }}
+        .art-row:last-child {{ border-bottom: 1px solid currentColor; }}
+        .art-row .k {{
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.66rem;
+            letter-spacing: 0.22em; text-transform: uppercase;
+            min-width: 108px; opacity: 0.72;
+        }}
+        .art-row .v {{ font-size: 1.02rem; line-height: 1.4; }}
+        .art-result {{
+            font-style: italic; font-size: 1.05rem;
+            padding: 12px 0 0 0; margin: 0 0 18px 0;
+            border-top: 3px double currentColor;
+        }}
+        .art-link {{
+            display: inline-block; text-decoration: none; color: inherit !important;
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.76rem;
+            letter-spacing: 0.24em; text-transform: uppercase;
+            padding: 11px 22px;
+            border: 1px solid currentColor; border-bottom-width: 3px;
+            transition: transform .18s ease, background .18s ease, color .18s ease;
+        }}
+        .art-link:hover {{ transform: translateY(-3px); }}
 
+        /* registro de tinta desplazado detrás de cada medio */
+        [class*="st-key-art-"] iframe {{ border: 1px solid currentColor !important; }}
+        .st-key-work-inmersivos [class*="st-key-art-"] iframe {{ box-shadow: 13px 13px 0 {THEMES['inmersivos']['ac']}; }}
+        .st-key-work-interfaces [class*="st-key-art-"] iframe {{ box-shadow: 13px 13px 0 {THEMES['interfaces']['ac']}; }}
+        .st-key-work-visual [class*="st-key-art-"] iframe {{ box-shadow: 13px 13px 0 {THEMES['visual']['ac']}; }}
+        .st-key-work-investigacion [class*="st-key-art-"] iframe {{ box-shadow: 13px 13px 0 {THEMES['investigacion']['ac']}; }}
 
-def slugify(text: str) -> str:
-    return "".join(c if c.isalnum() else "-" for c in text.lower()).strip("-")
+        /* ---------- retrato / imágenes de Streamlit ---------------------- */
+        [data-testid="stImage"] img {{
+            border: 1px solid var(--ink);
+            filter: saturate(0.86) sepia(0.14) contrast(1.05);
+            box-shadow: 14px 14px 0 var(--terracotta);
+        }}
+        video {{ border: 1px solid var(--ink); }}
+
+        /* ---------- colofón de herramientas ------------------------------ */
+        .colophon {{
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+            border-top: 1px solid currentColor;
+            border-left: 1px solid currentColor;
+        }}
+        .col-item {{
+            display: flex; align-items: center; gap: 12px;
+            padding: 17px 16px;
+            border-right: 1px solid currentColor;
+            border-bottom: 1px solid currentColor;
+            transition: background .2s ease, color .2s ease;
+        }}
+        .col-item:hover {{ background: var(--mustard); color: var(--ink); }}
+        .col-item .n {{
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.62rem;
+            letter-spacing: 0.16em; opacity: 0.6;
+        }}
+        .col-item .nm {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            text-transform: uppercase; font-size: 0.94rem; line-height: 1.05;
+        }}
+        .col-item img {{ height: 22px; width: auto; filter: saturate(0.9); }}
+
+        /* ---------- contraportada / contacto ----------------------------- */
+        .btn {{
+            display: inline-block; text-decoration: none;
+            color: var(--paper) !important;
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.8rem;
+            letter-spacing: 0.24em; text-transform: uppercase;
+            padding: 14px 26px; margin: 10px 14px 10px 0;
+            border: 1px solid var(--paper); border-bottom-width: 3px;
+            transition: background .18s ease, color .18s ease, transform .18s ease;
+        }}
+        .btn:hover {{
+            background: var(--mustard); border-color: var(--mustard);
+            color: var(--ink) !important; transform: translateY(-3px);
+        }}
+        .contact-line {{
+            display: flex; gap: 16px; align-items: baseline;
+            border-top: 1px solid rgba(241,230,207,0.4); padding: 10px 0;
+            font-size: 1.05rem;
+        }}
+        .contact-line .k {{
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.66rem;
+            letter-spacing: 0.22em; text-transform: uppercase;
+            min-width: 104px; opacity: 0.7;
+        }}
+
+        /* pie de imprenta */
+        .colofon-final {{
+            display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+            padding: 16px clamp(22px, 5vw, 84px);
+            background: var(--ink); color: var(--paper);
+            border-top: 1px solid rgba(241,230,207,0.3);
+        }}
+
+        /* ---------- aviso DEV, discreto ---------------------------------- */
+        div[data-testid="stExpander"] details {{
+            border: 1px solid rgba(29,22,17,0.35) !important;
+            background: var(--paper2) !important;
+            border-radius: 0 !important;
+        }}
+        div[data-testid="stExpander"] summary p, div[data-testid="stExpander"] summary {{
+            font-family: '{FONT_COND}', sans-serif !important;
+            text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem !important;
+        }}
+
+        @media (max-width: 900px) {{
+            .art-num {{ font-size: 3rem; }}
+            .cover-title .l2 {{ margin-left: 0; }}
+            [data-testid="stImage"] img, [class*="st-key-art-"] iframe {{ box-shadow: 8px 8px 0 var(--terracotta); }}
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 # =============================================================================
-# Utilidades de medios: si el archivo no existe, se genera un reemplazo
-# con la estética editorial 70s en vez de romper la página.
+# MEDIOS — misma lógica de siempre: archivos locales, videos locales y
+# enlaces de Vimeo. Si un archivo falta, se dibuja un sustituto impreso.
 # =============================================================================
+
 @st.cache_data(show_spinner=False)
 def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
     colors = [
-        (32, 21, 14),
-        (74, 74, 42),
-        (156, 59, 40),
-        (207, 106, 44),
-        (224, 168, 60),
+        (29, 22, 17),
+        (109, 31, 34),
+        (168, 68, 40),
+        (201, 98, 42),
+        (217, 160, 43),
     ]
 
     img = Image.new("RGB", (w, h))
@@ -760,45 +751,38 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
     draw = ImageDraw.Draw(img, "RGBA")
 
-    for i in range(0, w, 14):
-        draw.ellipse(
-            [i - 1, 0, i + 1, h],
-            fill=(0, 0, 0, 18)
-        )
+    # trama de semitono, como una foto mal impresa
+    for i in range(0, w, 15):
+        draw.ellipse([i - 1, 0, i + 1, h], fill=(0, 0, 0, 20))
 
-    try:
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
-            26,
-        )
-    except Exception:
+    draw.rectangle([16, 16, w - 16, h - 16], outline=(241, 230, 207, 170), width=2)
+
+    font = None
+    for candidate in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    ):
         try:
-            font = ImageFont.truetype(
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                26,
-            )
+            font = ImageFont.truetype(candidate, 26)
+            break
         except Exception:
-            font = ImageFont.load_default()
+            continue
+    if font is None:
+        font = ImageFont.load_default()
 
     text = f"❧  {label}"
     bbox = draw.textbbox((0, 0), text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
     draw.rectangle(
-        [
-            w / 2 - tw / 2 - 20,
-            h / 2 - th / 2 - 14,
-            w / 2 + tw / 2 + 20,
-            h / 2 + th / 2 + 14,
-        ],
-        fill=(32, 21, 14, 215),
+        [w / 2 - tw / 2 - 22, h / 2 - th / 2 - 16, w / 2 + tw / 2 + 22, h / 2 + th / 2 + 16],
+        fill=(29, 22, 17, 220),
     )
-
     draw.text(
         (w / 2 - tw / 2, h / 2 - th / 2 - 4),
         text,
         font=font,
-        fill=(243, 231, 207, 255),
+        fill=(241, 230, 207, 255),
     )
 
     buf = io.BytesIO()
@@ -809,324 +793,171 @@ def placeholder_image(label: str, w: int = 900, h: int = 600) -> bytes:
 
 def show_media(rel_path: str, label: str, height: int = None):
     """Muestra <rel_path> (buscado en la raíz del repo). Si no existe,
-    muestra un placeholder editorial."""
+    muestra un sustituto con la misma estética."""
 
     path = ASSETS / rel_path
 
     if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
-        st.video(
-            str(path),
-            loop=True,
-            autoplay=True,
-            muted=True,
-        )
+        st.video(str(path), loop=True, autoplay=True, muted=True)
 
     elif path.exists():
-        st.image(
-            str(path),
-            use_container_width=True,
-        )
+        st.image(str(path), use_container_width=True)
 
     else:
-        st.image(
-            placeholder_image(f"Añade: {rel_path}"),
-            use_container_width=True,
-        )
+        st.image(placeholder_image(f"Añade: {rel_path}"), use_container_width=True)
 
 
 def _media_data_uri(rel_path: str, label: str):
     """Convierte medios locales en data-uri y detecta enlaces de Vimeo
     para reproducirlos directamente dentro del carrusel."""
 
-    # ================================================================
-    # 🎬 VIMEO
-    # ================================================================
-    # Si recibimos una URL del reproductor de Vimeo, NO intentamos
-    # convertirla a base64. La devolvemos como iframe embebido.
+    # Vimeo: se devuelve tal cual para embeberlo como iframe.
     if isinstance(rel_path, str) and "player.vimeo.com/video/" in rel_path:
         return "vimeo", rel_path
 
-    # ================================================================
-    # 🎥 VIDEO LOCAL
-    # ================================================================
     path = ASSETS / rel_path
 
-    if path.exists() and path.suffix.lower() in (
-        ".mp4",
-        ".mov",
-        ".webm",
-    ):
+    # Video local.
+    if path.exists() and path.suffix.lower() in (".mp4", ".mov", ".webm"):
         ext = path.suffix.lstrip(".").lower()
         data = base64.b64encode(path.read_bytes()).decode()
+        return "video", f"data:video/{ext};base64,{data}"
 
-        return (
-            "video",
-            f"data:video/{ext};base64,{data}",
-        )
-
-    # ================================================================
-    # 🖼️ IMAGEN LOCAL
-    # ================================================================
+    # Imagen local.
     if path.exists():
         ext = path.suffix.lstrip(".").lower()
         mime = "jpeg" if ext in ("jpg", "jpeg") else ext
         data = base64.b64encode(path.read_bytes()).decode()
+        return "image", f"data:image/{mime};base64,{data}"
 
-        return (
-            "image",
-            f"data:image/{mime};base64,{data}",
-        )
-
-    # ================================================================
-    # ❌ ARCHIVO NO ENCONTRADO
-    # ================================================================
-    data = base64.b64encode(
-        placeholder_image(f"Añade: {rel_path}")
-    ).decode()
-
-    return (
-        "image",
-        f"data:image/jpeg;base64,{data}",
-    )
+    # No encontrado.
+    data = base64.b64encode(placeholder_image(f"Añade: {rel_path}")).decode()
+    return "image", f"data:image/jpeg;base64,{data}"
 
 
-def carousel_widget(media_list, label, height=280):
-    """Carrusel de fotos/video con altura FIJA.
+def _project_media_list(item):
+    """Une 'archivo' (un solo medio) y 'galeria' (varios) en una sola lista
+    para alimentar el carrusel."""
 
-    Soporta:
-    - imágenes locales
-    - videos locales
-    - videos de Vimeo usando:
-      https://player.vimeo.com/video/ID
-    """
+    if item.get("galeria"):
+        return list(item["galeria"])
+
+    if item.get("archivo"):
+        return [item["archivo"]]
+
+    return []
+
+
+def carousel_widget(media_list, label, height=430, theme=None):
+    """Carrusel de fotos/videos con altura FIJA, presentado como una plancha
+    de contactos: filete fino, folio de lámina, flechas de imprenta y índice
+    de láminas. Soporta imágenes locales, videos locales y Vimeo."""
+
+    theme = theme or {"bg": PALETTE["ink"], "fg": PALETTE["paper"], "ac": PALETTE["mustard"]}
 
     if not media_list:
-        st.image(
-            placeholder_image(f"Añade fotos/video: {label}"),
-            use_container_width=True,
-        )
+        st.image(placeholder_image(f"Añade fotos/video: {label}"), use_container_width=True)
         return
 
     slides_html = []
 
     for i, rel in enumerate(media_list):
-        kind, uri = _media_data_uri(
-            rel,
-            f"{label} {i + 1}",
-        )
+        kind, uri = _media_data_uri(rel, f"{label} {i + 1}")
 
-        # ============================================================
-        # 🎥 VIDEO LOCAL
-        # ============================================================
         if kind == "video":
             autoplay = "autoplay " if i == 0 else ""
-
             slides_html.append(
-                f'''
-                <div class="hm-slide">
-                    <video
-                        src="{uri}"
-                        {autoplay}
-                        muted
-                        loop
-                        playsinline>
-                    </video>
-                </div>
-                '''
+                f'<div class="hm-slide"><video src="{uri}" {autoplay}muted loop playsinline></video></div>'
             )
 
-        # ============================================================
-        # 🎬 VIDEO VIMEO
-        # ============================================================
         elif kind == "vimeo":
             slides_html.append(
-                f'''
-                <div class="hm-slide">
-                    <iframe
-                        src="{uri}"
-                        width="100%"
-                        height="100%"
-                        frameborder="0"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-                '''
+                f'<div class="hm-slide"><iframe src="{uri}" width="100%" height="100%" '
+                f'frameborder="0" allow="autoplay; fullscreen; picture-in-picture" '
+                f'allowfullscreen></iframe></div>'
             )
 
-        # ============================================================
-        # 🖼️ IMAGEN
-        # ============================================================
         else:
             slides_html.append(
-                f'''
-                <div class="hm-slide">
-                    <img
-                        src="{uri}"
-                        alt="{label}">
-                </div>
-                '''
+                f'<div class="hm-slide"><img src="{uri}" alt="{label}"></div>'
             )
 
     multi = len(slides_html) > 1
 
     dots_html = "".join(
-        f'''
-        <span
-            class="hm-dot{" active" if i == 0 else ""}"
-            onclick="hmGo(this,{i})">
-        </span>
-        '''
+        f'<span class="hm-dot{" active" if i == 0 else ""}" onclick="hmGo(this,{i})"></span>'
         for i in range(len(slides_html))
     )
 
     nav_html = (
-        '<div class="hm-arrow hm-prev" onclick="hmPrev(this)">‹</div>'
-        '<div class="hm-arrow hm-next" onclick="hmNext(this)">›</div>'
+        '<div class="hm-nav">'
+        '<div class="hm-arrow" onclick="hmPrev(this)">←</div>'
+        '<div class="hm-arrow" onclick="hmNext(this)">→</div>'
+        '</div>'
         if multi
         else ""
     )
 
-    dots_wrap = (
-        f'<div class="hm-dots">{dots_html}</div>'
-        if multi
-        else ""
-    )
+    dots_wrap = f'<div class="hm-dots">{dots_html}</div>' if multi else ""
 
     html = f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500&display=swap');
 
-        * {{
-            box-sizing: border-box;
-        }}
-
-        html, body {{
-            margin: 0;
-            padding: 0;
-            background: transparent;
-        }}
+        * {{ box-sizing: border-box; }}
+        html, body {{ margin: 0; padding: 0; background: transparent; }}
 
         .hm-carousel {{
-            position: relative;
-            width: 100%;
-            height: {height}px;
+            position: relative; width: 100%; height: {height}px;
             overflow: hidden;
-            border: 1px solid {PALETTE['ink']};
-            background: {PALETTE['void']};
+            background: {theme['bg']};
+            border: 1px solid {theme['fg']};
         }}
-
-        .hm-track {{
-            display: flex;
-            height: 100%;
-            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        .hm-track {{ display: flex; height: 100%; transition: transform .55s cubic-bezier(.4,0,.2,1); }}
+        .hm-slide {{ flex: 0 0 100%; height: 100%; overflow: hidden; }}
+        .hm-slide img, .hm-slide video, .hm-slide iframe {{
+            width: 100%; height: 100%; object-fit: cover; display: block; border: none;
         }}
-
-        .hm-slide {{
-            flex: 0 0 100%;
-            height: 100%;
+        .hm-slide img, .hm-slide video {{
+            filter: saturate(0.86) sepia(0.14) contrast(1.06);
+            transition: transform 1.1s cubic-bezier(.2,.7,.2,1), filter .4s ease;
         }}
+        .hm-carousel:hover .hm-slide img {{ transform: scale(1.035); filter: saturate(0.95) sepia(0.06) contrast(1.04); }}
 
-        .hm-slide img,
-        .hm-slide video,
-        .hm-slide iframe {{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }}
-
-        .hm-slide img,
-        .hm-slide video {{
-            filter: saturate(0.92) sepia(0.08) contrast(1.02);
-        }}
-
-        .hm-arrow {{
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 38px;
-            border-radius: 0;
-            background: {PALETTE['cream']};
-            color: {PALETTE['ink']};
-            border: 1px solid {PALETTE['ink']};
-            font-size: 1.15rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.92;
-            z-index: 5;
-            user-select: none;
-            transition: background 0.15s ease, color 0.15s ease;
-            font-family: 'Bebas Neue', sans-serif;
-        }}
-
-        .hm-arrow:hover {{
-            background: {PALETTE['crimson']};
-            color: {PALETTE['cream']};
-        }}
-
-        .hm-prev {{
-            left: 12px;
-        }}
-
-        .hm-next {{
-            right: 12px;
-        }}
-
+        /* folio de lámina, arriba a la izquierda */
         .hm-counter {{
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: {PALETTE['cream']};
-            color: {PALETTE['ink']};
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 0.78rem;
-            letter-spacing: 3px;
-            padding: 2px 10px;
-            border: 1px solid {PALETTE['ink']};
-            z-index: 5;
+            position: absolute; top: 0; left: 0; z-index: 6;
+            background: {theme['ac']}; color: {theme['bg']};
+            font-family: 'Oswald', sans-serif; font-weight: 500;
+            font-size: 0.66rem; letter-spacing: 0.22em;
+            padding: 5px 12px;
         }}
-
-        .hm-dots {{
-            position: absolute;
-            bottom: 14px;
-            left: 12px;
-            display: flex;
-            gap: 7px;
-            z-index: 5;
+        /* flechas de imprenta, abajo a la derecha */
+        .hm-nav {{ position: absolute; bottom: 0; right: 0; display: flex; z-index: 6; }}
+        .hm-arrow {{
+            width: 40px; height: 34px;
+            display: flex; align-items: center; justify-content: center;
+            background: {theme['fg']}; color: {theme['bg']};
+            border-left: 1px solid {theme['bg']};
+            font-family: 'Oswald', sans-serif; font-size: 0.92rem;
+            cursor: pointer; user-select: none;
+            transition: background .18s ease, color .18s ease;
         }}
+        .hm-arrow:hover {{ background: {theme['ac']}; color: {theme['bg']}; }}
 
+        /* índice de láminas: marcas verticales */
+        .hm-dots {{ position: absolute; bottom: 12px; left: 12px; display: flex; gap: 6px; z-index: 6; }}
         .hm-dot {{
-            width: 8px;
-            height: 8px;
-            border-radius: 0;
-            background: transparent;
-            border: 1px solid {PALETTE['cream']};
-            cursor: pointer;
-            opacity: 0.7;
+            width: 12px; height: 3px; background: {theme['fg']};
+            opacity: 0.45; cursor: pointer; transition: opacity .2s ease, background .2s ease, width .2s ease;
         }}
-
-        .hm-dot.active {{
-            background: {PALETTE['amber']};
-            border-color: {PALETTE['amber']};
-            opacity: 1;
-        }}
+        .hm-dot.active {{ background: {theme['ac']}; opacity: 1; width: 26px; }}
     </style>
 
     <div class="hm-carousel" data-index="0">
-        <div class="hm-track">
-            {''.join(slides_html)}
-        </div>
-
+        <div class="hm-track">{''.join(slides_html)}</div>
+        <div class="hm-counter">LÁM. 01 / {len(slides_html):02d}</div>
         {nav_html}
-
-        <div class="hm-counter">
-            01 / {len(slides_html):02d}
-        </div>
-
         {dots_wrap}
     </div>
 
@@ -1137,30 +968,22 @@ def carousel_widget(media_list, label, height=280):
             const n = slides.length;
 
             idx = ((idx % n) + n) % n;
-
-            track.style.transform =
-                'translateX(' + (-idx * 100) + '%)';
+            track.style.transform = 'translateX(' + (-idx * 100) + '%)';
 
             root.querySelectorAll('.hm-dot').forEach(
-                (d, i) => d.classList.toggle(
-                    'active',
-                    i === idx
-                )
+                (d, i) => d.classList.toggle('active', i === idx)
             );
 
             const counter = root.querySelector('.hm-counter');
-
             if (counter) {{
                 counter.textContent =
-                    String(idx + 1).padStart(2, '0') +
-                    ' / ' +
-                    String(n).padStart(2, '0');
+                    'L\\u00c1M. ' + String(idx + 1).padStart(2, '0') +
+                    ' / ' + String(n).padStart(2, '0');
             }}
 
             // Pausar/reproducir videos locales.
             slides.forEach((s, i) => {{
                 const v = s.querySelector('video');
-
                 if (v) {{
                     if (i === idx) {{
                         v.currentTime = 0;
@@ -1176,156 +999,47 @@ def carousel_widget(media_list, label, height=280):
 
         function hmPrev(el) {{
             const r = el.closest('.hm-carousel');
-
-            hmSetIndex(
-                r,
-                parseInt(r.dataset.index || '0') - 1
-            );
+            hmSetIndex(r, parseInt(r.dataset.index || '0') - 1);
         }}
 
         function hmNext(el) {{
             const r = el.closest('.hm-carousel');
-
-            hmSetIndex(
-                r,
-                parseInt(r.dataset.index || '0') + 1
-            );
+            hmSetIndex(r, parseInt(r.dataset.index || '0') + 1);
         }}
 
         function hmGo(el, idx) {{
             const r = el.closest('.hm-carousel');
-
             hmSetIndex(r, idx);
         }}
     </script>
     """
 
-    st.components.v1.html(
-        html,
-        height=height + 4,
-    )
+    st.components.v1.html(html, height=height + 4)
 
 
-def project_section(item, idx, fg_hex):
-    """Cada proyecto es su propio bloque, siempre visible (nada de
-    desplegable): número de catálogo, carrusel, título, resumen, ficha
-    corta (rol / herramientas), resultado y enlace opcional."""
-    with st.container(key=f"proj-{slugify(item['titulo'])}-{idx}"):
-        st.markdown(
-            f'<div class="proj-badge">N°{idx + 1:02d}</div>',
-            unsafe_allow_html=True,
-        )
-
-        carousel_widget(
-            _project_media_list(item),
-            item["titulo"],
-        )
-
-        st.markdown(
-            f'<div class="proj-title">{item["titulo"]}</div>',
-            unsafe_allow_html=True,
-        )
-
-        if item.get("resumen"):
-            st.markdown(
-                f'<p class="proj-resumen">{item["resumen"]}</p>',
-                unsafe_allow_html=True,
-            )
-
-        chips = ""
-
-        if item.get("rol"):
-            chips += (
-                '<div class="proj-chip">'
-                '<span class="proj-chip-label">Rol</span>'
-                f'{item["rol"]}'
-                '</div>'
-            )
-
-        if item.get("herramientas"):
-            chips += (
-                '<div class="proj-chip">'
-                '<span class="proj-chip-label">Herramientas</span>'
-                f'{item["herramientas"]}'
-                '</div>'
-            )
-
-        if chips:
-            st.markdown(
-                f'<div class="proj-meta">{chips}</div>',
-                unsafe_allow_html=True,
-            )
-
-        if item.get("resultado"):
-            st.markdown(
-                f'<p class="proj-resultado">❧ {item["resultado"]}</p>',
-                unsafe_allow_html=True,
-            )
-
-        if item.get("enlace"):
-            st.markdown(
-                f'<a class="proj-link-btn" '
-                f'href="{item["enlace"]}" '
-                f'target="_blank">Ver proyecto ↗</a>',
-                unsafe_allow_html=True,
-            )
-
-
-def render_flow_field_bg(
-    height_px: int,
-    density: float = 1.0,
-    seed: int = 0,
-):
-    """Fondo animado tipo 'loop de TouchDesigner' — partículas mostaza/naranja
-    quemado fluyendo sobre tinta marrón como un campo de ruido (flow field) —
-    generado 100% con canvas + JS. No carga ningún archivo, así que reemplaza
-    los videos pesados (mp4 de varias decenas de MB) sin perder el look."""
+def render_flow_field_bg(height_px: int, density: float = 1.0, seed: int = 0):
+    """Banda gráfica generativa — partículas mostaza / naranja quemado /
+    terracota fluyendo sobre tinta, como una lámina experimental impresa.
+    Se dibuja en canvas, no carga archivos."""
 
     html = f"""
     <style>
-        html, body {{
-            margin: 0;
-            padding: 0;
-            background: {PALETTE['void']};
-            overflow: hidden;
-        }}
-
-        #hm-bg-wrap {{
-            position: relative;
-            width: 100%;
-            height: {height_px}px;
-            background: {PALETTE['void']};
-        }}
-
-        #hm-bg-canvas {{
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            display: block;
-        }}
+        html, body {{ margin: 0; padding: 0; background: {PALETTE['ink']}; overflow: hidden; }}
+        #hm-bg-wrap {{ position: relative; width: 100%; height: {height_px}px; background: {PALETTE['ink']}; }}
+        #hm-bg-canvas {{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }}
     </style>
 
-    <div id="hm-bg-wrap">
-        <canvas id="hm-bg-canvas"></canvas>
-    </div>
+    <div id="hm-bg-wrap"><canvas id="hm-bg-canvas"></canvas></div>
 
     <script>
     (function() {{
         const canvas = document.getElementById('hm-bg-canvas');
         const ctx = canvas.getContext('2d');
         const wrap = document.getElementById('hm-bg-wrap');
-
         const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-        const colors = [
-            '{PALETTE['amber']}',
-            '{PALETTE['ember']}',
-            '{PALETTE['crimson']}'
-        ];
-
-        const voidColor = '{PALETTE['void']}';
-
+        const colors = ['{PALETTE['mustard']}', '{PALETTE['burnt']}', '{PALETTE['terracotta']}'];
+        const voidColor = '{PALETTE['ink']}';
         const seed = {seed};
         const density = {density};
 
@@ -1334,12 +1048,7 @@ def render_flow_field_bg(
         function hexToRgb(hex) {{
             hex = hex.replace('#', '');
             const n = parseInt(hex, 16);
-
-            return [
-                (n >> 16) & 255,
-                (n >> 8) & 255,
-                n & 255
-            ];
+            return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
         }}
 
         const rgbColors = colors.map(hexToRgb);
@@ -1354,10 +1063,7 @@ def render_flow_field_bg(
         }}
 
         function spawn() {{
-            const c = rgbColors[
-                Math.floor(Math.random() * rgbColors.length)
-            ];
-
+            const c = rgbColors[Math.floor(Math.random() * rgbColors.length)];
             return {{
                 x: Math.random() * W,
                 y: Math.random() * H,
@@ -1375,25 +1081,16 @@ def render_flow_field_bg(
 
             canvas.width = W * DPR;
             canvas.height = H * DPR;
-
             canvas.style.width = W + 'px';
             canvas.style.height = H + 'px';
 
             ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-
             ctx.fillStyle = voidColor;
             ctx.fillRect(0, 0, W, H);
 
-            const count = Math.max(
-                80,
-                Math.floor((W * H) / 9000 * density)
-            );
-
+            const count = Math.max(80, Math.floor((W * H) / 9000 * density));
             particles = [];
-
-            for (let i = 0; i < count; i++) {{
-                particles.push(spawn());
-            }}
+            for (let i = 0; i < count; i++) {{ particles.push(spawn()); }}
         }}
 
         let t = 0;
@@ -1401,43 +1098,21 @@ def render_flow_field_bg(
         function frame() {{
             t += 0.016;
 
-            ctx.fillStyle =
-                'rgba(' +
-                voidRgb[0] + ',' +
-                voidRgb[1] + ',' +
-                voidRgb[2] + ',' +
-                '0.07)';
-
+            ctx.fillStyle = 'rgba(' + voidRgb[0] + ',' + voidRgb[1] + ',' + voidRgb[2] + ',0.07)';
             ctx.fillRect(0, 0, W, H);
 
             for (let p of particles) {{
                 const angle = fieldAngle(p.x, p.y, t);
-
                 p.x += Math.cos(angle) * p.speed;
                 p.y += Math.sin(angle) * p.speed + 0.12;
-
                 p.age += 1;
 
-                if (
-                    p.x < -10 ||
-                    p.x > W + 10 ||
-                    p.y < -10 ||
-                    p.y > H + 10 ||
-                    p.age > p.life
-                ) {{
-                    const fresh = spawn();
-                    Object.assign(p, fresh);
+                if (p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10 || p.age > p.life) {{
+                    Object.assign(p, spawn());
                 }}
 
                 ctx.beginPath();
-
-                ctx.fillStyle =
-                    'rgba(' +
-                    p.color[0] + ',' +
-                    p.color[1] + ',' +
-                    p.color[2] + ',' +
-                    '0.55)';
-
+                ctx.fillStyle = 'rgba(' + p.color[0] + ',' + p.color[1] + ',' + p.color[2] + ',0.55)';
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
             }}
@@ -1452,180 +1127,33 @@ def render_flow_field_bg(
     </script>
     """
 
-    st.components.v1.html(
-        html,
-        height=height_px + 4,
+    st.components.v1.html(html, height=height_px + 4)
+
+
+def ticker_band(words):
+    """Cinta tipográfica horizontal, como el lomo repetido de una revista."""
+    run = "".join(f"<span>{w}</span><span>✦</span>" for w in words)
+    st.markdown(
+        f'<div class="ticker"><div class="ticker-inner">{run}{run}</div></div>',
+        unsafe_allow_html=True,
     )
 
 
-# =============================================================================
-# SECCIONES
-# =============================================================================
-
-def section_hero():
-    with st.container(key="hero"):
-        anchor("inicio")
-
-        render_flow_field_bg(
-            height_px=460,
-            density=1.3,
-            seed=1,
-        )
-
-        st.markdown(
-            f"""
-            <div style="position:relative; padding:80px 72px 96px 72px; background:var(--void); color:var(--cream); overflow:hidden; border-top:1px solid rgba(243,231,207,0.25);">
-                <div class="sunburst"></div>
-                <div class="halftone-block tr" style="color:var(--amber);"></div>
-
-                <div style="position:relative; z-index:2;">
-                    <div class="kicker">{SITE['nombre']}</div>
-
-                    <div
-                        class="heat-display display-xl"
-                        style="{echo_style(['var(--amber)', 'var(--ember)', 'var(--crimson)'])}">
-                        {SITE['titulo_hero_1']}<br>
-                        {SITE['titulo_hero_2']}
-                    </div>
-
-                    <div style="border-top:3px double rgba(243,231,207,0.5); max-width:38em; margin:34px 0 0 0;"></div>
-
-                    <p
-                        class="body-lg"
-                        style="margin-top:22px; font-style:italic;">
-                        {SITE['tagline']}
-                    </p>
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-
-def section_about():
-    with st.container(key="about"):
-        anchor("sobre-mi")
-
-        col1, col2 = st.columns(
-            [1.15, 1],
-            gap="large",
-        )
-
-        with col1:
-            st.markdown(
-                f"""
-                <div
-                    class="heat-display display-lg"
-                    style="{echo_style(['var(--void)', 'var(--amber)'])}">
-                    {ABOUT['titulo']}
-                </div>
-
-                <div style="border-top:3px double rgba(243,231,207,0.55); max-width:34em; margin:26px 0 0 0;"></div>
-
-                <p
-                    class="body-lg"
-                    style="margin-top:24px;">
-                    {ABOUT['texto']}
-                </p>
-                """,
-                unsafe_allow_html=True,
-            )
-
-        with col2:
-            st.markdown(
-                "<div style='height:52px;'></div>",
-                unsafe_allow_html=True,
-            )
-            show_media(
-                ABOUT["imagen"],
-                "tu foto de perfil",
-            )
-
-
-def section_tools():
-    with st.container(key="tools"):
-        anchor("herramientas")
-
-        st.markdown(
-            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">HERRAMIENTAS</div>',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            "<div style='border-top:3px double rgba(43,28,16,0.55); margin:24px 0 0 0;'></div>",
-            unsafe_allow_html=True,
-        )
-
-        chips = []
-
-        for tool in TOOLS:
-            logo_path = (
-                ASSETS /
-                "tools" /
-                tool["archivo"]
-            )
-
-            if logo_path.exists():
-                icon_html = (
-                    '<img '
-                    f'src="data:image/png;base64,'
-                    f'{base64.b64encode(logo_path.read_bytes()).decode()}" '
-                    'style="height:22px;">'
-                )
-            else:
-                icon_html = "✦"
-
-            chips.append(
-                f'<span class="tool-chip">'
-                f'{icon_html} '
-                f'{tool["nombre"]}'
-                f'</span>'
-            )
-
-        st.markdown(
-            f'<div style="margin-top:32px;">'
-            f'{"".join(chips)}'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-
-def _project_media_list(item):
-    """Une 'archivo' (un solo medio) y 'galeria' (varios) en una sola lista
-    para alimentar el carrusel, sin importar cómo esté definido el proyecto."""
-
-    if item.get("galeria"):
-        return list(item["galeria"])
-
-    if item.get("archivo"):
-        return [item["archivo"]]
-
-    return []
+def spacer(px: int):
+    st.markdown(f"<div style='height:{px}px;'></div>", unsafe_allow_html=True)
 
 
 def render_missing_assets_banner():
-    """Aviso de desarrollo (solo para ti, no para reclutadores): revisa qué
-    imágenes/videos referenciados en el código NO se encontraron en /assets
-    y muestra la ruta EXACTA que se buscó, para detectar rápido errores de
-    mayúsculas, extensión o carpeta. Bórralo cuando ya no lo necesites."""
+    """Aviso de desarrollo (solo para ti): revisa qué imágenes/videos
+    referenciados en el código NO se encontraron, y muestra la ruta EXACTA
+    que se buscó. Bórralo cuando ya no lo necesites."""
 
-    expected = [
-        ABOUT["imagen"]
-    ]
+    expected = [ABOUT["imagen"]]
 
-    for lst in (
-        INMERSIVOS,
-        INTERFACES,
-        VISUAL,
-        INVESTIGACION,
-    ):
+    for lst in (INMERSIVOS, INTERFACES, VISUAL, INVESTIGACION):
         for item in lst:
-            expected.extend(
-                _project_media_list(item)
-            )
+            expected.extend(_project_media_list(item))
 
-    # Los enlaces de Vimeo no son archivos locales,
-    # así que NO deben aparecer como archivos faltantes.
     missing = [
         p
         for p in expected
@@ -1636,198 +1164,325 @@ def render_missing_assets_banner():
 
     if missing:
         with st.expander(
-            f"⚠️ DEV: faltan {len(missing)} archivo(s) "
-            "en la raíz del repo "
+            f"⚠️ DEV: faltan {len(missing)} archivo(s) en la raíz del repo "
             "(clic para ver rutas exactas)"
         ):
             st.write(
                 "Streamlit no encontró estos archivos con ese nombre exacto "
                 "(revisa mayúsculas/minúsculas, extensión y carpeta):"
             )
-
             for p in missing:
-                st.code(
-                    str(ASSETS / p)
+                st.code(str(ASSETS / p))
+
+
+# =============================================================================
+# PÁGINAS DE LA REVISTA
+# =============================================================================
+
+SECTION_NUM = {a: i + 1 for i, (_, a) in enumerate(NAV)}
+
+
+def masthead_and_nav():
+    words = SITE["eyebrow"]
+
+    st.markdown(
+        f'<div class="spine">{SITE["nombre"]} — {words[0]} · {words[1]} · {words[2]}</div>',
+        unsafe_allow_html=True,
+    )
+
+    nav_links = "".join(
+        f'<a href="#{a}"><sup>{SECTION_NUM[a]:02d}</sup>{label}</a>'
+        for label, a in NAV
+    )
+
+    st.markdown(
+        f"""
+        <div class="mast">
+            <span class="label">{words[0]}</span>
+            <span class="label">{words[1]}</span>
+            <span class="label">{words[2]}</span>
+        </div>
+        <div class="nav">
+            <span class="nav-name">{SITE['nombre']}</span>
+            {nav_links}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def section_cover():
+    """Portada: titular a sangre, sol naciente girando y sumario de la
+    edición a la derecha."""
+    with st.container(key="cover"):
+        anchor("inicio")
+
+        st.markdown(
+            '<div class="sunburst"></div>'
+            '<div class="halftone tr" style="color:var(--mustard);"></div>',
+            unsafe_allow_html=True,
+        )
+
+        col_title, col_toc = st.columns([1.62, 1], gap="large")
+
+        with col_title:
+            toc_items = "".join(
+                f'<a href="#{a}"><span class="n">{SECTION_NUM[a]:02d}</span>'
+                f'<span class="t">{label}</span><span class="d"></span></a>'
+                for label, a in NAV
+            )
+
+            st.markdown(
+                f"""
+                <div class="cover-grid rise">
+                    <div class="label" style="color:var(--mustard);">{SITE['nombre']}</div>
+                    <div class="disp disp-xxl cover-title"
+                         style="{offset_ink(['var(--terracotta)', 'var(--espresso)'], 5)}">
+                        {SITE['titulo_hero_1']}
+                        <span class="l2 accent">{SITE['titulo_hero_2']}</span>
+                    </div>
+                    <div class="rule-d" style="margin:34px 0 20px 0; max-width:40em;"></div>
+                    <p class="lede rise-2" style="margin:0;">{SITE['tagline']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        with col_toc:
+            st.markdown(
+                f"""
+                <div class="cover-grid rise-2" style="padding-top:14px;">
+                    <div class="folio" style="margin-bottom:12px;">
+                        {SITE['eyebrow'][0]} · {SITE['eyebrow'][1]} · {SITE['eyebrow'][2]}
+                    </div>
+                    <div class="toc">{toc_items}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+
+def section_about():
+    """Doble página de apertura: retrato a la izquierda, texto a dos
+    columnas con capitular a la derecha."""
+    with st.container(key="about"):
+        anchor("sobre-mi")
+
+        st.markdown(
+            f"""
+            <div class="folio" style="margin-bottom:10px;">
+                {SECTION_NUM['sobre-mi']:02d} — {SITE['eyebrow'][1]}
+            </div>
+            <div class="disp disp-xl" style="{offset_ink(['var(--burnt)'], 4)}">
+                {ABOUT['titulo']}
+            </div>
+            <div class="rule-d" style="margin:30px 0 44px 0;"></div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        col_img, col_txt = st.columns([0.92, 1.28], gap="large")
+
+        with col_img:
+            show_media(ABOUT["imagen"], "tu foto de perfil")
+            st.markdown(
+                f'<div class="caption">{SITE["nombre"]} — {SITE["eyebrow"][0]}</div>',
+                unsafe_allow_html=True,
+            )
+
+        with col_txt:
+            st.markdown(
+                f'<div class="body dropcap">\n\n{ABOUT["texto"]}\n\n</div>',
+                unsafe_allow_html=True,
+            )
+
+
+def section_tools():
+    """Colofón: las herramientas como índice técnico de la edición."""
+    with st.container(key="tools"):
+        anchor("herramientas")
+
+        items = []
+
+        for i, tool in enumerate(TOOLS):
+            logo_path = ASSETS / "tools" / tool["archivo"]
+
+            if logo_path.exists():
+                icon_html = (
+                    '<img src="data:image/png;base64,'
+                    f'{base64.b64encode(logo_path.read_bytes()).decode()}">'
+                )
+            else:
+                icon_html = '<span class="n">✦</span>'
+
+            items.append(
+                '<div class="col-item">'
+                f'<span class="n">{i + 1:02d}</span>'
+                f'{icon_html}'
+                f'<span class="nm">{tool["nombre"]}</span>'
+                '</div>'
+            )
+
+        st.markdown(
+            f"""
+            <div class="folio" style="margin-bottom:10px;">
+                {SECTION_NUM['herramientas']:02d} — {SITE['eyebrow'][2]}
+            </div>
+            <div class="disp disp-lg" style="{offset_ink(['var(--mustard)'], 4)}">HERRAMIENTAS</div>
+            <div class="rule-d" style="margin:28px 0 34px 0;"></div>
+            <div class="colophon">{''.join(items)}</div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+
+def article(item, idx, theme, kicker, flip=False):
+    """Ficha de proyecto compuesta como artículo: láminas a un lado,
+    titular + entradilla + créditos al otro. El orden se alterna para que
+    la lectura avance en zigzag, como en una revista."""
+
+    with st.container(key=f"art-{slugify(item['titulo'])}-{idx}"):
+        ratio = [1, 1.42] if flip else [1.42, 1]
+        cols = st.columns(ratio, gap="large")
+
+        col_media = cols[1] if flip else cols[0]
+        col_text = cols[0] if flip else cols[1]
+
+        with col_media:
+            carousel_widget(
+                _project_media_list(item),
+                item["titulo"],
+                height=430,
+                theme=theme,
+            )
+
+        with col_text:
+            rows = ""
+
+            if item.get("rol"):
+                rows += (
+                    '<div class="art-row"><span class="k">Rol</span>'
+                    f'<span class="v">{item["rol"]}</span></div>'
                 )
 
+            if item.get("herramientas"):
+                rows += (
+                    '<div class="art-row"><span class="k">Herramientas</span>'
+                    f'<span class="v">{item["herramientas"]}</span></div>'
+                )
 
-def project_grid(items, section_key, columns=2, fg_hex=None):
-    """Distribuye proyectos usando columnas reales de Streamlit.
+            meta = f'<div class="art-meta">{rows}</div>' if rows else ""
 
-    - 2 columnas: dos tarjetas del mismo ancho.
-    - Si queda un proyecto impar al final, se centra con el mismo ancho
-      que una tarjeta normal.
-    """
-    fg_hex = fg_hex or PALETTE["cream"]
+            resultado = (
+                f'<p class="art-result">{item["resultado"]}</p>'
+                if item.get("resultado")
+                else ""
+            )
 
-    if not items:
-        return
+            enlace = (
+                f'<a class="art-link" href="{item["enlace"]}" target="_blank">Ver proyecto ↗</a>'
+                if item.get("enlace")
+                else ""
+            )
 
-    # En este portafolio trabajamos con 2 columnas en escritorio.
-    # El tercer/último proyecto ocupa una columna centrada, no todo el ancho.
-    cols_count = 2 if columns <= 2 else columns
+            resumen = (
+                f'<p class="art-lede">{item["resumen"]}</p>'
+                if item.get("resumen")
+                else ""
+            )
 
-    for start_idx in range(0, len(items), cols_count):
-        row_items = items[start_idx:start_idx + cols_count]
+            st.markdown(
+                f"""
+                <div style="padding-top:6px;">
+                    <div class="art-num">{idx + 1:02d}</div>
+                    <span class="art-kicker">{kicker}</span>
+                    <div class="art-title">{item['titulo']}</div>
+                    {resumen}
+                    {meta}
+                    {resultado}
+                    {enlace}
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        if len(row_items) == cols_count:
-            cols = st.columns(cols_count, gap="large")
-            for local_idx, item in enumerate(row_items):
-                with cols[local_idx]:
-                    project_section(item, start_idx + local_idx, fg_hex)
 
-        else:
-            # Última fila incompleta: dejamos espacios laterales iguales.
-            if cols_count == 2 and len(row_items) == 1:
-                empty_left, center, empty_right = st.columns([1, 1, 1], gap="large")
-                with center:
-                    project_section(row_items[0], start_idx, fg_hex)
-            else:
-                cols = st.columns(cols_count, gap="large")
-                for local_idx, item in enumerate(row_items):
-                    with cols[local_idx]:
-                        project_section(item, start_idx + local_idx, fg_hex)
+def section_work(key, anchor_id, titulo, items, theme, standfirst=""):
+    """Sección de trabajo: apertura tipográfica y después un artículo por
+    proyecto, alternando la posición de las láminas."""
 
-def section_immersive():
-    with st.container(key="immersive"):
-        anchor("inmersivos")
+    with st.container(key=f"work-{key}"):
+        anchor(anchor_id)
 
-        st.markdown(
-            f'<div class="heat-display display-lg" style="{echo_style(["var(--ember)", "var(--amber)"])}">INMERSIVOS</div>',
-            unsafe_allow_html=True,
+        lede = (
+            f'<p class="lede" style="margin:26px 0 0 0; max-width:38em;">{standfirst}</p>'
+            if standfirst
+            else ""
         )
 
         st.markdown(
-            '<p class="body-md" style="margin:22px 0 50px 0; border-top:3px double rgba(243,231,207,0.5); padding-top:22px; font-style:italic;">Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.</p>',
+            f"""
+            <div class="folio" style="margin-bottom:10px;">
+                {SECTION_NUM.get(anchor_id, 0):02d} — {len(items):02d} {'proyectos' if len(items) != 1 else 'proyecto'}
+            </div>
+            <div class="disp disp-xl" style="{offset_ink([theme['ac']], 5)}">{titulo}</div>
+            {lede}
+            <div class="rule-d" style="margin:34px 0 8px 0;"></div>
+            """,
             unsafe_allow_html=True,
         )
 
-        project_grid(
-            INMERSIVOS,
-            "immersivos",
-            fg_hex=PALETTE["cream"],
-        )
+        kicker = f"{titulo} · {SITE['nombre']}"
 
-
-def section_divider():
-    with st.container(key="divider"):
-        render_flow_field_bg(
-            height_px=200,
-            density=0.8,
-            seed=2,
-        )
-
-
-def section_interfaces():
-    with st.container(key="interfaces"):
-        anchor("interfaces")
-
-        st.markdown(
-            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--amber)"])}">INTERFACES</div>',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            "<div style='border-top:3px double rgba(243,231,207,0.5); margin:24px 0 0 0; height:40px;'></div>",
-            unsafe_allow_html=True,
-        )
-
-        project_grid(
-            INTERFACES,
-            "interfaces",
-            fg_hex=PALETTE["cream"],
-        )
-
-
-def section_visual():
-    with st.container(key="visual"):
-        anchor("visual")
-
-        st.markdown(
-            f'<div class="heat-display display-lg" style="{echo_style(["var(--plum)", "var(--crimson)"])}">VISUAL</div>',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            "<div style='border-top:3px double rgba(43,28,16,0.5); margin:24px 0 0 0; height:40px;'></div>",
-            unsafe_allow_html=True,
-        )
-
-        project_grid(
-            VISUAL,
-            "visual",
-            columns=2,
-            fg_hex=PALETTE["void"],
-        )
-
-
-def section_research():
-    with st.container(key="research"):
-        anchor("investigacion")
-
-        st.markdown(
-            f'<div class="heat-display display-lg" style="{echo_style(["var(--crimson)", "var(--plum)"])}">INVESTIGACIÓN</div>',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown(
-            "<div style='border-top:3px double rgba(43,28,16,0.5); margin:24px 0 0 0; height:40px;'></div>",
-            unsafe_allow_html=True,
-        )
-
-        project_grid(
-            INVESTIGACION,
-            "investigacion",
-            fg_hex=PALETTE["ink"],
-        )
+        for i, item in enumerate(items):
+            spacer(54)
+            article(item, i, theme, kicker, flip=bool(i % 2))
 
 
 def section_contact():
+    """Contraportada: titular a sangre, datos de contacto como créditos."""
     with st.container(key="contact"):
         anchor("contacto")
 
-        render_flow_field_bg(
-            height_px=380,
-            density=1.1,
-            seed=3,
-        )
+        render_flow_field_bg(height_px=300, density=1.15, seed=3)
 
         links_html = "".join(
-            f'<a class="cta-btn" '
-            f'href="{l["url"]}" '
-            f'target="_blank">'
-            f'{l["nombre"]}'
-            f'</a>'
+            f'<a class="btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>'
             for l in CONTACT["links"]
         )
 
         st.markdown(
             f"""
-            <div style="position:relative; padding:70px 72px 96px 72px; background:var(--void); color:var(--cream); overflow:hidden; border-top:1px solid rgba(243,231,207,0.25);">
-                <div class="halftone-block bl" style="color:var(--amber);"></div>
+            <div style="position:relative; padding:64px 0 8px 0;">
+                <div class="halftone bl" style="color:var(--mustard);"></div>
 
                 <div style="position:relative; z-index:2;">
-                    <div
-                        class="heat-display display-xl"
-                        style="{echo_style(['var(--amber)', 'var(--ember)', 'var(--crimson)'])}">
-                        {CONTACT['titulo_1']}<br>
-                        {CONTACT['titulo_2']}
+                    <div class="folio" style="margin-bottom:12px;">
+                        {SECTION_NUM['contacto']:02d} — {SITE['eyebrow'][0]}
                     </div>
 
-                    <div style="border-top:3px double rgba(243,231,207,0.5); max-width:38em; margin:32px 0 0 0;"></div>
+                    <div class="disp disp-xxl"
+                         style="{offset_ink(['var(--terracotta)', 'var(--espresso)'], 5)}">
+                        {CONTACT['titulo_1']}
+                        <span class="l2 accent" style="display:block; margin-left:clamp(0px,5vw,110px); color:var(--mustard);">{CONTACT['titulo_2']}</span>
+                    </div>
 
-                    <p
-                        class="body-lg"
-                        style="margin:22px 0 30px 0; font-style:italic;">
-                        {CONTACT['texto']}
-                    </p>
+                    <div class="rule-d" style="margin:34px 0 22px 0; max-width:40em;"></div>
 
-                    <a
-                        class="cta-btn"
-                        href="mailto:{CONTACT['email']}">
-                        ✉ {CONTACT['email']}
-                    </a>
+                    <p class="lede" style="margin:0 0 30px 0;">{CONTACT['texto']}</p>
 
+                    <div style="max-width:44em; margin-bottom:26px;">
+                        <div class="contact-line">
+                            <span class="k">Correo</span>
+                            <span>{CONTACT['email']}</span>
+                        </div>
+                        <div class="contact-line">
+                            <span class="k">Teléfono</span>
+                            <span>{CONTACT['telefono']}</span>
+                        </div>
+                    </div>
+
+                    <a class="btn" href="mailto:{CONTACT['email']}">✉ {CONTACT['email']}</a>
                     {links_html}
                 </div>
             </div>
@@ -1836,19 +1491,68 @@ def section_contact():
         )
 
 
+def final_colophon():
+    words = SITE["eyebrow"]
+    st.markdown(
+        f"""
+        <div class="colofon-final">
+            <span class="folio">{SITE['nombre']}</span>
+            <span class="folio">{words[0]} · {words[1]} · {words[2]}</span>
+            <span class="folio">{SITE['titulo_hero_1']} {SITE['titulo_hero_2']}</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 # =============================================================================
-# RENDER
+# ORDEN DE LA EDICIÓN
 # =============================================================================
 
 inject_css()
+inject_css_layout()
+inject_css_pieces()
+
 render_missing_assets_banner()
-eyebrow_and_nav()
-section_hero()
+masthead_and_nav()
+
+section_cover()
+
+with st.container(key="strip-1"):
+    render_flow_field_bg(height_px=190, density=1.25, seed=1)
+
+ticker_band(
+    [SITE["eyebrow"][0], SITE["eyebrow"][1], SITE["eyebrow"][2], SITE["nombre"]]
+)
+
 section_about()
 section_tools()
-section_immersive()
-section_divider()
-section_interfaces()
-section_visual()
-section_research()
+
+section_work(
+    "inmersivos",
+    "inmersivos",
+    "INMERSIVOS",
+    INMERSIVOS,
+    THEMES["inmersivos"],
+    standfirst="Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.",
+)
+
+with st.container(key="strip-2"):
+    render_flow_field_bg(height_px=140, density=0.9, seed=2)
+
+section_work("interfaces", "interfaces", "INTERFACES", INTERFACES, THEMES["interfaces"])
+section_work("visual", "visual", "VISUAL", VISUAL, THEMES["visual"])
+section_work(
+    "investigacion",
+    "investigacion",
+    "INVESTIGACIÓN",
+    INVESTIGACION,
+    THEMES["investigacion"],
+)
+
+ticker_band(
+    [SITE["titulo_hero_1"], SITE["titulo_hero_2"], SITE["nombre"], SITE["eyebrow"][1]]
+)
+
 section_contact()
+final_colophon()
