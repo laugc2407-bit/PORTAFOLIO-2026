@@ -721,78 +721,78 @@ def inject_css_pieces():
         }}
         video {{ border: 1px solid var(--ink); }}
 
-        /* ---------- colofón de herramientas: los LOGOS mandan --------- */
-        .colophon {{
+        /* ---------- herramientas: tarjetas de estudio setentero --------- */
+        .tool-shelf {{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-            gap: 0;
-            border-top: 1px solid currentColor;
-            border-left: 1px solid currentColor;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 22px;
+            padding: 0;
         }}
-        .col-item {{
+        .tool-card {{
             position: relative;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 0;
-            padding: 12px 10px 14px 10px;
-            border-right: 1px solid currentColor;
-            border-bottom: 1px solid currentColor;
-            overflow: hidden;
-            transition: background .25s ease, color .25s ease;
-        }}
-        /* medio arco de sol 70s — centrado respecto a la casilla */
-        .col-item::before {{
-            content: "";
-            position: absolute; left: 50%; top: 50%;
-            width: 100px; height: 100px;
-            margin-left: -50px; margin-top: -50px;
-            border-radius: 999px;
+            display: flex; align-items: center; gap: 22px;
+            padding: 24px 22px 24px 22px;
             background: var(--paper2);
-            box-shadow: inset 0 0 0 1px rgba(29,22,17,0.25);
-            transition: background .25s ease, transform .35s ease;
+            border: 1px solid rgba(29,22,17,0.35);
+            border-bottom-width: 3px;
+            transition: transform .28s cubic-bezier(.34,1.56,.64,1),
+                        background .22s ease,
+                        box-shadow .22s ease;
         }}
-        .col-item:nth-child(3n)::before   {{ background: rgba(217,160,43,0.28); }}
-        .col-item:nth-child(3n+1)::before {{ background: rgba(168,68,40,0.15); }}
-        .col-item:nth-child(4n)::before   {{ background: rgba(90,98,56,0.16); }}
-        .col-item .n {{
-            position: absolute; top: 6px; left: 8px; z-index: 3;
-            font-family: '{FONT_COND}', sans-serif; font-size: 0.54rem;
-            letter-spacing: 0.17em; opacity: 0.5;
+        /* cinta adhesiva setentera arriba-izquierda */
+        .tool-card::before {{
+            content: "";
+            position: absolute; top: -7px; left: 18px;
+            width: 42px; height: 14px;
+            background: var(--mustard); opacity: 0.7;
+            transform: rotate(-2deg);
+            box-shadow: 1px 1px 0 rgba(29,22,17,0.18);
+            transition: opacity .22s ease;
         }}
-        .col-logo {{
-            position: relative; z-index: 2;
-            width: 100px; height: 100px; flex-shrink: 0;
+        .tool-card:nth-child(even)::before {{ left: auto; right: 18px; transform: rotate(2deg); }}
+        .tool-card:nth-child(3n)::before {{ background: var(--terracotta); }}
+        .tool-card:nth-child(4n)::before {{ background: var(--olive); }}
+        .tool-logo {{
+            width: 62px; height: 62px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto;
+            border: 1px solid rgba(29,22,17,0.25);
+            background: var(--paper);
         }}
-        .col-logo img {{
-            max-width: 62px; max-height: 62px;
+        .tool-logo img {{
+            max-width: 44px; max-height: 44px;
             width: auto; height: auto;
-            display: block;
-            margin: auto;
+            display: block; margin: auto;
             object-fit: contain;
-            filter: saturate(0.82) contrast(1.04)
-                    drop-shadow(3px 3px 0 rgba(29,22,17,0.20));
-            transition: transform .35s cubic-bezier(.34,1.56,.64,1), filter .25s ease;
+            filter: saturate(0.78) contrast(1.06)
+                    drop-shadow(2px 2px 0 rgba(29,22,17,0.16));
+            transition: transform .3s cubic-bezier(.34,1.56,.64,1);
         }}
-        .col-logo .glyph {{
-            font-family: '{FONT_ACCENT}', serif; font-size: 1.9rem;
-            line-height: 1; color: var(--espresso); opacity: 0.7;
-            display: block; text-align: center;
+        .tool-logo .glyph {{
+            font-family: '{FONT_ACCENT}', serif; font-size: 1.65rem;
+            line-height: 1; color: var(--espresso); opacity: 0.65;
         }}
-        .col-item .nm {{
-            position: relative; z-index: 2;
-            font-family: '{FONT_COND}', sans-serif; font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.64rem; letter-spacing: 0.14em;
-            line-height: 1.3; text-align: center;
-            margin-top: 10px;
-            overflow-wrap: break-word; max-width: 100%;
+        .tool-info {{
+            display: flex; flex-direction: column; gap: 3px;
+            min-width: 0;
         }}
-        .col-item:hover {{ background: var(--ink); color: var(--paper); }}
-        .col-item:hover::before {{ background: var(--mustard); transform: scale(1.06); }}
-        .col-item:hover .col-logo img {{ transform: scale(1.1) rotate(-3deg); }}
-        .col-item:hover .col-logo .glyph {{ color: var(--ink); }}
+        .tool-info .tnum {{
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.54rem;
+            letter-spacing: 0.2em; opacity: 0.45;
+        }}
+        .tool-info .tname {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            text-transform: uppercase; font-size: 1.12rem;
+            letter-spacing: -0.012em; line-height: 1.08;
+            overflow-wrap: break-word;
+        }}
+        .tool-card:hover {{
+            transform: translateY(-5px) rotate(-0.4deg);
+            background: var(--ink); color: var(--paper);
+            box-shadow: 10px 10px 0 var(--terracotta);
+        }}
+        .tool-card:hover .tool-logo {{ background: var(--paper2); }}
+        .tool-card:hover .tool-logo img {{ transform: scale(1.08) rotate(-3deg); }}
+        .tool-card:hover::before {{ opacity: 0; }}
 
         /* ---------- contraportada / contacto ----------------------------- */
         .btn {{
@@ -1466,18 +1466,20 @@ def section_tools():
 
             if logo_path is not None:
                 icon_html = (
-                    '<span class="col-logo">'
+                    '<div class="tool-logo">'
                     f'<img src="{logo_data_uri(str(logo_path))}" alt="{tool["nombre"]}">'
-                    '</span>'
+                    '</div>'
                 )
             else:
-                icon_html = '<span class="col-logo"><span class="glyph">✦</span></span>'
+                icon_html = '<div class="tool-logo"><span class="glyph">✦</span></div>'
 
             items.append(
-                '<div class="col-item">'
-                f'<span class="n">{i + 1:02d}</span>'
+                '<div class="tool-card">'
                 f'{icon_html}'
-                f'<span class="nm">{tool["nombre"]}</span>'
+                '<div class="tool-info">'
+                f'<span class="tnum">{i + 1:02d}</span>'
+                f'<span class="tname">{tool["nombre"]}</span>'
+                '</div>'
                 '</div>'
             )
 
@@ -1488,7 +1490,7 @@ def section_tools():
             </div>
             <div class="disp disp-lg" style="{fit_type('HERRAMIENTAS', 3.6, 1.9)}{offset_ink(['var(--mustard)'], 4)}">HERRAMIENTAS</div>
             <div class="rule-d" style="margin:28px 0 34px 0;"></div>
-            <div class="colophon">{''.join(items)}</div>
+            <div class="tool-shelf">{''.join(items)}</div>
             """,
             unsafe_allow_html=True,
         )
