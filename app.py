@@ -161,8 +161,10 @@ INTERFACES = [
         titulo="App: Antioquia, territorio multicultural (En proceso)",
         resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
         galeria=[
-            "mundo1.jpg",
-            "mundo2.jpg",
+            "mal1.png",
+            "mal2.png",
+            "mal3.png",
+            "mal4.png",
         ],
         rol="Diseño de experiencia y de interfaz (UX/UI).",
         herramientas="Figma y Canva.",
