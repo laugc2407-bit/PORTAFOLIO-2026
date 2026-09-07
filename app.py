@@ -158,7 +158,7 @@ INTERFACES = [
         herramientas="Figma y Canva.",
     ),
     proyecto(
-        titulo="App: Antioquia, territorio multicultural (En proceso)",
+        titulo="App: MalicIA (En proceso)",
         resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
         galeria=[
             "mal1.png",
