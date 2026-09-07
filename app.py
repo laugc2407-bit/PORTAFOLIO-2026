@@ -50,7 +50,7 @@ Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas 
 **En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
 """,
     # Coloca tu foto en la raíz del repo: perfil.jpg
-    "imagen": "perfil.jpg",
+    "imagen": "perfil2.jpg",
 }
 
 # Para cada herramienta puedes (opcional) poner un logo en tools/<archivo>
