@@ -50,7 +50,7 @@ Soy curiosa, aprendo haciendo y no me da miedo meterme en herramientas o áreas 
 **En pocas palabras: me gusta imaginar posibilidades y después descubrir cómo hacerlas realidad.**
 """,
     # Coloca tu foto en la raíz del repo: perfil.jpg
-    "imagen": "perfil.png",
+    "imagen": "perfil.jpg",
 }
 
 # Para cada herramienta puedes (opcional) poner un logo en tools/<archivo>
@@ -275,6 +275,80 @@ def slugify(text: str) -> str:
     return "".join(c if c.isalnum() else "-" for c in text.lower()).strip("-")
 
 
+# -----------------------------------------------------------------------
+# CALIBRADO TIPOGRÁFICO
+# El cuerpo de cada titular se calcula contra el ancho real de su columna
+# (unidades cqw dentro de .fitbox) y en función de la palabra más larga,
+# así "PORTAFOLIO" o "INVESTIGACIÓN" nunca desbordan ni se ven gigantes.
+# -----------------------------------------------------------------------
+def fit_type(text: str, max_rem: float, min_rem: float = 1.6,
+             ratio: float = 0.66, fill: float = 0.97, track: float = None) -> str:
+    words = [w for w in str(text).replace("\n", " ").split(" ") if w]
+    longest = max((len(w) for w in words), default=1)
+    cqw = fill * 100.0 / (ratio * max(longest, 1))
+    css = (
+        f"font-size:clamp({min_rem}rem, {cqw:.1f}cqw, {max_rem}rem);"
+    )
+    if track is not None:
+        css += f"letter-spacing:{track}em;"
+    return css
+
+
+# -----------------------------------------------------------------------
+# LOGOS DE HERRAMIENTAS
+# Se buscan en varias carpetas y extensiones posibles del repositorio,
+# así funciona tanto si los subiste a "tools/" como si están en la raíz.
+# -----------------------------------------------------------------------
+LOGO_DIRS = ["tools", "logos", "herramientas", "assets/tools", "assets", "img", "images", ""]
+LOGO_EXTS = [".png", ".webp", ".jpg", ".jpeg", ".svg", ".PNG", ".JPG", ".JPEG", ".WEBP", ".SVG"]
+MIME = {
+    ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg", ".svg": "image/svg+xml",
+}
+
+
+@st.cache_data(show_spinner=False)
+def find_logo(archivo: str, nombre: str):
+    """Devuelve la ruta del logo si existe en cualquiera de las ubicaciones
+    y extensiones habituales; si no, None."""
+    stem = Path(archivo).stem if archivo else ""
+    candidatos = []
+    bases = [b for b in [stem, slugify(nombre), slugify(nombre).replace("-", "")] if b]
+
+    for d in LOGO_DIRS:
+        folder = (ASSETS / d) if d else ASSETS
+        if archivo:
+            candidatos.append(folder / archivo)
+        for b in bases:
+            for ext in LOGO_EXTS:
+                candidatos.append(folder / f"{b}{ext}")
+
+    for p in candidatos:
+        try:
+            if p.is_file():
+                return p
+        except OSError:
+            continue
+
+    # último recurso: búsqueda por nombre aproximado en el repo
+    for d in LOGO_DIRS:
+        folder = (ASSETS / d) if d else ASSETS
+        if not folder.is_dir():
+            continue
+        for p in sorted(folder.glob("*")):
+            if p.suffix.lower() in (".png", ".webp", ".jpg", ".jpeg", ".svg"):
+                if p.stem.lower() in bases or slugify(p.stem) in bases:
+                    return p
+    return None
+
+
+@st.cache_data(show_spinner=False)
+def logo_data_uri(path_str: str) -> str:
+    p = Path(path_str)
+    mime = MIME.get(p.suffix.lower(), "image/png")
+    return f"data:{mime};base64,{base64.b64encode(p.read_bytes()).decode()}"
+
+
 def anchor(name: str):
     st.markdown(f'<div id="{name}"></div>', unsafe_allow_html=True)
 
@@ -336,14 +410,21 @@ def inject_css():
             font-family: '{FONT_DISPLAY}', 'Times New Roman', serif;
             font-weight: 900;
             text-transform: uppercase;
-            line-height: 0.92;
-            letter-spacing: -0.02em;
+            line-height: 0.9;
+            letter-spacing: -0.022em;
             margin: 0; padding: 0;
+            overflow-wrap: break-word;
+            hyphens: none;
+            max-width: 100%;
         }}
-        .disp-xxl {{ font-size: clamp(3.6rem, 15vw, 13rem); }}
-        .disp-xl  {{ font-size: clamp(3rem, 9vw, 7.4rem); }}
-        .disp-lg  {{ font-size: clamp(2.2rem, 5.6vw, 4.6rem); }}
-        .disp-md  {{ font-size: clamp(1.5rem, 2.6vw, 2.3rem); line-height: 1.02; }}
+        /* caja de medida: permite calibrar el cuerpo contra el ANCHO REAL
+           de la columna (cqw), no contra el viewport, para que ninguna
+           palabra se salga ni quede gigante. */
+        .fitbox {{ container-type: inline-size; max-width: 100%; }}
+        .disp-xxl {{ font-size: clamp(2.7rem, 9vw, 8.6rem); letter-spacing: -0.038em; }}
+        .disp-xl  {{ font-size: clamp(2.3rem, 6.2vw, 5.4rem); letter-spacing: -0.03em; }}
+        .disp-lg  {{ font-size: clamp(2rem, 4.4vw, 3.6rem); letter-spacing: -0.024em; }}
+        .disp-md  {{ font-size: clamp(1.4rem, 2.2vw, 2.05rem); line-height: 1.0; letter-spacing: -0.016em; }}
 
         .accent {{
             font-family: '{FONT_ACCENT}', '{FONT_DISPLAY}', serif;
@@ -375,12 +456,14 @@ def inject_css():
             line-height: 0.8;
         }}
         .lede {{
-            font-size: clamp(1.15rem, 1.6vw, 1.5rem);
-            line-height: 1.5;
+            font-size: clamp(1.04rem, 1.25vw, 1.32rem);
+            line-height: 1.52;
             font-style: italic;
-            max-width: 30em;
+            letter-spacing: 0.004em;
+            max-width: 32em;
+            text-wrap: pretty;
         }}
-        .body {{ font-size: 1.14rem; line-height: 1.62; }}
+        .body {{ font-size: 1.08rem; line-height: 1.66; letter-spacing: 0.005em; }}
         .body p {{ margin: 0 0 1em 0; }}
         .caption {{
             font-family: '{FONT_COND}', sans-serif;
@@ -521,7 +604,7 @@ def inject_css_layout():
 
         .cover-grid {{ position: relative; z-index: 2; }}
         .cover-title {{ margin: 6px 0 0 0; }}
-        .cover-title .l2 {{ display: block; margin-left: clamp(0px, 6vw, 130px); color: var(--mustard); }}
+        .cover-title .l2 {{ display: block; margin-left: clamp(0px, 4vw, 86px); color: var(--mustard); }}
         .rise {{ animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }}
         .rise-2 {{ animation: rise 1.1s cubic-bezier(.2,.7,.2,1) both; }}
         @keyframes rise {{ from {{ opacity: 0; transform: translateY(26px); }} to {{ opacity: 1; transform: none; }} }}
@@ -571,7 +654,7 @@ def inject_css_pieces():
         }}
         .art-num {{
             font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
-            font-size: clamp(3rem, 7vw, 6.2rem); line-height: 0.78;
+            font-size: clamp(2.4rem, 4.6vw, 4.2rem); line-height: 0.8;
             color: transparent;
             -webkit-text-stroke: 1.4px currentColor;
             opacity: 0.75;
@@ -585,14 +668,15 @@ def inject_css_pieces():
         }}
         .art-title {{
             font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
-            text-transform: uppercase; line-height: 0.98;
-            font-size: clamp(1.55rem, 2.5vw, 2.5rem);
-            letter-spacing: -0.015em;
+            text-transform: uppercase; line-height: 1.0;
+            font-size: clamp(1.35rem, 2vw, 2.1rem);
+            letter-spacing: -0.018em;
             margin: 4px 0 14px 0;
+            overflow-wrap: break-word;
         }}
         .art-lede {{
-            font-size: 1.12rem; line-height: 1.58; font-style: italic;
-            margin: 0 0 18px 0; max-width: 34em;
+            font-size: 1.04rem; line-height: 1.6; font-style: italic;
+            margin: 0 0 18px 0; max-width: 34em; text-wrap: pretty;
         }}
         .art-meta {{ margin: 0 0 18px 0; }}
         .art-row {{
@@ -637,30 +721,72 @@ def inject_css_pieces():
         }}
         video {{ border: 1px solid var(--ink); }}
 
-        /* ---------- colofón de herramientas ------------------------------ */
+        /* ---------- colofón de herramientas: los LOGOS mandan --------- */
         .colophon {{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+            gap: 0;
             border-top: 1px solid currentColor;
             border-left: 1px solid currentColor;
         }}
         .col-item {{
-            display: flex; align-items: center; gap: 12px;
-            padding: 17px 16px;
+            position: relative;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: flex-start;
+            gap: 14px;
+            padding: 26px 16px 18px 16px;
             border-right: 1px solid currentColor;
             border-bottom: 1px solid currentColor;
-            transition: background .2s ease, color .2s ease;
+            overflow: hidden;
+            transition: background .25s ease, color .25s ease;
         }}
-        .col-item:hover {{ background: var(--mustard); color: var(--ink); }}
+        /* medio arco de sol 70s detrás de cada logo */
+        .col-item::before {{
+            content: "";
+            position: absolute; left: 50%; top: 14px;
+            width: 108px; height: 108px; margin-left: -54px;
+            border-radius: 999px;
+            background: var(--paper2);
+            box-shadow: inset 0 0 0 1px rgba(29,22,17,0.28);
+            transition: background .25s ease, transform .35s ease;
+        }}
+        .col-item:nth-child(3n)::before {{ background: rgba(217,160,43,0.30); }}
+        .col-item:nth-child(3n+1)::before {{ background: rgba(168,68,40,0.16); }}
+        .col-item:nth-child(4n)::before {{ background: rgba(90,98,56,0.18); }}
         .col-item .n {{
-            font-family: '{FONT_COND}', sans-serif; font-size: 0.62rem;
-            letter-spacing: 0.16em; opacity: 0.6;
+            position: absolute; top: 8px; left: 10px; z-index: 3;
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.58rem;
+            letter-spacing: 0.18em; opacity: 0.55;
+        }}
+        .col-logo {{
+            position: relative; z-index: 2;
+            width: 108px; height: 108px;
+            display: flex; align-items: center; justify-content: center;
+        }}
+        .col-logo img {{
+            max-width: 68px; max-height: 68px;
+            width: auto; height: auto;
+            object-fit: contain;
+            filter: saturate(0.82) contrast(1.04)
+                    drop-shadow(3px 3px 0 rgba(29,22,17,0.22));
+            transition: transform .35s cubic-bezier(.34,1.56,.64,1), filter .25s ease;
+        }}
+        .col-logo .glyph {{
+            font-family: '{FONT_ACCENT}', serif; font-size: 2.1rem;
+            line-height: 1; color: var(--espresso); opacity: 0.75;
         }}
         .col-item .nm {{
-            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
-            text-transform: uppercase; font-size: 0.94rem; line-height: 1.05;
+            position: relative; z-index: 2;
+            font-family: '{FONT_COND}', sans-serif; font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.68rem; letter-spacing: 0.16em;
+            line-height: 1.25; text-align: center;
+            overflow-wrap: break-word; max-width: 100%;
         }}
-        .col-item img {{ height: 22px; width: auto; filter: saturate(0.9); }}
+        .col-item:hover {{ background: var(--ink); color: var(--paper); }}
+        .col-item:hover::before {{ background: var(--mustard); transform: scale(1.06); }}
+        .col-item:hover .col-logo img {{ transform: scale(1.1) rotate(-3deg); }}
+        .col-item:hover .col-logo .glyph {{ color: var(--ink); }}
 
         /* ---------- contraportada / contacto ----------------------------- */
         .btn {{
@@ -691,7 +817,7 @@ def inject_css_pieces():
         .back-inner .folio {{ display: block; margin-bottom: 12px; }}
         .back-inner .l2 {{
             display: block; color: var(--mustard);
-            margin-left: clamp(0px, 5vw, 110px);
+            margin-left: clamp(0px, 3.4vw, 74px);
         }}
         .contact-block {{ max-width: 44em; margin-bottom: 26px; }}
 
@@ -1182,6 +1308,19 @@ def render_missing_assets_banner():
             for p in missing:
                 st.code(str(ASSETS / p))
 
+    sin_logo = [t["nombre"] for t in TOOLS if find_logo(t.get("archivo", ""), t["nombre"]) is None]
+
+    if sin_logo:
+        with st.expander(
+            f"⚙️ DEV: {len(sin_logo)} herramienta(s) sin logo detectado"
+        ):
+            st.write(
+                "Busco los logos por nombre de archivo o por nombre de la "
+                "herramienta en estas carpetas: tools/, logos/, herramientas/, "
+                "assets/, img/, images/ y la raíz. Extensiones: png, webp, jpg, svg."
+            )
+            st.code(", ".join(sin_logo))
+
 
 # =============================================================================
 # PÁGINAS DE LA REVISTA
@@ -1240,16 +1379,18 @@ def section_cover():
                 for label, a in NAV
             )
 
+            hero = f"{SITE['titulo_hero_1']} {SITE['titulo_hero_2']}"
+
             st.markdown(
                 f"""
-                <div class="cover-grid rise">
+                <div class="cover-grid rise fitbox">
                     <div class="label" style="color:var(--mustard);">{SITE['nombre']}</div>
                     <div class="disp disp-xxl cover-title"
-                         style="{offset_ink(['var(--terracotta)', 'var(--espresso)'], 5)}">
+                         style="{fit_type(hero, 7.6, 2.5)}{offset_ink(['var(--terracotta)', 'var(--espresso)'], 5)}">
                         {SITE['titulo_hero_1']}
                         <span class="l2 accent">{SITE['titulo_hero_2']}</span>
                     </div>
-                    <div class="rule-d" style="margin:34px 0 20px 0; max-width:40em;"></div>
+                    <div class="rule-d" style="margin:30px 0 20px 0; max-width:34em;"></div>
                     <p class="lede rise-2" style="margin:0;">{SITE['tagline']}</p>
                 </div>
                 """,
@@ -1281,8 +1422,10 @@ def section_about():
             <div class="folio" style="margin-bottom:10px;">
                 {SECTION_NUM['sobre-mi']:02d} — {SITE['eyebrow'][1]}
             </div>
-            <div class="disp disp-xl" style="{offset_ink(['var(--burnt)'], 4)}">
+            <div class="fitbox">
+            <div class="disp disp-xl" style="{fit_type(ABOUT['titulo'], 5.4, 2.2)}{offset_ink(['var(--burnt)'], 4)}">
                 {ABOUT['titulo']}
+            </div>
             </div>
             <div class="rule-d" style="margin:30px 0 44px 0;"></div>
             """,
@@ -1313,15 +1456,16 @@ def section_tools():
         items = []
 
         for i, tool in enumerate(TOOLS):
-            logo_path = ASSETS / "tools" / tool["archivo"]
+            logo_path = find_logo(tool.get("archivo", ""), tool["nombre"])
 
-            if logo_path.exists():
+            if logo_path is not None:
                 icon_html = (
-                    '<img src="data:image/png;base64,'
-                    f'{base64.b64encode(logo_path.read_bytes()).decode()}">'
+                    '<span class="col-logo">'
+                    f'<img src="{logo_data_uri(str(logo_path))}" alt="{tool["nombre"]}">'
+                    '</span>'
                 )
             else:
-                icon_html = '<span class="n">✦</span>'
+                icon_html = '<span class="col-logo"><span class="glyph">✦</span></span>'
 
             items.append(
                 '<div class="col-item">'
@@ -1336,7 +1480,7 @@ def section_tools():
             <div class="folio" style="margin-bottom:10px;">
                 {SECTION_NUM['herramientas']:02d} — {SITE['eyebrow'][2]}
             </div>
-            <div class="disp disp-lg" style="{offset_ink(['var(--mustard)'], 4)}">HERRAMIENTAS</div>
+            <div class="disp disp-lg" style="{fit_type('HERRAMIENTAS', 3.6, 1.9)}{offset_ink(['var(--mustard)'], 4)}">HERRAMIENTAS</div>
             <div class="rule-d" style="margin:28px 0 34px 0;"></div>
             <div class="colophon">{''.join(items)}</div>
             """,
@@ -1401,10 +1545,10 @@ def article(item, idx, theme, kicker, flip=False):
 
             st.markdown(
                 f"""
-                <div style="padding-top:6px;">
+                <div style="padding-top:6px;" class="fitbox">
                     <div class="art-num">{idx + 1:02d}</div>
                     <span class="art-kicker">{kicker}</span>
-                    <div class="art-title">{item['titulo']}</div>
+                    <div class="art-title" style="{fit_type(item['titulo'], 2.15, 1.3, ratio=0.62)}">{item['titulo']}</div>
                     {resumen}
                     {meta}
                     {resultado}
@@ -1433,7 +1577,9 @@ def section_work(key, anchor_id, titulo, items, theme, standfirst=""):
             <div class="folio" style="margin-bottom:10px;">
                 {SECTION_NUM.get(anchor_id, 0):02d} — {len(items):02d} {'proyectos' if len(items) != 1 else 'proyecto'}
             </div>
-            <div class="disp disp-xl" style="{offset_ink([theme['ac']], 5)}">{titulo}</div>
+            <div class="fitbox">
+            <div class="disp disp-xl" style="{fit_type(titulo, 5.2, 2.1)}{offset_ink([theme['ac']], 5)}">{titulo}</div>
+            </div>
             {lede}
             <div class="rule-d" style="margin:34px 0 8px 0;"></div>
             """,
@@ -1465,9 +1611,9 @@ def section_contact():
         contacto_html = (
             '<div class="back-cover">'
             '<div class="halftone bl" style="color:var(--mustard);"></div>'
-            '<div class="back-inner">'
+            '<div class="back-inner fitbox">'
             f'<div class="folio">{SECTION_NUM["contacto"]:02d} — {SITE["eyebrow"][0]}</div>'
-            f'<div class="disp disp-xxl" style="{offset_ink(["var(--terracotta)", "var(--espresso)"], 5)}">'
+            f'<div class="disp disp-xxl" style="{fit_type(CONTACT["titulo_1"] + " " + CONTACT["titulo_2"], 7.2, 2.4)}{offset_ink(["var(--terracotta)", "var(--espresso)"], 5)}">'
             f'{CONTACT["titulo_1"]}'
             f'<span class="l2 accent">{CONTACT["titulo_2"]}</span>'
             '</div>'
