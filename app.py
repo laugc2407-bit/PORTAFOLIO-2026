@@ -732,55 +732,61 @@ def inject_css_pieces():
         .col-item {{
             position: relative;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: flex-start;
-            gap: 14px;
-            padding: 26px 16px 18px 16px;
+            align-items: center; justify-content: center;
+            gap: 0;
+            padding: 12px 10px 14px 10px;
             border-right: 1px solid currentColor;
             border-bottom: 1px solid currentColor;
             overflow: hidden;
             transition: background .25s ease, color .25s ease;
         }}
-        /* medio arco de sol 70s detrás de cada logo */
+        /* medio arco de sol 70s — centrado respecto a la casilla */
         .col-item::before {{
             content: "";
-            position: absolute; left: 50%; top: 14px;
-            width: 108px; height: 108px; margin-left: -54px;
+            position: absolute; left: 50%; top: 50%;
+            width: 100px; height: 100px;
+            margin-left: -50px; margin-top: -50px;
             border-radius: 999px;
             background: var(--paper2);
-            box-shadow: inset 0 0 0 1px rgba(29,22,17,0.28);
+            box-shadow: inset 0 0 0 1px rgba(29,22,17,0.25);
             transition: background .25s ease, transform .35s ease;
         }}
-        .col-item:nth-child(3n)::before {{ background: rgba(217,160,43,0.30); }}
-        .col-item:nth-child(3n+1)::before {{ background: rgba(168,68,40,0.16); }}
-        .col-item:nth-child(4n)::before {{ background: rgba(90,98,56,0.18); }}
+        .col-item:nth-child(3n)::before   {{ background: rgba(217,160,43,0.28); }}
+        .col-item:nth-child(3n+1)::before {{ background: rgba(168,68,40,0.15); }}
+        .col-item:nth-child(4n)::before   {{ background: rgba(90,98,56,0.16); }}
         .col-item .n {{
-            position: absolute; top: 8px; left: 10px; z-index: 3;
-            font-family: '{FONT_COND}', sans-serif; font-size: 0.58rem;
-            letter-spacing: 0.18em; opacity: 0.55;
+            position: absolute; top: 6px; left: 8px; z-index: 3;
+            font-family: '{FONT_COND}', sans-serif; font-size: 0.54rem;
+            letter-spacing: 0.17em; opacity: 0.5;
         }}
         .col-logo {{
             position: relative; z-index: 2;
-            width: 108px; height: 108px;
+            width: 100px; height: 100px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
+            margin: 0 auto;
         }}
         .col-logo img {{
-            max-width: 68px; max-height: 68px;
+            max-width: 62px; max-height: 62px;
             width: auto; height: auto;
+            display: block;
+            margin: auto;
             object-fit: contain;
             filter: saturate(0.82) contrast(1.04)
-                    drop-shadow(3px 3px 0 rgba(29,22,17,0.22));
+                    drop-shadow(3px 3px 0 rgba(29,22,17,0.20));
             transition: transform .35s cubic-bezier(.34,1.56,.64,1), filter .25s ease;
         }}
         .col-logo .glyph {{
-            font-family: '{FONT_ACCENT}', serif; font-size: 2.1rem;
-            line-height: 1; color: var(--espresso); opacity: 0.75;
+            font-family: '{FONT_ACCENT}', serif; font-size: 1.9rem;
+            line-height: 1; color: var(--espresso); opacity: 0.7;
+            display: block; text-align: center;
         }}
         .col-item .nm {{
             position: relative; z-index: 2;
             font-family: '{FONT_COND}', sans-serif; font-weight: 500;
             text-transform: uppercase;
-            font-size: 0.68rem; letter-spacing: 0.16em;
-            line-height: 1.25; text-align: center;
+            font-size: 0.64rem; letter-spacing: 0.14em;
+            line-height: 1.3; text-align: center;
+            margin-top: 10px;
             overflow-wrap: break-word; max-width: 100%;
         }}
         .col-item:hover {{ background: var(--ink); color: var(--paper); }}
