@@ -158,7 +158,7 @@ INTERFACES = [
         herramientas="Figma y Canva.",
     ),
     proyecto(
-        titulo="App: MalicIA (En proceso)",
+        titulo="App: Antioquia, territorio multicultural (En proceso)",
         resumen="Aplicativo para aprender sobre la diversidad cultural de Antioquia.",
         galeria=[
             "mal1.png",
@@ -522,8 +522,8 @@ def inject_css_layout():
         .st-key-work-visual        {{ background: {THEMES['visual']['bg']} !important; color: {THEMES['visual']['fg']}; }}
         .st-key-work-investigacion {{ background: {THEMES['investigacion']['bg']} !important; color: {THEMES['investigacion']['fg']}; }}
 
-        .st-key-strip-1, .st-key-strip-2, .st-key-strip-3 {{
-            padding: 0 !important; position: relative; background: var(--ink) !important;
+        .st-key-strip-1, .st-key-strip-2 {{
+            padding: 0 !important; position: relative;
         }}
 
         /* marco de página impresa: filete interior en cada sección */
@@ -586,23 +586,35 @@ def inject_css_layout():
         @media (max-width: 1000px) {{ .spine {{ display: none; }} }}
 
         /* ---------- portada ---------------------------------------------- */
+        /* ---------- portada: sol tipográfico y cuadro de composición ------ */
         .sunburst {{
             position: absolute; top: 42%; left: 62%;
             width: 1250px; height: 1250px; transform: translate(-50%, -50%);
-            background: repeating-conic-gradient(from 0deg, var(--terracotta) 0deg 8deg, transparent 8deg 22deg);
-            opacity: 0.16; border-radius: 50%;
-            animation: spin 120s linear infinite;
+            background: repeating-conic-gradient(
+                from 0deg,
+                var(--terracotta) 0deg 5deg,
+                transparent 5deg 13deg
+            );
+            opacity: 0.12; border-radius: 50%;
+            animation: spin 180s linear infinite;
             pointer-events: none; z-index: 0;
         }}
         @keyframes spin {{ to {{ transform: translate(-50%, -50%) rotate(360deg); }} }}
 
-        .halftone {{
+        /* cuadro de composición: filetes en L como guía de imprenta */
+        .comp-corner {{
             position: absolute; pointer-events: none; z-index: 0;
-            background-image: radial-gradient(currentColor 2.6px, transparent 2.6px);
-            background-size: 15px 15px; opacity: 0.3;
+            width: 180px; height: 180px;
+            border: 1px solid currentColor; opacity: 0.2;
         }}
-        .halftone.tr {{ top: 0; right: 0; width: 300px; height: 300px; clip-path: polygon(100% 0, 100% 100%, 0 0); }}
-        .halftone.bl {{ bottom: 0; left: 0; width: 300px; height: 300px; clip-path: polygon(0 0, 100% 100%, 0 100%); }}
+        .comp-corner.tr {{
+            top: 0; right: 0;
+            border-left: none; border-bottom: none;
+        }}
+        .comp-corner.bl {{
+            bottom: 0; left: 0;
+            border-right: none; border-top: none;
+        }}
 
         .cover-grid {{ position: relative; z-index: 2; }}
         .cover-title {{ margin: 6px 0 0 0; }}
@@ -624,20 +636,157 @@ def inject_css_layout():
         .toc .t {{ font-family: '{FONT_DISPLAY}', serif; font-weight: 900; text-transform: uppercase; font-size: 1.02rem; }}
         .toc .d {{ flex: 1; border-bottom: 1px dotted currentColor; opacity: 0.35; transform: translateY(-4px); }}
 
-        /* ---------- cinta tipográfica (ticker impreso) -------------------- */
-        .ticker {{
+        /* ---------- tiras de separación editorial 70s --------------------- */
+        .strip {{
+            width: 100%; position: relative; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }}
+
+        /* --- variante 1: orla de registro de impresión --- */
+        .strip-printer {{
+            background: var(--bg); color: var(--fg);
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; padding: 0;
+        }}
+        .strip-printer .reg-marks {{
+            display: flex; gap: 2px;
+            font-family: '{FONT_COND}', sans-serif;
+            font-size: 1.3rem; opacity: 0.45;
+            letter-spacing: 0.02em; line-height: 1;
+        }}
+        .strip-printer .reg-cross {{
+            font-size: 1.05rem; opacity: 0.3;
+            padding: 0 18px;
+        }}
+        .strip-printer .reg-label {{
+            font-family: '{FONT_COND}', sans-serif;
+            font-size: 0.62rem; letter-spacing: 0.35em;
+            opacity: 0.4; padding: 0 22px;
+        }}
+        .strip-printer .reg-dots {{
+            display: flex; gap: 5px;
+        }}
+        .strip-printer .reg-dots i {{
+            width: 8px; height: 8px; border-radius: 999px;
+            display: block;
+        }}
+        .strip-printer .reg-dots i:nth-child(1) {{ background: {PALETTE['terracotta']}; }}
+        .strip-printer .reg-dots i:nth-child(2) {{ background: {PALETTE['mustard']}; }}
+        .strip-printer .reg-dots i:nth-child(3) {{ background: {PALETTE['burnt']}; }}
+        .strip-printer .reg-dots i:nth-child(4) {{ background: {PALETTE['olive']}; }}
+        .strip-printer .reg-dots i:nth-child(5) {{ background: {PALETTE['espresso']}; }}
+        .strip-printer .reg-dots i:nth-child(6) {{ background: {PALETTE['oxblood']}; }}
+        .strip-printer .reg-dots i:nth-child(7) {{ background: {PALETTE['terracotta']}; opacity: 0.6; }}
+        .strip-printer .reg-dots i:nth-child(8) {{ background: {PALETTE['mustard']}; opacity: 0.6; }}
+
+        /* --- variante 2: cenefa zig-zag dentada --- */
+        .strip-zigzag {{
+            background: var(--bg); flex-direction: column;
+            padding: 0; gap: 0;
+        }}
+        .zz-band {{
+            width: 100%; height: 3px;
+            background: repeating-linear-gradient(
+                -60deg, var(--ac), var(--ac) 4px,
+                transparent 4px, transparent 10px
+            );
+            opacity: 0.6;
+        }}
+        .zz-teeth {{
+            flex: 1; width: 100%;
+            background: repeating-linear-gradient(
+                120deg, var(--fg) 0 2px, transparent 2px 9px
+            );
+            opacity: 0.12;
+        }}
+
+        /* --- variante 3: franja cromática Pantone --- */
+        .strip-pantone {{
+            background: var(--bg); flex-direction: column;
+            padding: 0; gap: 0;
+        }}
+        .pan-swatch {{
+            flex: 1; width: 100%; position: relative;
+        }}
+        .pan-swatch::after {{
+            content: ""; position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            width: 20px; height: 2px;
+            background: rgba(29,22,17,0.35);
+        }}
+        .pan-labels {{
+            display: flex; width: 100%;
+            border-top: 1px solid var(--fg);
+        }}
+        .pan-labels span {{
+            flex: 1; text-align: center;
+            font-family: '{FONT_COND}', sans-serif;
+            font-size: 0.5rem; letter-spacing: 0.18em;
+            text-transform: uppercase;
+            padding: 3px 0; opacity: 0.55;
+        }}
+
+        /* --- variante 4: marginalia tipográfica --- */
+        .strip-marginalia {{
+            background: var(--bg); flex-direction: column;
+            padding: 0; gap: 0;
+        }}
+        .mg-rule {{
+            width: 100%; height: 1px;
+            background: repeating-linear-gradient(
+                90deg, var(--fg) 0 1px, transparent 1px 8px
+            );
+            opacity: 0.3;
+        }}
+        .mg-ornament {{
+            flex: 1; display: flex; align-items: center;
+            justify-content: center;
+            font-size: clamp(1.8rem, 4vw, 3.4rem);
+            color: var(--ac); opacity: 0.5;
+            font-family: '{FONT_ACCENT}', serif;
+            letter-spacing: 0.12em;
+        }}
+
+        /* ---------- cinta tipográfica tipo cabecera de sección ------------- */
+        .marquee {{
             overflow: hidden; white-space: nowrap;
-            background: var(--mustard); color: var(--ink);
-            border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink);
-            padding: 9px 0;
+            border-top: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            padding: 11px 0;
+            position: relative;
         }}
-        .ticker-inner {{ display: inline-block; animation: slide 34s linear infinite; }}
-        .ticker span {{
-            font-family: '{FONT_COND}', sans-serif; font-weight: 500;
-            text-transform: uppercase; letter-spacing: 0.36em; font-size: 0.76rem;
-            padding: 0 22px;
+        .marquee::before, .marquee::after {{
+            content: ""; position: absolute; top: 0; bottom: 0;
+            width: 60px; z-index: 2; pointer-events: none;
         }}
-        @keyframes slide {{ from {{ transform: translateX(0); }} to {{ transform: translateX(-50%); }} }}
+        .marquee::before {{
+            left: 0;
+            background: linear-gradient(to right, currentColor, transparent);
+            opacity: 0.12;
+        }}
+        .marquee::after {{
+            right: 0;
+            background: linear-gradient(to left, currentColor, transparent);
+            opacity: 0.12;
+        }}
+        .marquee-inner {{
+            display: inline-block;
+            animation: mq-slide 40s linear infinite;
+        }}
+        .mq-word {{
+            font-family: '{FONT_DISPLAY}', serif; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 0.18em;
+            font-size: clamp(0.72rem, 1vw, 0.92rem);
+            padding: 0 6px;
+        }}
+        .mq-orn {{
+            font-size: 0.5rem; padding: 0 18px;
+            opacity: 0.55; vertical-align: middle;
+        }}
+        @keyframes mq-slide {{
+            from {{ transform: translateX(0); }}
+            to   {{ transform: translateX(-50%); }}
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -1159,124 +1308,95 @@ def carousel_widget(media_list, label, height=430, theme=None):
     st.components.v1.html(html, height=height + 4)
 
 
-def render_flow_field_bg(height_px: int, density: float = 1.0, seed: int = 0):
-    """Banda gráfica generativa — partículas mostaza / naranja quemado /
-    terracota fluyendo sobre tinta, como una lámina experimental impresa.
-    Se dibuja en canvas, no carga archivos."""
+def editorial_strip(section: str = "default", height_px: int = 140):
+    """Banda de separación editorial — cada variante es una lámina de
+    la revista: orla de grabado, franja de registro, cenefa geométrica
+    o marginalia. 100 % CSS, sin canvas."""
 
-    html = f"""
-    <style>
-        html, body {{ margin: 0; padding: 0; background: {PALETTE['ink']}; overflow: hidden; }}
-        #hm-bg-wrap {{ position: relative; width: 100%; height: {height_px}px; background: {PALETTE['ink']}; }}
-        #hm-bg-canvas {{ position: absolute; inset: 0; width: 100%; height: 100%; display: block; }}
-    </style>
+    ac = THEMES.get(section, {}).get("ac", PALETTE["mustard"])
+    bg = THEMES.get(section, {}).get("bg", PALETTE["ink"])
+    fg = THEMES.get(section, {}).get("fg", PALETTE["paper"])
 
-    <div id="hm-bg-wrap"><canvas id="hm-bg-canvas"></canvas></div>
+    # ---- 4 variantes de lámina ----
+    variants = {
+        # 1) Orla de registro de impresión: marcas de corte + cruces de
+        #    registro + sangrados, como la guía del impresor
+        "printer": (
+            '<div class="strip strip-printer" style="'
+            f'--ac:{ac};--bg:{bg};--fg:{fg};height:{height_px}px;">'
+            '<span class="reg-marks">'
+            '<i class="rm-crop">⌜</i><i class="rm-crop">⌟</i>'
+            '<i class="rm-crop">⌝</i><i class="rm-crop">⌞</i>'
+            '</span>'
+            '<span class="reg-cross">✛</span>'
+            '<span class="reg-cross">✛</span>'
+            '<span class="reg-cross">✛</span>'
+            '<span class="reg-cross">✛</span>'
+            '<span class="reg-label">C M Y K</span>'
+            '<span class="reg-dots">'
+            '<i></i><i></i><i></i><i></i>'
+            '<i></i><i></i><i></i><i></i>'
+            '</span>'
+            '</div>'
+        ),
+        # 2) Cenefa Art Deco 70: zig-zag dentado con filetes
+        "zigzag": (
+            '<div class="strip strip-zigzag" style="'
+            f'--ac:{ac};--bg:{bg};--fg:{fg};height:{height_px}px;">'
+            '<div class="zz-band"></div>'
+            '<div class="zz-teeth"></div>'
+            '<div class="zz-band"></div>'
+            '</div>'
+        ),
+        # 3) Franja de cromo — bloques de color apilados como muestras
+        #    de tinta en un catálogo Pantone setentero
+        "pantone": (
+            '<div class="strip strip-pantone" style="'
+            f'--ac:{ac};--bg:{bg};--fg:{fg};height:{height_px}px;">'
+            f'<div class="pan-swatch" style="background:{PALETTE["terracotta"]};"></div>'
+            f'<div class="pan-swatch" style="background:{PALETTE["mustard"]};"></div>'
+            f'<div class="pan-swatch" style="background:{PALETTE["burnt"]};"></div>'
+            f'<div class="pan-swatch" style="background:{PALETTE["olive"]};"></div>'
+            f'<div class="pan-swatch" style="background:{PALETTE["espresso"]};"></div>'
+            f'<div class="pan-swatch" style="background:{PALETTE["oxblood"]};"></div>'
+            '<div class="pan-labels">'
+            '<span>terracotta</span><span>mustard</span>'
+            '<span>burnt sienna</span><span>olive</span>'
+            '<span>espresso</span><span>oxblood</span>'
+            '</div>'
+            '</div>'
+        ),
+        # 4) Marginalia tipográfica — filetes, folio grande y palabras
+        #    clave repetidas, como las notas al margen de una revista
+        "marginalia": (
+            '<div class="strip strip-marginalia" style="'
+            f'--ac:{ac};--bg:{bg};--fg:{fg};height:{height_px}px;">'
+            '<div class="mg-rule"></div>'
+            '<div class="mg-ornament">⟡</div>'
+            '<div class="mg-rule"></div>'
+            '</div>'
+        ),
+    }
 
-    <script>
-    (function() {{
-        const canvas = document.getElementById('hm-bg-canvas');
-        const ctx = canvas.getContext('2d');
-        const wrap = document.getElementById('hm-bg-wrap');
-        const DPR = Math.min(window.devicePixelRatio || 1, 2);
-
-        const colors = ['{PALETTE['mustard']}', '{PALETTE['burnt']}', '{PALETTE['terracotta']}'];
-        const voidColor = '{PALETTE['ink']}';
-        const seed = {seed};
-        const density = {density};
-
-        let W, H, particles = [];
-
-        function hexToRgb(hex) {{
-            hex = hex.replace('#', '');
-            const n = parseInt(hex, 16);
-            return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-        }}
-
-        const rgbColors = colors.map(hexToRgb);
-        const voidRgb = hexToRgb(voidColor);
-
-        function fieldAngle(x, y, t) {{
-            return (
-                Math.sin(x * 0.006 + t * 0.35 + seed) +
-                Math.cos(y * 0.008 - t * 0.28 + seed * 1.3) +
-                Math.sin((x + y) * 0.004 + t * 0.18)
-            ) * Math.PI * 0.6;
-        }}
-
-        function spawn() {{
-            const c = rgbColors[Math.floor(Math.random() * rgbColors.length)];
-            return {{
-                x: Math.random() * W,
-                y: Math.random() * H,
-                speed: 0.4 + Math.random() * 1.1,
-                r: 0.6 + Math.random() * 1.5,
-                life: 220 + Math.random() * 320,
-                age: Math.random() * 300,
-                color: c,
-            }};
-        }}
-
-        function resize() {{
-            W = wrap.clientWidth;
-            H = wrap.clientHeight;
-
-            canvas.width = W * DPR;
-            canvas.height = H * DPR;
-            canvas.style.width = W + 'px';
-            canvas.style.height = H + 'px';
-
-            ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-            ctx.fillStyle = voidColor;
-            ctx.fillRect(0, 0, W, H);
-
-            const count = Math.max(80, Math.floor((W * H) / 9000 * density));
-            particles = [];
-            for (let i = 0; i < count; i++) {{ particles.push(spawn()); }}
-        }}
-
-        let t = 0;
-
-        function frame() {{
-            t += 0.016;
-
-            ctx.fillStyle = 'rgba(' + voidRgb[0] + ',' + voidRgb[1] + ',' + voidRgb[2] + ',0.07)';
-            ctx.fillRect(0, 0, W, H);
-
-            for (let p of particles) {{
-                const angle = fieldAngle(p.x, p.y, t);
-                p.x += Math.cos(angle) * p.speed;
-                p.y += Math.sin(angle) * p.speed + 0.12;
-                p.age += 1;
-
-                if (p.x < -10 || p.x > W + 10 || p.y < -10 || p.y > H + 10 || p.age > p.life) {{
-                    Object.assign(p, spawn());
-                }}
-
-                ctx.beginPath();
-                ctx.fillStyle = 'rgba(' + p.color[0] + ',' + p.color[1] + ',' + p.color[2] + ',0.55)';
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fill();
-            }}
-
-            requestAnimationFrame(frame);
-        }}
-
-        resize();
-        window.addEventListener('resize', resize);
-        requestAnimationFrame(frame);
-    }})();
-    </script>
-    """
-
-    st.components.v1.html(html, height=height_px + 4)
+    chosen = variants.get(section, variants["marginalia"])
+    st.markdown(chosen, unsafe_allow_html=True)
 
 
-def ticker_band(words):
-    """Cinta tipográfica horizontal, como el lomo repetido de una revista."""
-    run = "".join(f"<span>{w}</span><span>✦</span>" for w in words)
+def editorial_marquee(words, variant: str = "default"):
+    """Cinta tipográfica como cabecera de sección de revista: no es un
+    marquee genérico sino un filete de composición con palabras-clave
+    y ornamentas entre medias."""
+    sep = '<span class="mq-orn">◆</span>'
+    run = sep.join(f'<span class="mq-word">{w.upper()}</span>' for w in words)
+    full = run + sep + run + sep
+    # dos variantes de fondo
+    bg = PALETTE["mustard"] if variant == "warm" else PALETTE["ink"]
+    fg = PALETTE["ink"] if variant == "warm" else PALETTE["mustard"]
     st.markdown(
-        f'<div class="ticker"><div class="ticker-inner">{run}{run}</div></div>',
+        '<div class="marquee" style="'
+        f'background:{bg};color:{fg};">'
+        '<div class="marquee-inner">' + full + '</div>'
+        '</div>',
         unsafe_allow_html=True,
     )
 
@@ -1374,7 +1494,7 @@ def section_cover():
 
         st.markdown(
             '<div class="sunburst"></div>'
-            '<div class="halftone tr" style="color:var(--mustard);"></div>',
+            '<div class="comp-corner tr" style="color:var(--mustard);"></div>',
             unsafe_allow_html=True,
         )
 
@@ -1608,7 +1728,7 @@ def section_contact():
     with st.container(key="contact"):
         anchor("contacto")
 
-        render_flow_field_bg(height_px=300, density=1.15, seed=3)
+        editorial_strip("marginalia", height_px=110)
 
         links_html = "".join(
             f'<a class="btn" href="{l["url"]}" target="_blank">{l["nombre"]}</a>'
@@ -1620,7 +1740,7 @@ def section_contact():
         # bloque de código y muestra el código en crudo.
         contacto_html = (
             '<div class="back-cover">'
-            '<div class="halftone bl" style="color:var(--mustard);"></div>'
+            '<div class="comp-corner bl" style="color:var(--mustard);"></div>'
             '<div class="back-inner fitbox">'
             f'<div class="folio">{SECTION_NUM["contacto"]:02d} — {SITE["eyebrow"][0]}</div>'
             f'<div class="disp disp-xxl" style="{fit_type(CONTACT["titulo_1"] + " " + CONTACT["titulo_2"], 7.2, 2.4)}{offset_ink(["var(--terracotta)", "var(--espresso)"], 5)}">'
@@ -1669,11 +1789,11 @@ masthead_and_nav()
 
 section_cover()
 
-with st.container(key="strip-1"):
-    render_flow_field_bg(height_px=190, density=1.25, seed=1)
+editorial_strip("printer", height_px=110)
 
-ticker_band(
-    [SITE["eyebrow"][0], SITE["eyebrow"][1], SITE["eyebrow"][2], SITE["nombre"]]
+editorial_marquee(
+    [SITE["eyebrow"][0], SITE["eyebrow"][1], SITE["eyebrow"][2], SITE["nombre"]],
+    variant="warm",
 )
 
 section_about()
@@ -1688,8 +1808,7 @@ section_work(
     standfirst="Proyectos que combinan diseño, tecnología y narrativa para crear experiencias que se recorren, no solo se miran.",
 )
 
-with st.container(key="strip-2"):
-    render_flow_field_bg(height_px=140, density=0.9, seed=2)
+editorial_strip("pantone", height_px=96)
 
 section_work("interfaces", "interfaces", "INTERFACES", INTERFACES, THEMES["interfaces"])
 section_work("visual", "visual", "VISUAL", VISUAL, THEMES["visual"])
@@ -1701,8 +1820,9 @@ section_work(
     THEMES["investigacion"],
 )
 
-ticker_band(
-    [SITE["titulo_hero_1"], SITE["titulo_hero_2"], SITE["nombre"], SITE["eyebrow"][1]]
+editorial_marquee(
+    [SITE["titulo_hero_1"], SITE["titulo_hero_2"], SITE["nombre"], SITE["eyebrow"][1]],
+    variant="dark",
 )
 
 section_contact()
